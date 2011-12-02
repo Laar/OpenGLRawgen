@@ -1,0 +1,56 @@
+name: OpenGLRawgen
+version: 0.0.1
+cabal-version: -any
+build-type: Simple
+license: AllRightsReserved
+license-file: ""
+copyright:
+maintainer:
+build-depends: parsec -any, opengl-api -any, mtl -any,
+               haskell-src-exts -any, containers -any, base >=4,
+               CodeGeneration -any
+stability:
+homepage:
+package-url:
+bug-reports:
+synopsis:
+description: .
+category:
+author:
+tested-with:
+data-files:
+data-dir: ""
+extra-source-files:
+extra-tmp-files:
+ 
+executable: OpenGLRawgen
+main-is: Main.hs
+buildable: True
+build-tools:
+cpp-options:
+cc-options:
+ld-options:
+pkgconfig-depends:
+frameworks:
+c-sources:
+default-language:
+other-languages:
+default-extensions:
+other-extensions:
+extensions:
+extra-libraries:
+extra-lib-dirs:
+includes:
+install-includes:
+include-dirs:
+hs-source-dirs: src
+other-modules: Code.New.Raw Code.New.Module Code.New.Builder Spec
+               Spec.Parsing Spec.RawSpec FuncSpec Code.RawFunc FuncSpec.Parsing
+               FuncSpec.Types Code.ModuleLocation EnumSpec EnumSpec.Processing
+               EnumSpec.Parsing EnumSpec.Types Code.Enum Code.Types
+ghc-prof-options:
+ghc-shared-options:
+ghc-options: -Wall -O2
+hugs-options:
+nhc98-options:
+jhc-options:
