@@ -135,17 +135,17 @@ convertRetType rt = addIOType $ case rt of
     Boolean      -> tyCon "GLboolean"
     BufferOffset -> tyCon "GLsizeiptr"
     ErrorCode    -> tyCon "GLenum" -- TODO lookup
-    FramebufferStatus -> tyCon "GLenum" -- TODO lookup
+    FramebufferStatus -> tyCon "GLenum" -- lookup
     GLEnum       -> tyCon "GLenum"
-    HandleARB    -> tyCon "GLuint" -- TODO lookup
+    HandleARB    -> tyCon "GLuint" -- lookup
     Int32        -> tyCon "GLint"
-    S.List       -> tyCon "GLuint" -- TODO lookup
+    S.List       -> tyCon "GLuint" -- lookup
     S.String     -> TyApp (tyCon "Ptr") (tyCon "GLchar")
     Sync         -> tyCon "GLsync"
     UInt32       -> tyCon "GLuint"
     Void         -> unit_tycon
     VoidPointer  -> TyApp (tyCon "Ptr") (tyVar "a") -- TODO improve the type variable
-    VdpauSurfaceNV -> tyCon "GLuint" -- TODO lookup
+    VdpauSurfaceNV -> tyCon "GLintptr" -- lookup
 
 lookupType :: String -> TypeMap -> Type
 lookupType t _ | t == "cl_context" = tyCon "CLcontext"
@@ -168,8 +168,8 @@ lookupType t tm = case M.lookup t tm of
 --            GLenumWithTrailingComma -- removed from the source
             GLfloat     -> tyCon "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> tyCon "GLushort" -- TODO lookup
-            GLhandleARB -> tyCon "GLuint" -- TODO lookup
+            GLhalfNV    -> tyCon "GLushort" -- lookup
+            GLhandleARB -> tyCon "GLuint" -- lookup
             GLint       -> tyCon "GLint"
             GLint64     -> tyCon "GLint64"
             GLint64EXT  -> tyCon "GLint64"
@@ -190,9 +190,9 @@ lookupType t tm = case M.lookup t tm of
             GLushort    -> tyCon "GLushort"
             GLUtesselator -> error  "tesselator"
             GLvoid      -> TyApp (tyCon "Ptr") (tyVar "a")
-            GLvoidStarConst -> tyCon "GLuint" -- TODO lookup ??
-            GLvdpauSurfaceNV -> tyCon "GLuint" -- TODO lookup
-            GLdebugprocARB -> tyCon "GLuint" -- TODO lookup error "Debug ARB"
-            GLdebugprocAMD -> tyCon "GLuint" -- TODO lookup error  "DebugAMD"
+            GLvoidStarConst -> TyApp (tyCon "Ptr") (tyVar "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
+            GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
+            GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
+            GLdebugprocAMD -> tyCon "GLdebugprocAMD" -- lookup
 
 -----------------------------------------------------------------------------
