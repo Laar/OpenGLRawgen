@@ -39,20 +39,17 @@ buildModule :: Category -> Builder ()
 buildModule c = do
     funcs <- asks (M.toList . categoryFuncs c)
     enums <- asks (M.toList . categoryEnums c)
-    if null funcs && null enums
-     then return () -- Don't make a module for a category without contents
-     else do
-        mn <- askCategoryModule c
-        hasMod <- liftPquery hasModule mn
-        when (not hasMod) $ do
-            liftPadjust $ addExternalModule' mn
-        activateModule mn
+    mn <- askCategoryModule c
+    hasMod <- liftPquery hasModule mn
+    when (not hasMod) $ do
+        liftPadjust $ addExternalModule' mn
+    activateModule mn
 
-        sequence_ . map (addEnum c) $ enums
-        sequence_ . map (addFunc c) $ funcs
-        let funcvals = map snd funcs
-        addFunctionConditionals $ funcvals
-        addCondEImports $ map snd enums
+    sequence_ . map (addEnum c) $ enums
+    sequence_ . map (addFunc c) $ funcs
+    let funcvals = map snd funcs
+    addFunctionConditionals $ funcvals
+    addCondEImports $ map snd enums
 --        when (any isFDefine funcvals) $ addExtensionNameString c
 
 -----------------------------------------------------------------------------

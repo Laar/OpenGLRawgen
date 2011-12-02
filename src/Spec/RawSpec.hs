@@ -33,6 +33,7 @@ module Spec.RawSpec (
     isEDefine,
     isFDefine,
 
+    filterEmpty,
     addReuses,
 ) where
 
@@ -137,6 +138,18 @@ whereIsFDefined :: String -> RawSpec -> Maybe Category
 whereIsFDefined n s =
     let cats = M.keys $ funcSpec s
     in listToMaybe $ filter (\c -> isFDefinedInCat n c s) cats
+
+-----------------------------------------------------------------------------
+
+filterEmpty :: RawSpec -> RawSpec
+filterEmpty rs =
+    let cats = allCategories rs
+        emptyCats = filter (\c -> M.null (categoryFuncs c rs)
+                                  && M.null (categoryEnums c rs))
+                        cats
+        enumSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ enumSpec rs
+        funcSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ funcSpec rs
+    in rs{enumSpec = enumSpec', funcSpec = funcSpec'}
 
 -----------------------------------------------------------------------------
 

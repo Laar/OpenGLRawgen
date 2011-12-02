@@ -46,7 +46,7 @@ procNew = do
             reuses <- readFile rfuncP >>= return . parseReuses
             writeFile "temp.output" $ show reuses
             let reuses' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reuses
-                modules = makeRaw $ addReuses reuses' rawSpec
+                modules = makeRaw $ filterEmpty . addReuses reuses' $ rawSpec
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
                     in  safeWriteFile ("output/" ++ moduleNameToPath mn ++ ".hs") msc
