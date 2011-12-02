@@ -114,8 +114,8 @@ extensionModule = ModuleName $ moduleBase <.> "Extensions"
 
 categoryModule :: Category -> ModuleName
 categoryModule (Version ma mi d) =
-    ModuleName $ (if d then moduleBase <.> "Core" <.> "Deprecated" else moduleBase <.> "Core")
-                    <.> ("Core" ++ show ma ++ show mi)
+    ModuleName $ moduleBase <.>  "Core" <.> "Internal"
+                    <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n _) =
     ModuleName $ moduleBase <.> capFirst (show ex) <.> capFirst n
 categoryModule (S.Name n) = error $ "Category " ++ capFirst (show n)
