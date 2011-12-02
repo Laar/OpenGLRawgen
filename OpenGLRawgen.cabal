@@ -6,8 +6,9 @@ license: AllRightsReserved
 license-file: ""
 copyright:
 maintainer:
-build-depends: CodeGeneration -any, base >=4, containers -any,
-               haskell-src-exts -any, mtl -any, opengl-api -any, parsec -any
+build-depends: parsec -any, opengl-api -any, mtl -any,
+               haskell-src-exts -any, containers -any, base >=4,
+               CodeGeneration -any
 stability:
 homepage:
 package-url:
@@ -43,8 +44,8 @@ includes:
 install-includes:
 include-dirs:
 hs-source-dirs: src
-other-modules: Code.Raw Code.Module Code.Builder Spec
-               Spec.Parsing Spec.RawSpec
+other-modules: Code.GroupModule Code.Raw Code.Module Code.Builder
+               Spec Spec.Parsing Spec.RawSpec
 ghc-prof-options:
 ghc-shared-options:
 ghc-options: -Wall -O2

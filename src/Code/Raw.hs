@@ -25,6 +25,7 @@ import Code.New.ModuleBuilder
 import Code.New.Package
 
 import Code.Builder
+import Code.GroupModule
 import Code.Module
 
 makeRaw :: RawSpec -> Package Module
@@ -39,3 +40,4 @@ buildRawImports :: Builder ()
 buildRawImports = do
     cats <- asks allCategories
     sequence_ $ map buildModule cats
+    addCoreProfiles

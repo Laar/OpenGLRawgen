@@ -27,6 +27,7 @@ module Code.Builder (
     askCategoryModule,
     askCategoryPImport,
     isExternalCategory, addCategoryAndActivate, addModuleAndActivate,
+    askCorePath,
 
     ensureImport,
 
@@ -115,9 +116,15 @@ typesModule = ModuleName $ moduleBase <.> "TypesInternal"
 extensionModule :: ModuleName
 extensionModule = ModuleName $ moduleBase <.> "Extensions"
 
+corePath :: String
+corePath = moduleBase <.>  "Core"
+
+askCorePath :: Builder String
+askCorePath = return corePath
+
 categoryModule :: Category -> ModuleName
 categoryModule (Version ma mi d) =
-    ModuleName $ moduleBase <.>  "Core" <.> "Internal"
+    ModuleName $ corePath <.> "Internal"
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n _) =
     ModuleName $ moduleBase <.> capFirst (show ex) <.> capFirst n
