@@ -30,6 +30,8 @@ module Code.Builder (
     ensureImport,
 
     askECategory, askECategory',
+
+    askFCategory, askFCategory',
 ) where
 
 -----------------------------------------------------------------------------
@@ -87,6 +89,14 @@ askECategory' :: String -> Category -> Builder (Maybe Category)
 askECategory' n guess = do
     isInCat <- asks (isEInCat n guess)
     if isInCat then return $ Just guess else askECategory n
+
+askFCategory :: String -> Builder (Maybe Category)
+askFCategory n = asks (whereIsFDefined n)
+
+askFCategory' :: String -> Category -> Builder (Maybe Category)
+askFCategory' n guess = do
+    isInCat <- asks (isFInCat n guess)
+    if isInCat then return $ Just guess else askFCategory n
 
 -----------------------------------------------------------------------------
 

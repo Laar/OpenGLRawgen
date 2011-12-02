@@ -24,11 +24,8 @@ import Control.Monad.Reader
 import qualified Data.Map as M
 import Data.Maybe(fromMaybe)
 
---import Code.Mangler
---import Code.Module
 import Code.Utils
 import Language.Haskell.Exts.Syntax
---import Language.Haskell.Exts.Pretty(prettyPrint)
 import Code.Builder
 import Code.New.Package
 import Code.New.ModuleBuilder
@@ -101,13 +98,13 @@ addFunc c (n, v) = do
     addExport $ (EVar . UnQual) name
     case v of
         RawFunc ty -> addFFIDecls ty
-        ReUseF guessc -> addReuse guessc
+        RedirectF guessc -> addReuse guessc
     where
         name = toFuncName n
         addReuse guessc = do
-            ic <- askECategory' n guessc
+            ic <- askFCategory' n guessc
                 >>= return . fromMaybe (error $ "addFunc: Couldn't find : " ++ show n)
-            when (ic /= c) $ askCategoryPImport c [IVar $ name] >>= addImport
+            when (ic /= c) $ askCategoryPImport ic [IVar $ name] >>= addImport
         addFFIDecls ty = do
             emod <- askExtensionModule
             let dynEntry = Ident $ "dyn_" ++ toFuncName' n
@@ -135,9 +132,6 @@ replaceCallConv r = go
         go []                               = []
         go ('s':'t':'d':'c':'a':'l':'l':xs) = r ++ xs
         go (x                          :xs) = x : go xs
---replaceCallConv _ [] = []
---replaceCallConv r ('s':'t':'d':'c':'a':'l':'l':xs) = r ++ xs
---replaceCallConv r (x:xs) = x:replaceCallConv r xs
 
 toFuncName :: String -> Name
 toFuncName = Ident . toFuncName'
@@ -154,21 +148,3 @@ addFunctionConditionals fvs = when (any isFDefine fvs) $  do
     hffi <- hasPragma pragma
     askExtensionModule >>= ensureImport
     when (not hffi) $ addPragma pragma
-
---addExtensionNameString :: Category -> Builder ()
---addExtensionNameString c = do
---        let ens = Ident "extensionNameString"
---        addDecls $ [oneTypeSig ens (tyCon "String"), oneLiner ens [] (Lit . String $ "GL_" ++ showCategory c)]
-
------------------------------------------------------------------------------
-
---extensionMacro :: String -> Type -> String
---extensionMacro n t = "EXTENSION_ENTRY(" ++ name ++ ',' : args ++ ")"
---    where name = toFuncName' n
---          args = prettyPrint t
---
---genMacros :: [(String, FuncValue)] -> [String]
---genMacros = mapMaybe genMacro
---    where
---        genMacro (n, RawFunc t) = Just $ extensionMacro n t
---        genMacro _             = Nothing

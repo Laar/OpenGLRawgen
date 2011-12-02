@@ -22,7 +22,7 @@ import Code.Utils
 
 import Code.New.Package
 
-import Spec()
+import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
 import Code.Raw
@@ -43,10 +43,13 @@ procNew = do
     case erawSpec of
         Left e -> print e
         Right rawSpec -> do
-            _ <- readFile rfuncP >>= return . parseReuses
-            let modules = makeRaw rawSpec
+            reuses <- readFile rfuncP >>= return . parseReuses
+            writeFile "temp.output" $ show reuses
+            let reuses' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reuses
+                modules = makeRaw $ addReuses reuses' rawSpec
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
                     in  safeWriteFile ("output/" ++ moduleNameToPath mn ++ ".hs") msc
             processModules' pmodule modules
-                >> safeWriteFile "output/modules.txt" (unlines . map (\n -> "      " ++ moduleNameToName n ++ ","). fst $ listModules modules)
+                >> safeWriteFile "output/modules.txt" (unlines .
+                    map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules)

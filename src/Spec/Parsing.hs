@@ -44,7 +44,6 @@ parseSpecs esf gsf tmf = do
     especf <- readFile esf
     fspecf <- readFile gsf
     tymapf <- readFile tmf
-    -- hFlush stdout
     return $ do -- Either ParseError monad
         espec  <- enumLines especf >>= parseEnumSpec
         tymap  <- tmLines tymapf >>= return . mkTypeMap

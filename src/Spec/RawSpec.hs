@@ -27,8 +27,13 @@ module Spec.RawSpec (
     lookupEInCat, isEInCat,
     isEDefinedInCat, whereIsEDefined,
 
+    lookupFInCat, isFInCat,
+    isFDefinedInCat, whereIsFDefined,
+
     isEDefine,
     isFDefine,
+
+    addReuses,
 ) where
 
 import Data.List(union)
@@ -93,8 +98,8 @@ isEDefine _           = False
 type FuncMap = M.Map String FuncValue
 
 data FuncValue
-    = RawFunc Type
-    | ReUseF  Category
+    = RawFunc   Type
+    | RedirectF Category -- the category is again purely a hint
     deriving (Eq, Ord, Show)
 
 isFDefine :: FuncValue -> Bool
@@ -118,3 +123,29 @@ whereIsEDefined n s =
     in listToMaybe $ filter (\c -> isEDefinedInCat n c s) cats
 
 -----------------------------------------------------------------------------
+
+lookupFInCat :: String -> Category -> RawSpec -> Maybe FuncValue
+lookupFInCat n c s = M.lookup c (funcSpec s) >>= M.lookup n
+
+isFInCat :: String -> Category -> RawSpec -> Bool
+isFInCat n c s = isJust $ lookupFInCat n c s
+
+isFDefinedInCat :: String -> Category -> RawSpec -> Bool
+isFDefinedInCat n c s = maybe False isFDefine $ lookupFInCat n c s
+
+whereIsFDefined :: String -> RawSpec -> Maybe Category
+whereIsFDefined n s =
+    let cats = M.keys $ funcSpec s
+    in listToMaybe $ filter (\c -> isFDefinedInCat n c s) cats
+
+-----------------------------------------------------------------------------
+
+importFuncsFromCat :: Category -> Category -> RawSpec -> RawSpec
+importFuncsFromCat tc sc sp =
+    let addFuncs = M.map (\_ -> RedirectF sc) $  categoryFuncs sc sp
+    in sp{funcSpec = M.alter (\cur -> Just $ M.union (fromMaybe M.empty cur) addFuncs) tc $ funcSpec sp}
+
+addReuses :: [(Category, [Category])] -> RawSpec -> RawSpec
+addReuses reuse sp = foldr addReuse sp reuse
+    where
+        addReuse (tc, scs) sp' = foldr (importFuncsFromCat tc) sp' scs
