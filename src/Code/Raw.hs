@@ -12,7 +12,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.New.Raw (
+module Code.Raw (
     makeRaw,
 ) where
 
@@ -24,8 +24,8 @@ import Language.Haskell.Exts.Syntax
 import Code.New.ModuleBuilder
 import Code.New.Package
 
-import Code.New.Builder
-import Code.New.Module
+import Code.Builder
+import Code.Module
 
 makeRaw :: RawSpec -> Package Module
 makeRaw s =

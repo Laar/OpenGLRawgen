@@ -12,7 +12,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.New.Module (
+module Code.Module (
     buildModule,
     replaceCallConv,
 ) where
@@ -29,7 +29,7 @@ import Data.Maybe(fromMaybe)
 import Code.Utils
 import Language.Haskell.Exts.Syntax
 --import Language.Haskell.Exts.Pretty(prettyPrint)
-import Code.New.Builder
+import Code.Builder
 import Code.New.Package
 import Code.New.ModuleBuilder
 

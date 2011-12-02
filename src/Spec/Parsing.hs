@@ -33,8 +33,6 @@ import Text.ParserCombinators.Parsec hiding
 import Text.OpenGL.Api as A
 import Text.OpenGL.Spec as S hiding (Value)
 
-import System.IO
-
 -----------------------------------------------------------------------------
 
 parseSpecs

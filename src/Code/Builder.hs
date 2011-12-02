@@ -12,7 +12,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.New.Builder (
+module Code.Builder (
     Builder,
     emptyBuilder,
 
