@@ -51,5 +51,7 @@ procNew = do
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
                     in  safeWriteFile ("output/" ++ moduleNameToPath mn ++ ".hs") msc
             processModules' pmodule modules
-                >> safeWriteFile "output/modules.txt" (unlines .
+                >> safeWriteFile "output/modulesE.txt" (unlines .
                     map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules)
+                >> safeWriteFile "output/modulesI.txt" (unlines .
+                    map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules)
