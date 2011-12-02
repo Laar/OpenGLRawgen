@@ -26,12 +26,15 @@ module Code.Builder (
     askExtensionImport,
     askCategoryModule,
     askCategoryPImport,
+    isExternalCategory, addCategoryAndActivate, addModuleAndActivate,
 
     ensureImport,
 
     askECategory, askECategory',
 
     askFCategory, askFCategory',
+
+    importAll,
 ) where
 
 -----------------------------------------------------------------------------
@@ -120,6 +123,22 @@ categoryModule (Extension ex n _) =
     ModuleName $ moduleBase <.> capFirst (show ex) <.> capFirst n
 categoryModule (S.Name n) = error $ "Category " ++ capFirst (show n)
 
+isExternalCategory :: Category -> Builder Bool
+isExternalCategory (Version _ _ _) = return False
+isExternalCategory _               = return True
+
+addCategoryAndActivate :: Category -> Builder ()
+addCategoryAndActivate c = do
+    cm <- askCategoryModule c
+    isExt <- isExternalCategory c
+    addModuleAndActivate cm isExt
+
+addModuleAndActivate :: ModuleName -> Bool -> Builder ()
+addModuleAndActivate mn ext = do
+    hasMod <- liftPquery hasModule mn
+    when (not hasMod) $ do
+        liftPadjust $ if ext then addExternalModule' mn else addInternalModule' mn
+    activateModule mn
 -----------------------------------------------------------------------------
 
 (<.>) :: String -> String -> String

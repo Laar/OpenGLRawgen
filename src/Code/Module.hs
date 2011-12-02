@@ -27,7 +27,6 @@ import Data.Maybe(fromMaybe)
 import Code.Utils
 import Language.Haskell.Exts.Syntax
 import Code.Builder
-import Code.New.Package
 import Code.New.ModuleBuilder
 
 import Text.OpenGL.Spec(Category, showCategory)
@@ -39,11 +38,7 @@ buildModule :: Category -> Builder ()
 buildModule c = do
     funcs <- asks (M.toList . categoryFuncs c)
     enums <- asks (M.toList . categoryEnums c)
-    mn <- askCategoryModule c
-    hasMod <- liftPquery hasModule mn
-    when (not hasMod) $ do
-        liftPadjust $ addExternalModule' mn
-    activateModule mn
+    addCategoryAndActivate c
 
     sequence_ . map (addEnum c) $ enums
     sequence_ . map (addFunc c) $ funcs
