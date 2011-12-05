@@ -140,7 +140,7 @@ categoryModule (Extension ex n _) =
 categoryModule (S.Name n) = error $ "Category " ++ capFirst (show n)
 
 isExternalCategory :: BuildableModule bm => Category -> GBuilder bm Bool
-isExternalCategory (Version _ _ _) = return False
+--isExternalCategory (Version _ _ _) = return False
 isExternalCategory _               = return True
 
 addCategoryAndActivate :: Category -> RawPBuilder ()
