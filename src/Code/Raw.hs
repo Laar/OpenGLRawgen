@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.New.Raw
--- Copyright   :
--- License     :  AllRightsReserved
+-- Module      :  Code.Raw
+-- Copyright   :  (c) 2011 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
 -- Stability   :

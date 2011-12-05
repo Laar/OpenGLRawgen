@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.New.Builder
--- Copyright   :
--- License     :  AllRightsReserved
+-- Module      :  Code.Builder
+-- Copyright   :  (c) 2011 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
 -- Stability   :
