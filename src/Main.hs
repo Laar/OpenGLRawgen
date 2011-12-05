@@ -31,8 +31,6 @@ import Code.Module(replaceCallConv)
 main :: IO ()
 main = procNew
 
-
-
 procNew :: IO ()
 procNew = do
     let especP  = "enumext.spec"
@@ -44,7 +42,6 @@ procNew = do
         Left e -> print e
         Right rawSpec -> do
             reuses <- readFile rfuncP >>= return . parseReuses
-            writeFile "temp.output" $ show reuses
             let reuses' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reuses
                 modules = makeRaw $ filterEmpty . addReuses reuses' $ rawSpec
                 pmodule mn m =
