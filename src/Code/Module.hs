@@ -24,10 +24,10 @@ import Control.Monad.Reader
 import qualified Data.Map as M
 import Data.Maybe(fromMaybe)
 
-import Code.Utils
+import Code.Generating.Utils
 import Language.Haskell.Exts.Syntax
 import Code.Builder
-import Code.New.ModuleBuilder
+import Code.Generating.ModuleBuilder
 
 import Text.OpenGL.Spec(Category, showCategory)
 import Spec

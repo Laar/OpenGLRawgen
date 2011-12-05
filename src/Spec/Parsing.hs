@@ -24,7 +24,7 @@ import Data.Maybe
 import Spec.RawSpec
 
 import Language.Haskell.Exts.Syntax
-import Code.Utils
+import Code.Generating.Utils
 
 import Control.Applicative
 import Text.ParserCombinators.Parsec hiding

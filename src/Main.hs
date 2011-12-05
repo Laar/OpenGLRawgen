@@ -18,9 +18,9 @@ module Main (
 
 
 import Language.Haskell.Exts.Pretty
-import Code.Utils
+import Code.Generating.Utils
 
-import Code.New.Package
+import Code.Generating.Package
 
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)

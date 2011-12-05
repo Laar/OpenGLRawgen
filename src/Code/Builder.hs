@@ -46,9 +46,9 @@ import Data.Char
 import Data.Maybe
 
 import Language.Haskell.Exts.Syntax
-import Code.Utils
-import Code.New.Package
-import Code.New.ModuleBuilder
+import Code.Generating.Utils
+import Code.Generating.Package
+import Code.Generating.ModuleBuilder
 
 import Text.OpenGL.Spec as S
 import Spec

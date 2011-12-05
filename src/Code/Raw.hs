@@ -21,8 +21,8 @@ import Control.Monad.Reader
 import Spec
 
 import Language.Haskell.Exts.Syntax
-import Code.New.ModuleBuilder
-import Code.New.Package
+import Code.Generating.ModuleBuilder
+import Code.Generating.Package
 
 import Code.Builder
 import Code.GroupModule

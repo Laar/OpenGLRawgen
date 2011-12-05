@@ -21,7 +21,7 @@ import Control.Monad.Reader
 import Data.Maybe
 
 import Language.Haskell.Exts.Syntax
-import Code.New.ModuleBuilder
+import Code.Generating.ModuleBuilder
 import Code.Builder
 
 import Spec
