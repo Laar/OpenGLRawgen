@@ -38,7 +38,6 @@ buildModule :: Category -> Builder ()
 buildModule c = do
     funcs <- asks (M.toList . categoryFuncs c)
     enums <- asks (M.toList . categoryEnums c)
-    addCategoryAndActivate c
 
     sequence_ . map (addEnum c) $ enums
     sequence_ . map (addFunc c) $ funcs

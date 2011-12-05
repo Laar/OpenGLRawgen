@@ -29,9 +29,8 @@ import Text.OpenGL.Spec(Category(..))
 
 -----------------------------------------------------------------------------
 
-mkGroupModule :: ModuleName -> [Category] -> Builder ()
-mkGroupModule mn cats = do
-    addModuleAndActivate mn True
+mkGroupModule :: [Category] -> Builder ()
+mkGroupModule cats = do
     sequence_ $ map addCat cats
     where
         addCat c = do
@@ -40,14 +39,14 @@ mkGroupModule mn cats = do
             addExport $ EModuleContents cm
 
 
-addCoreProfiles :: Builder ()
+addCoreProfiles :: RawPBuilder ()
 addCoreProfiles = do
     let addCat (Version ma mi False) = Just $ addCoreProfile ma mi False
                                           >> when (ma >= 3) (addCoreProfile ma mi True)
         addCat _                    = Nothing
-    asksCategories (mapMaybe addCat) >>= sequence_
+    (asksCategories $ mapMaybe addCat) >>= sequence_
 
-addCoreProfile :: Int -> Int -> Bool -> Builder ()
+addCoreProfile :: Int -> Int -> Bool -> RawPBuilder ()
 addCoreProfile ma mi comp = do
      let catFilter (Version ma' mi' comp') =
             (ma' < ma || (ma' == ma && mi' <= mi)) -- version check
@@ -57,7 +56,7 @@ addCoreProfile ma mi comp = do
      cp <- askCorePath
      let mn = ModuleName $ cp ++ ".Core" ++ show ma ++ show mi
                 ++ (if comp then "Compatibility" else "")
-     mkGroupModule mn cats
+     defineModule mn True $ mkGroupModule cats
 
-asksCategories :: ([Category] -> a) -> Builder a
+asksCategories :: ([Category] -> a) -> RawPBuilder a
 asksCategories f = asks (f . allCategories)

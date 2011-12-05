@@ -14,6 +14,7 @@
 
 module Code.Builder (
     Builder,
+    RawPBuilder,
     emptyBuilder,
 
     categoryModule,
@@ -54,24 +55,32 @@ import Spec
 
 -----------------------------------------------------------------------------
 
-type Builder a = PackageBuilder Module (Reader RawSpec) a
+type Builder = ModuleBuilder Module (Reader RawSpec)
+type RawPBuilder a = PackageBuilder Module (Reader RawSpec) a
+
+-- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
+-- a function can be used in both `Builder` and `RawPBuilder`.
+type GBuilder bm a = ModuleBuilder bm (Reader RawSpec) a
 
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
 
 -----------------------------------------------------------------------------
 
-askBaseModule, askTypesModule, askExtensionModule :: Builder ModuleName
+askBaseModule, askTypesModule, askExtensionModule :: BuildableModule bm
+     => GBuilder bm ModuleName
 askBaseModule = return baseModule
 askTypesModule = return typesModule
 askExtensionModule = return extensionModule
 
-askBaseImport, askTypesImport, askExtensionImport :: Builder ImportDecl
+askBaseImport, askTypesImport, askExtensionImport :: BuildableModule bm
+    => GBuilder bm ImportDecl
 askBaseImport       = return . importAll $ baseModule
 askTypesImport      = return . importAll $ typesModule
 askExtensionImport  = return . importAll $ extensionModule
 
-askCategoryModule :: Category -> Builder ModuleName
+askCategoryModule :: BuildableModule bm
+    => Category -> GBuilder bm ModuleName
 askCategoryModule c = return . categoryModule $ c
 
 askCategoryPImport :: Category -> [ImportSpec] -> Builder ImportDecl
@@ -119,7 +128,7 @@ extensionModule = ModuleName $ moduleBase <.> "Extensions"
 corePath :: String
 corePath = moduleBase <.>  "Core"
 
-askCorePath :: Builder String
+askCorePath :: BuildableModule bm => GBuilder bm String
 askCorePath = return corePath
 
 categoryModule :: Category -> ModuleName
@@ -130,22 +139,16 @@ categoryModule (Extension ex n _) =
     ModuleName $ moduleBase <.> capFirst (show ex) <.> capFirst n
 categoryModule (S.Name n) = error $ "Category " ++ capFirst (show n)
 
-isExternalCategory :: Category -> Builder Bool
+isExternalCategory :: BuildableModule bm => Category -> GBuilder bm Bool
 isExternalCategory (Version _ _ _) = return False
 isExternalCategory _               = return True
 
-addCategoryAndActivate :: Category -> Builder ()
+addCategoryAndActivate :: Category -> RawPBuilder ()
 addCategoryAndActivate c = do
     cm <- askCategoryModule c
     isExt <- isExternalCategory c
     addModuleAndActivate cm isExt
 
-addModuleAndActivate :: ModuleName -> Bool -> Builder ()
-addModuleAndActivate mn ext = do
-    hasMod <- liftPquery hasModule mn
-    when (not hasMod) $ do
-        liftPadjust $ if ext then addExternalModule' mn else addInternalModule' mn
-    activateModule mn
 -----------------------------------------------------------------------------
 
 (<.>) :: String -> String -> String
