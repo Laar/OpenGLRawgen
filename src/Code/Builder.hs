@@ -29,6 +29,9 @@ module Code.Builder (
     askCategoryPImport,
     isExternalCategory, addCategoryAndActivate, addModuleAndActivate,
     askCorePath,
+    askProfileModule,
+    asksCategories,
+    askExtensionModuleName,
 
     ensureImport,
 
@@ -85,6 +88,9 @@ askCategoryModule c = return . categoryModule $ c
 
 askCategoryPImport :: Category -> [ImportSpec] -> Builder ImportDecl
 askCategoryPImport c i = return $ partialImport (categoryModule c) i
+
+asksCategories :: (BuildableModule bm) => ([Category] -> a) -> GBuilder bm a
+asksCategories f = asks (f . allCategories)
 
 -----------------------------------------------------------------------------
 
@@ -148,6 +154,15 @@ addCategoryAndActivate c = do
     cm <- askCategoryModule c
     isExt <- isExternalCategory c
     addModuleAndActivate cm isExt
+
+askProfileModule :: Int -> Int -> Bool -> RawPBuilder ModuleName
+askProfileModule ma mi comp = do
+    cp <- askCorePath
+    return . ModuleName $ cp ++ ".Core" ++ show ma ++ show mi
+                ++ (if comp then "Compatibility" else "")
+
+askExtensionModuleName :: Extension -> RawPBuilder ModuleName
+askExtensionModuleName e = return . ModuleName $ moduleBase <.> show e
 
 -----------------------------------------------------------------------------
 

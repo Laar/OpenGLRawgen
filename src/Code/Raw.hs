@@ -17,6 +17,8 @@ module Code.Raw (
 ) where
 
 import Control.Monad.Reader
+import Data.Function(on)
+import Data.List(sortBy)
 
 import Spec
 
@@ -28,7 +30,7 @@ import Code.Builder
 import Code.GroupModule
 import Code.Module
 
-import Text.OpenGL.Spec(Category)
+import Text.OpenGL.Spec(Category(..))
 
 makeRaw :: RawSpec -> Package Module
 makeRaw s =
@@ -39,6 +41,8 @@ buildRaw :: RawPBuilder ()
 buildRaw = do
     buildRawImports
     addCoreProfiles
+    addExtensionGroups
+    addLatestProfileToRaw
 
 buildRawImports :: RawPBuilder ()
 buildRawImports = do
@@ -51,3 +55,15 @@ defineRawImport c = do
     mn <- askCategoryModule c
     ex <- isExternalCategory c
     defineModule mn ex $ buildModule c
+
+addLatestProfileToRaw :: RawPBuilder ()
+addLatestProfileToRaw = do
+    latest <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
+    latestProf <- askCategoryModule latest
+    bm <- askBaseModule
+    liftModBuilder' bm $ do
+        ensureImport latestProf
+        addExport $ EModuleContents latestProf
+    where
+        catRanking (Version ma mi False) = (-ma, -mi)
+        catRanking _                     = (1, 1)
