@@ -17,6 +17,8 @@ module Spec.Parsing (
     parseReuses,
 ) where
 
+import Control.Monad.State as S
+
 import Data.Function
 import Data.List
 import qualified Data.Map as M
@@ -56,7 +58,7 @@ parseSpecs esf gsf tmf = do
 parseEnumSpec :: [EnumLine] -> Either ParseError [(Category, [(String, EnumValue)])]
 parseEnumSpec ls =
     let ls' = filter inputFilter ls
-    in parse pEnumSpec "EnumLines" ls'
+    in parse pEnumSpec "EnumLines" ls' >>= return . nubSpec
 
 type EP = GenParser EnumLine ()
 
@@ -95,6 +97,25 @@ pGLValue = tokenPrim showValue nextPos testValue
         partialValue (Deci i)       = Value $ fromIntegral i
         partialValue (Identifier i) = ReUse (fromMaybe i . stripPrefix "GL_" $ i)
         valueType name = if "_BIT" `isInfixOf` name then tyCon "GLbitfield" else tyCon "GLenum"
+
+-----------------------------------------------------------------------------
+
+-- | Repalce duplicate defenitions by redirections.
+nubSpec :: [(Category, [(String, EnumValue)])] -> [(Category, [(String, EnumValue)])]
+nubSpec enumSpec = evalState (sequence $ map filterCat enumSpec) M.empty
+    where
+        filterCat (c, vals) = (sequence $ map (filterVal c) vals) >>= \vals' -> return (c, vals')
+        filterVal _ r@(_, Redirect _ _) = return r
+        filterVal c r@(n, ReUse _ t)   = do
+            defed <- gets (M.lookup n)
+            case defed of
+                Just c' -> return $ (n, Redirect c' t)
+                Nothing -> modify (M.insert n c) >> return r
+        filterVal c v@(n, Value _ t) = do
+            defed <- gets (M.lookup n)
+            case defed of
+                Just c' -> return $ (n, Redirect c' t)
+                Nothing -> modify (M.insert n c) >> return v
 
 -----------------------------------------------------------------------------
 
