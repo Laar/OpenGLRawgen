@@ -121,7 +121,7 @@ replaceCallConv :: String -> String -> String
 replaceCallConv r = go
     where
         go []                               = []
-        go ('s':'t':'d':'c':'a':'l':'l':xs) = r ++ xs
+        go ('s':'t':'d':'c':'a':'l':'l':xs) = r ++ go xs
         go (x                          :xs) = x : go xs
 
 toFuncName :: String -> Name
