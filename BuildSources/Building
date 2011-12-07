@@ -8,6 +8,5 @@ The generated source can be build by the following steps.
    to their appropriate location.
 5. Edit OpenGLRawTest.hs to list the modules in modulesE.txt and
    modulesI.txt in the exposed-modules and other-modules. Remove the
-   last comma, and remove the line for the module starting with a 
-   number. (EXT.422_pixels.hs)
+   last comma, and add the modules mentioned in 4.
 6. Build it using the standerd methods.

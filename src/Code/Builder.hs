@@ -142,7 +142,7 @@ categoryModule (Version ma mi d) =
     ModuleName $ corePath <.> "Internal"
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n _) =
-    ModuleName $ moduleBase <.> capFirst (show ex) <.> capFirst n
+    ModuleName $ moduleBase <.> capFirst (show ex) <.> correctName ex n
 categoryModule (S.Name n) = error $ "Category " ++ capFirst (show n)
 
 isExternalCategory :: BuildableModule bm => Category -> GBuilder bm Bool
@@ -172,6 +172,10 @@ a <.> b = a ++ '.' : b
 capFirst :: String -> String
 capFirst [] = []
 capFirst (c:cs) = toUpper c : cs
+
+correctName :: Extension -> String -> String
+correctName ex n | isAlpha $ head n = capFirst n
+                 | otherwise        = capFirst $ show ex ++ n
 
 importAll :: ModuleName -> ImportDecl
 importAll name = ImportDecl noSrcLoc name False False Nothing Nothing Nothing
