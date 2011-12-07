@@ -2,8 +2,8 @@ name: OpenGLRawgen
 version: 0.0.1
 cabal-version: -any
 build-type: Simple
-license: AllRightsReserved
-license-file: ""
+license: BSD3
+license-file: LICENSE
 copyright:
 maintainer:
 build-depends: CodeGenerating -any, base >=4, containers -any,
