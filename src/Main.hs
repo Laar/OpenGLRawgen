@@ -28,6 +28,8 @@ import Spec.Parsing(parseSpecs, parseReuses)
 import Code.Raw
 import Code.Module(replaceCallConv)
 
+-----------------------------------------------------------------------------
+
 main :: IO ()
 main = procNew
 
@@ -44,10 +46,13 @@ procNew = do
             reuses <- readFile rfuncP >>= return . parseReuses
             let reuses' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reuses
                 modules = makeRaw $ filterEmpty . addReuses reuses' $ rawSpec
+                -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
                     in  safeWriteFile ("output/" ++ moduleNameToPath mn ++ ".hs") msc
+            -- write out the modules
             processModules' pmodule modules
+            -- and a list of exposed and internal modules.
                 >> safeWriteFile "output/modulesE.txt" (unlines .
                     map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules)
                 >> safeWriteFile "output/modulesI.txt" (unlines .

@@ -8,7 +8,8 @@
 -- Stability   :
 -- Portability :
 --
--- |
+-- | The parser build over the the parsers in openGL-api , and a simple
+-- parser to parse the reuse entries.
 --
 -----------------------------------------------------------------------------
 
@@ -37,6 +38,8 @@ import Text.OpenGL.Spec as S hiding (Value)
 
 -----------------------------------------------------------------------------
 
+-- | Parse the needed OpenGL spec files and generate a 'RawSpec' based on
+-- them.
 parseSpecs
     :: FilePath         -- ^ The path to \"enumext.spec\"
     -> FilePath         -- ^ The path to \"gl.spec\"
@@ -46,7 +49,7 @@ parseSpecs esf gsf tmf = do
     especf <- readFile esf
     fspecf <- readFile gsf
     tymapf <- readFile tmf
-    return $ do -- Either ParseError monad
+    return $ do -- (Either ParseError) monad
         espec  <- enumLines especf >>= parseEnumSpec
         tymap  <- tmLines tymapf >>= return . mkTypeMap
         fspec  <- funLines fspecf >>= return . extractFunctions
@@ -55,6 +58,7 @@ parseSpecs esf gsf tmf = do
 
 -----------------------------------------------------------------------------
 
+-- | Parse the enumeration spec.
 parseEnumSpec :: [EnumLine] -> Either ParseError [(Category, [(String, EnumValue)])]
 parseEnumSpec ls =
     let ls' = filter inputFilter ls
@@ -71,6 +75,7 @@ inputFilter _            = False
 pEnumSpec :: EP [(Category, [(String, EnumValue)])]
 pEnumSpec = many pCategory'
 
+-- | Parse a category header and the enums that come with it.
 pCategory' :: EP (Category, [(String, EnumValue)])
 pCategory' = do
     cat <- pCategoryHeader
@@ -100,7 +105,7 @@ pGLValue = tokenPrim showValue nextPos testValue
 
 -----------------------------------------------------------------------------
 
--- | Repalce duplicate defenitions by redirections.
+-- | Replace duplicate definitions by redirections.
 nubSpec :: [(Category, [(String, EnumValue)])] -> [(Category, [(String, EnumValue)])]
 nubSpec enumSpec = evalState (sequence $ map filterCat enumSpec) M.empty
     where
@@ -119,10 +124,12 @@ nubSpec enumSpec = evalState (sequence $ map filterCat enumSpec) M.empty
 
 -----------------------------------------------------------------------------
 
+-- | Parse (or process) the function as the are supplied by the openGL-api
+-- package.
 parseFSpec :: [Function] -> TypeMap -> [(Category, [(String, FuncValue)])]
 parseFSpec funcs tm =
     map (\x -> (fst $ head x, map snd x)) -- pull out the categories
-    . groupBy ((==) `on` fst) -- group em by category
+    . groupBy ((==) `on` fst) -- group them by category
     $ map (convertFunc tm) funcs
 
 convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
@@ -136,6 +143,7 @@ convertFunc tm rf = (funCategory rf, (name, RawFunc ty))
 
 -----------------------------------------------------------------------------
 
+-- | Parse the reuses from a string.
 parseReuses :: String -> Either ParseError [(Category, [Category])]
 parseReuses = parse (many pReuseLine <* eof) "reuse"
 
@@ -151,6 +159,8 @@ pReuseLine = (,) <$> (pCategory <* blanks) <*> (sepBy pCategory (char ',' *> bla
 
 -----------------------------------------------------------------------------
 
+-- | Convert the 'ReturnType' supplied by openGL-api to a type useable for
+-- Language.Haskell.Exts
 convertRetType :: ReturnType -> Type
 convertRetType rt = addIOType $ case rt of
     Boolean      -> tyCon "GLboolean"
@@ -168,6 +178,8 @@ convertRetType rt = addIOType $ case rt of
     VoidPointer  -> TyApp (tyCon "Ptr") (tyVar "a") -- TODO improve the type variable
     VdpauSurfaceNV -> tyCon "GLintptr" -- lookup
 
+-- | Convert the type supplied by openGL-api to a type useable for
+-- Language.Haskell.Exts
 lookupType :: String -> TypeMap -> Type
 lookupType t _ | t == "cl_context" = tyCon "CLcontext"
                | t == "cl_event"   = tyCon "CLevent"
@@ -190,7 +202,7 @@ lookupType t tm = case M.lookup t tm of
             GLfloat     -> tyCon "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
             GLhalfNV    -> tyCon "GLushort" -- lookup
-            GLhandleARB -> tyCon "GLuint" -- lookup
+            GLhandleARB -> tyCon "GLhandle"--tyCon "GLuint" -- lookup
             GLint       -> tyCon "GLint"
             GLint64     -> tyCon "GLint64"
             GLint64EXT  -> tyCon "GLint64"
