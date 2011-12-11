@@ -48,7 +48,8 @@ mkGroupModule cats = do
 addCoreProfiles :: RawPBuilder ()
 addCoreProfiles = do
     let addCat (Version ma mi False) = Just $ addCoreProfile ma mi False
-                                          >> when (ma >= 3) (addCoreProfile ma mi True)
+                                          >> when (ma > 3 || (ma == 3 && not (mi == 0)))
+                                                    (addCoreProfile ma mi True)
         addCat _                    = Nothing
     (asksCategories $ mapMaybe addCat) >>= sequence_
 
