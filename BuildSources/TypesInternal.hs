@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Graphics.Rendering.OpenGL.Raw.TypesInternal where
+module Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal where
 
 import Data.Bits
 import Data.Int

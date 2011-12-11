@@ -31,9 +31,17 @@ module Graphics.Rendering.OpenGL.Raw.Types (
    GLsizeiptr,
    GLubyte,
    GLuint,
-   GLushort
+   GLushort,
+   GLint64,
+   GLuint64,
+   GLsync,
+   CLevent,
+   CLcontext,
+   GLdebugprocARB,
+   GLdebugprocAMD,
+   GLhandle
 ) where
 
 -- Just re-export the types in an opaque way, without introducing any warnings
 -- about unused constructors.
-import Graphics.Rendering.OpenGL.Raw.TypesInternal
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal

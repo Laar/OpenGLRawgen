@@ -27,7 +27,8 @@ module Code.Builder (
 
     -- * Ask-ers for module locations
     askBaseModule,
-    askTypesModule,
+    askTypesInternalModule,
+    askTypesExposedModule,
     askExtensionModule,
     askCategoryModule,
     askProfileModule,
@@ -35,7 +36,8 @@ module Code.Builder (
 
     -- * Ask-ers for module imports
     askBaseImport,
-    askTypesImport,
+    askTypesInternalImport,
+    askTypesExposedImport,
     askExtensionImport,
     askCategoryPImport,
 
@@ -80,18 +82,21 @@ emptyBuilder = singlePackage . emptyMod $ baseModule
 -----------------------------------------------------------------------------
 
 -- | Asks the location of several basic modules
-askBaseModule, askTypesModule, askExtensionModule :: BuildableModule bm
-     => GBuilder bm ModuleName
+askBaseModule, askTypesInternalModule, askTypesExposedModule, askExtensionModule
+    :: BuildableModule bm => GBuilder bm ModuleName
 askBaseModule = return baseModule
-askTypesModule = return typesModule
+askTypesInternalModule = return typesInternalModule
+askTypesExposedModule = return typesExposedModule
 askExtensionModule = return extensionModule
 
 -- | Asks the full import of several basic modules
-askBaseImport, askTypesImport, askExtensionImport :: BuildableModule bm
-    => GBuilder bm ImportDecl
-askBaseImport       = return . importAll $ baseModule
-askTypesImport      = return . importAll $ typesModule
-askExtensionImport  = return . importAll $ extensionModule
+askBaseImport, askTypesInternalImport, askTypesExposedImport, askExtensionImport
+    :: BuildableModule bm => GBuilder bm ImportDecl
+askBaseImport           = return . importAll $ baseModule
+askTypesInternalImport          = return . importAll $ typesInternalModule
+askTypesExposedImport   = return . importAll $ typesExposedModule
+askExtensionImport      = return . importAll $ extensionModule
+
 
 -- | Ask the module in which the functions and enums will be defined for
 -- that category
@@ -154,12 +159,16 @@ baseModule :: ModuleName
 baseModule = ModuleName $ moduleBase
 
 -- (Temporary) TypesInternal modulepath
-typesModule :: ModuleName
-typesModule = ModuleName $ moduleBase <.> "TypesInternal"
+typesInternalModule :: ModuleName
+typesInternalModule = ModuleName $ moduleBase <.> "Internal" <.> "TypesInternal"
+
+-- (Temporary) TypesExposed modulePath
+typesExposedModule :: ModuleName
+typesExposedModule = ModuleName $ moduleBase <.> "Types"
 
 -- (Temporary) Extensions modulepath
 extensionModule :: ModuleName
-extensionModule = ModuleName $ moduleBase <.> "Extensions"
+extensionModule = ModuleName $ moduleBase <.> "Internal" <.> "Extensions"
 
 -- (Temporary) corePath
 corePath :: String

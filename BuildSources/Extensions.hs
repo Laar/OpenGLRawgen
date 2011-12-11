@@ -14,14 +14,14 @@
 --
 --------------------------------------------------------------------------------
 
-module Graphics.Rendering.OpenGL.Raw.Extensions (
+module Graphics.Rendering.OpenGL.Raw.Internal.Extensions (
    Invoker, getExtensionEntry,
    FunPtr, unsafePerformIO
 ) where
 
 import Foreign.Marshal.Error
 import Foreign.Ptr
-import Graphics.Rendering.OpenGL.Raw.GetProcAddress
+import Graphics.Rendering.OpenGL.Raw.Internal.GetProcAddress
 import System.IO.Unsafe
 
 --------------------------------------------------------------------------------

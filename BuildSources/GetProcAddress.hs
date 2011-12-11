@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Graphics.Rendering.OpenGL.Raw.GetProcAddress (
+module Graphics.Rendering.OpenGL.Raw.Internal.GetProcAddress (
    getProcAddress, getProcAddressWithSuffixes
 ) where
 

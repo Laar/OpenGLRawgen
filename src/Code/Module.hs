@@ -66,7 +66,7 @@ addEnum c (n, t) = do
     where
         name  = toEnumName n
         addValue val ty = do
-            askTypesModule >>= ensureImport
+            askTypesInternalModule >>= ensureImport
             addDecls $ enumDecl name val ty
 
 -- | Adds an import for a value, the category is needed to check it's not in
@@ -92,7 +92,7 @@ toEnumName n = Ident $ "gl_" ++ n
 -- is nessacery
 addCondEImports :: [EnumValue] -> Builder ()
 addCondEImports evs = when (any isEDefine evs) $ do
-    askTypesModule >>= ensureImport
+    askTypesInternalModule >>= ensureImport
 
 -----------------------------------------------------------------------------
 
@@ -174,7 +174,7 @@ toFuncName' n = "gl" ++ n
 -- 'FuncValue's are needed to check if there is any such function.
 addFunctionConditionals :: [FuncValue] -> Builder ()
 addFunctionConditionals fvs = when (any isFDefine fvs) $  do
-    askTypesModule >>= ensureImport
+    askTypesInternalModule >>= ensureImport
     let forPtr = ModuleName "Foreign.Ptr"
     ensureImport forPtr
     let pragma = (LanguagePragma (SrcLoc "" 0 0)  [Ident "ForeignFunctionInterface", Ident "CPP" ])

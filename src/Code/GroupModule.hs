@@ -67,7 +67,12 @@ addCoreProfile ma mi comp = do
          catFilter _                 = False
      cats <- asksCategories (filter catFilter)
      mn <- askProfileModule ma mi comp
-     defineModule mn True $ mkGroupModule cats
+     defineModule mn True $ do
+        mkGroupModule cats
+        -- let the core modules also expose the types
+        tyMod <- askTypesExposedModule
+        ensureImport tyMod
+        addExport $ EModuleContents tyMod
 
 -- | Asks a list of all 'Extensions' that are used in the spec. This is
 -- essentially a list of all Vendors (ATI, NV, etc.), EXT and ARB
