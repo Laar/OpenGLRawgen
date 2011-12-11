@@ -66,7 +66,6 @@ addEnum c (n, t) = do
     where
         name  = toEnumName n
         addValue val ty = do
-            askTypesInternalModule >>= ensureImport
             addDecls $ enumDecl name val ty
 
 -- | Adds an import for a value, the category is needed to check it's not in
@@ -76,7 +75,9 @@ addImport' c iname = do
     ic <- askECategory iname >>= return . fromMaybe (error $ "addEnum: Couldn't find: " ++ show iname)
     when (ic /= c) $ askCategoryPImport ic [IVar $ toEnumName iname] >>= addImport
 
--- | The declerations to define the enum.
+-- | The declerations to define the enum, which will look like
+-- > enumName :: enumType
+-- > enumName = enumExp
 enumDecl :: Name -> Exp -> Type -> [Decl]
 enumDecl name valExp vtype =
     [ oneTypeSig name vtype
