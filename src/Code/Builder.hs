@@ -39,7 +39,6 @@ module Code.Builder (
 
     askFCategory, askFCategory',
 
-    importAll,
 ) where
 
 -----------------------------------------------------------------------------
@@ -176,10 +175,3 @@ capFirst (c:cs) = toUpper c : cs
 correctName :: Extension -> String -> String
 correctName ex n | isAlpha $ head n = capFirst n
                  | otherwise        = capFirst $ show ex ++ n
-
-importAll :: ModuleName -> ImportDecl
-importAll name = ImportDecl noSrcLoc name False False Nothing Nothing Nothing
-
-partialImport :: ModuleName -> [ImportSpec] -> ImportDecl
-partialImport name imports =
-    ImportDecl noSrcLoc name False False Nothing Nothing (Just (False, imports))

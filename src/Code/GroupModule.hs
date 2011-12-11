@@ -24,6 +24,7 @@ import Data.Maybe(mapMaybe)
 import Data.List(nub)
 
 import Language.Haskell.Exts.Syntax
+import Code.Generating.Utils
 import Code.Generating.ModuleBuilder
 import Code.Builder
 
