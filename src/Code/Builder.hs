@@ -232,5 +232,10 @@ upperFirst (c:cs) = toUpper c : cs
 -- the name of the extension which, at least with the current spec, does
 -- start with a letter.
 correctName :: Extension -> String -> String
-correctName ex n | isAlpha $ head n = upperFirst n
-                 | otherwise        = upperFirst $ show ex ++ n
+correctName ex n | isAlpha $ head n = upperFirst $            recapUnderscores n
+                 | otherwise        = upperFirst $ show ex ++ recapUnderscores n
+
+recapUnderscores :: String -> String
+recapUnderscores []             = []
+recapUnderscores ('_' : x : xs) = toUpper x : recapUnderscores xs
+recapUnderscores (      x : xs) =         x : recapUnderscores xs
