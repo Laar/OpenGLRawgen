@@ -18,6 +18,7 @@ module Code.GroupModule (
     addCoreProfiles,
     askExtensionGroups,
     addVendorModules,
+    mkGroupModule,
 ) where
 
 import Control.Monad.Reader

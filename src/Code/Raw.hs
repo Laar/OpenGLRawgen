@@ -33,6 +33,8 @@ import Code.Module
 
 import Text.OpenGL.Spec(Category(..))
 
+import Code.Compatibility
+
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the 'RawSpec'.
@@ -49,6 +51,7 @@ buildRaw = do
     addCoreProfiles
     addVendorModules
     addLatestProfileToRaw
+    addCompatibilityModules
 
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()
@@ -67,8 +70,8 @@ defineRawImport c = do
 addLatestProfileToRaw :: RawPBuilder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
-    latest <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
-    latestProf <- askCategoryModule latest
+    Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
+    latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
     liftModBuilder' bm $ do
         ensureImport latestProf
