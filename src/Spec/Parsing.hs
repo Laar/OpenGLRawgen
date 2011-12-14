@@ -35,6 +35,7 @@ import Text.ParserCombinators.Parsec hiding
 
 import Text.OpenGL.Api as A
 import Text.OpenGL.Spec as S hiding (Value)
+import qualified Text.OpenGL.Spec as S
 
 -----------------------------------------------------------------------------
 
@@ -139,7 +140,7 @@ convertFunc tm rf = (funCategory rf, (name, RawFunc ty))
         ty   = foldr (-->>)
             (convertRetType $ funReturnType rf)
             (map paramToType $ funParameters rf)
-        paramToType (Parameter _ t _ _) = lookupType t tm
+        paramToType (Parameter _ t _ p) = lookupType t p tm
 
 -----------------------------------------------------------------------------
 
@@ -180,11 +181,11 @@ convertRetType rt = addIOType $ case rt of
 
 -- | Convert the type supplied by openGL-api to a type useable for
 -- Language.Haskell.Exts
-lookupType :: String -> TypeMap -> Type
-lookupType t _ | t == "cl_context" = tyCon "CLcontext"
-               | t == "cl_event"   = tyCon "CLevent"
-lookupType t tm = case M.lookup t tm of
-    Just (t', ptr) -> (if ptr then TyApp (tyCon "Ptr") else id) $ convertType t'
+lookupType :: String -> Passing -> TypeMap -> Type
+lookupType t _ _ | t == "cl_context" = tyCon "CLcontext"
+                 | t == "cl_event"   = tyCon "CLevent"
+lookupType t p tm = case M.lookup t tm of
+    Just (t', ptr) -> (if ptr || p /= S.Value then TyApp (tyCon "Ptr") else id) $ convertType t'
     Nothing -> error $ "lookupType: Type not found " ++ show t
     where
         convertType t' = case t' of
