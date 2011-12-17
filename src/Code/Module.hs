@@ -92,7 +92,7 @@ toEnumName n = Ident $ "gl_" ++ n
 -- defined in this module, the 'EnumValue's are needed to check if this
 -- is nessacery
 addCondEImports :: [EnumValue] -> Builder ()
-addCondEImports evs = when (any isEDefine evs) $ do
+addCondEImports evs = when (any isDefine evs) $ do
     askTypesInternalModule >>= ensureImport
 
 -----------------------------------------------------------------------------
@@ -174,7 +174,7 @@ toFuncName' n = "gl" ++ n
 -- | Adds the imports, etc. needed when there is a FFI function import. The
 -- 'FuncValue's are needed to check if there is any such function.
 addFunctionConditionals :: [FuncValue] -> Builder ()
-addFunctionConditionals fvs = when (any isFDefine fvs) $  do
+addFunctionConditionals fvs = when (any isDefine fvs) $  do
     askTypesInternalModule >>= ensureImport
     let forPtr = ModuleName "Foreign.Ptr"
     ensureImport forPtr
