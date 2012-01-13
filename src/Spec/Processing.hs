@@ -62,7 +62,28 @@ filterEmpty rs =
         enumSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ getPart rs
         funcSpec' :: FuncSpec
         funcSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ getPart rs
-    in modifyPart (const enumSpec') $ modifyPart (const funcSpec') rs
+    in setPart enumSpec' $ setPart funcSpec' rs
+
+-----------------------------------------------------------------------------
+
+-- | The 'transformSpecMap' function is used to transform the 'SpecMap' based
+-- on 'SpecValue' basis. It will apply the function to all the 'SpecValue's
+-- in it using 'Traversable'. In order to pass information between the
+-- application of the function on the several values the 'Monad' can be used
+-- (e.g. a 'State').
+transformSpecMap :: (Monad m, SpecValue sv)
+    => (Category -> ValueName -> sv -> m sv) -- the function to use
+    -> SpecMap sv -- the SpecMap from which to get it
+    -> m (SpecMap sv)
+transformSpecMap f = T.sequence . M.mapWithKey processCategory
+    where processCategory c = T.sequence . M.mapWithKey (f c)
+
+-- | Lifting 'transformSpecMap' to the 'RawSpec' level
+transformRawSpec :: (Monad m, SpecValue sv)
+    => (Category -> ValueName -> sv -> m sv) -- the function to use
+    -> RawSpec -> m RawSpec
+transformRawSpec f r =
+    transformSpecMap f (getPart r) >>= \p' -> return $ setPart p' r
 
 -----------------------------------------------------------------------------
 
@@ -72,22 +93,17 @@ type NubState = State (M.Map ValueName Category)
 -- | Remove all duplicate definitions from the 'EnumSpec' part to prevent
 -- collisions.
 nubEnumSpec :: RawSpec -> RawSpec
-nubEnumSpec = modifyPart (\sp -> evalState (nubEnumSpecS sp) M.empty)
+nubEnumSpec r = evalState (transformRawSpec nubValue r) M.empty
 
-nubEnumSpecS :: EnumSpec -> NubState EnumSpec
-nubEnumSpecS =  T.sequence . M.mapWithKey processCategory
 
-processCategory :: Category -> ValueMap EnumValue -> NubState (ValueMap EnumValue)
-processCategory c vals = T.sequence $ M.mapWithKey (processValue c) vals
-
-processValue :: Category -> ValueName -> EnumValue -> NubState EnumValue
-processValue _ _ r@(Redirect _ _) = return r
-processValue c n r@(ReUse _ t)   = do
+nubValue :: Category -> ValueName -> EnumValue -> NubState EnumValue
+nubValue _ _ r@(Redirect _ _) = return r
+nubValue c n r@(ReUse _ t)   = do
     defed <- gets (M.lookup n)
     case defed of
         Just c' -> return $ Redirect c' t
         Nothing -> modify (M.insert n c) >> return r
-processValue c n v@(Value _ t) = do
+nubValue c n v@(Value _ t) = do
     defed <- gets (M.lookup n)
     case defed of
         Just c' -> return $ Redirect c' t
