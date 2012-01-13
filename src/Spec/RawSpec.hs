@@ -147,6 +147,7 @@ class SpecValue sv where
     getPart     :: RawSpec -> SpecMap sv
     setPart     :: SpecMap sv -> RawSpec -> RawSpec
     isDefine    :: sv -> Bool
+    toRedirect  ::  sv -> Category -> sv -- with the new category
 
     modifyPart  :: (SpecMap sv -> SpecMap sv) -> RawSpec -> RawSpec
     modifyPart f s = setPart (f $ getPart s) s
@@ -155,10 +156,12 @@ instance SpecValue EnumValue where
     getPart   = enumSpec
     setPart e = \s -> s{enumSpec = e}
     isDefine  = isEDefine
+    toRedirect ev c = Redirect c $ enumType ev
 
 instance SpecValue FuncValue where
     getPart   = funcSpec
     setPart f = \s -> s{funcSpec = f}
     isDefine  = isFDefine
+    toRedirect _ c = RedirectF c
 
 -----------------------------------------------------------------------------

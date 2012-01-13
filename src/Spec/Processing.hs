@@ -20,7 +20,7 @@ module Spec.Processing (
 ) where
 
 import Control.Category((>>>))
-import Control.Monad.RWS
+import Control.Monad.Reader
 import Control.Monad.State
 
 import qualified Data.Map as M
@@ -29,7 +29,7 @@ import Data.Traversable as T
 
 import Text.OpenGL.Spec(Category)
 
---import Spec.Lookup
+import Spec.Lookup
 import Spec.RawSpec
 
 -- | Clean the 'RawSpec' in order to make it useable for codegeneration.
@@ -111,14 +111,31 @@ nubValue c n v@(Value _ t) = do
 
 -----------------------------------------------------------------------------
 
--- | TODO, sort all the imports in order to prevent cycles in the import\/exports
+-- | This changes the location of definition for all the Values in the spec
+-- to the one that is first passed in traversale over the spec. This is done
+-- to prevent import cycles.
+-- TODO import cylces may still ocure in aliases.
 sortCategoryImports :: RawSpec -> RawSpec
 sortCategoryImports rs =
-    let (_, _, rs') = runRWS sortRWS rs M.empty
-    in rs'
+    let ms' :: SpecValue sv => SpecMap sv
+        ms' = runReader (evalStateT (transformSpecMap sortValue $ getPart rs) M.empty) rs
+    in setPart (ms' :: FuncSpec) . setPart (ms' :: EnumSpec) $ rs
 
-sortRWS :: RWS RawSpec RawSpec (M.Map ValueName Category) ()
-sortRWS = ask >>= tell
+type SortState = StateT (M.Map ValueName Category) (Reader RawSpec)
+
+sortValue :: SpecValue sv => Category -> ValueName -> sv -> SortState sv
+sortValue curCat vn sv = do
+    deflocM <- gets (M.lookup vn)
+    case deflocM of
+        Just defloc -> return $ toRedirect sv defloc
+        Nothing -> do
+            defVal <-
+                if isDefine sv then return sv
+                    else asks (whereIsDefined vn) >>= return . snd . fromMaybe
+                                (error $ "SpecValue " ++ vn ++ " is nowhere defined")
+            modify (M.insert vn curCat)
+            return defVal
+
 
 -----------------------------------------------------------------------------
 
