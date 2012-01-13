@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.RawSpec
--- Copyright   :  (c) 2011 Lars Corbijn
+-- Copyright   :  (c) 2011-12 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
@@ -18,7 +18,7 @@ module Spec.RawSpec (
     -- * The 'RawSpec' and associated types and functions
     RawSpec(),
     SpecValue(..),
-    modifyInCat, putInCat, lookupInCat,
+    ValueName, ValueMap, SpecMap,
 
     EnumSpec, FuncSpec,
 
@@ -28,24 +28,14 @@ module Spec.RawSpec (
     enumType,
 
     -- * General functions on 'RawSpec'
-    mkRawSpec, allCategories,
+    allCategories,
     categoryFuncs, categoryEnums,
 
-    -- * Lookup functions
-    -- ** Enum lookup functions
-    isEInCat,
-    isEDefinedInCat, whereIsEDefined,
-
-    -- ** Function lookup functions
-    isFInCat,
-    isFDefinedInCat, whereIsFDefined,
-
-    -- * 'RawSpec' processors
-    filterEmpty,
-    addReuses,
+    singletonSpec, categoryRawSpec,
 ) where
 
 import Data.List(union)
+import Data.Monoid
 import qualified Data.Map as M
 import Data.Maybe
 
@@ -65,16 +55,21 @@ data RawSpec
     , funcSpec :: SpecMap FuncValue
     }
 
+instance Monoid RawSpec where
+    mempty = RawSpec M.empty M.empty
+    mappend (RawSpec em1 fm1) (RawSpec em2 fm2)
+        = RawSpec (em1 `mappend` em2) (fm1 `mappend`fm2)
 
--- | Make a 'RawSpec' from it's components
-mkRawSpec
-    :: [(Category, [(String, EnumValue)])] -- ^ A listing of all enums per category
-    -> [(Category, [(String, FuncValue)])] -- ^ A listing of all functionns per category
-    -> RawSpec
-mkRawSpec es fs =
-    let especs = M.fromList es
-        fspecs = M.fromList fs
-    in RawSpec (M.map M.fromList especs) (M.map M.fromList fspecs)
+-----------------------------------------------------------------------------
+
+-- | Create a 'RawSpec' with only a single 'SpecValue'.
+singletonSpec :: SpecValue sv => Category -> ValueName -> sv -> RawSpec
+singletonSpec c vn sv = setPart (M.singleton c $ M.singleton vn sv) mempty
+
+-- | Create a 'RawSpec' from all the values in a specific 'Category'.
+categoryRawSpec :: SpecValue sv => Category->  [(ValueName, sv)] -> RawSpec
+categoryRawSpec c vals = setPart specMap mempty
+    where specMap = M.singleton c $ M.fromList vals
 
 -----------------------------------------------------------------------------
 
@@ -84,12 +79,12 @@ type EnumMap = ValueMap EnumValue
 -- | The real values of an enum
 data EnumValue
     -- | A localy defined enumvalue
-    = Value     Integer  Type
+    = Value     Integer   Type
     -- | An imported enum. The 'Category' is only a hint to where it should be.
-    | Redirect  Category Type
+    | Redirect  Category  Type
     -- | An enum that is the same as another one
     -- > gl_FRAMEBUFFER_BINDING = gl_DRAW_BUFFER_BINDING
-    | ReUse     String   Type
+    | ReUse     ValueName Type
     deriving(Eq, Ord, Show)
 
 isEDefine :: EnumValue -> Bool
@@ -127,28 +122,34 @@ allCategories rs =
 
 -- | Find the 'FuncMap' of a certain 'Category'.
 categoryFuncs :: Category -> RawSpec -> FuncMap
-categoryFuncs c s = fromMaybe M.empty . M.lookup c $ funcSpec s
+categoryFuncs = categoryValues
 
 -- | Find the 'EnumMap' of a certain 'Category'.
 categoryEnums :: Category -> RawSpec -> EnumMap
-categoryEnums c s = fromMaybe M.empty . M.lookup c $ enumSpec s
+categoryEnums = categoryValues
+
+-- | Find a 'ValueMap' of a 'Category'.
+categoryValues :: SpecValue sv => Category -> RawSpec -> ValueMap sv
+categoryValues c s = fromMaybe M.empty . M.lookup c $ getPart s
 
 -----------------------------------------------------------------------------
 
+type ValueName = String
+
 -- | A map of names to values of certain type
-type ValueMap a = M.Map String a
+type ValueMap a = M.Map ValueName a
 -- | A map of categories to a `ValueMap a`
 type SpecMap  a = M.Map Category (ValueMap a)
 
 -- | A class to generalize over the value types in the RawSpec to reduce
 -- boilerplate code
-class SpecValue a where
-    getPart     :: RawSpec -> SpecMap a
-    setPart     :: SpecMap a -> RawSpec -> RawSpec
-    modifyPart  :: (SpecMap a -> SpecMap a) -> RawSpec -> RawSpec
-    modifyPart f s = setPart (f $ getPart s) s
+class SpecValue sv where
+    getPart     :: RawSpec -> SpecMap sv
+    setPart     :: SpecMap sv -> RawSpec -> RawSpec
+    isDefine    :: sv -> Bool
 
-    isDefine    :: a -> Bool
+    modifyPart  :: (SpecMap sv -> SpecMap sv) -> RawSpec -> RawSpec
+    modifyPart f s = setPart (f $ getPart s) s
 
 instance SpecValue EnumValue where
     getPart   = enumSpec
@@ -161,91 +162,3 @@ instance SpecValue FuncValue where
     isDefine  = isFDefine
 
 -----------------------------------------------------------------------------
-
--- | Look a `SpecValue` up by it's name in a certain category
-lookupInCat :: SpecValue s => String -> Category -> RawSpec -> Maybe s
-lookupInCat n c s = M.lookup c (getPart s) >>= M.lookup n
-
--- | Insert a `SpecValue` in a Category with a name. If it's already in that
--- Category then the old value is deleted
-insertInCat :: SpecValue s => s -> String -> Category -> RawSpec -> RawSpec
-insertInCat v n c = modifyPart $ M.alter f c
-    where
-        f  Nothing  = Just $ M.singleton n v
-        f (Just vs) = Just $ M.insert    n v vs
-
--- | Look for the defenition of a `SpecValue`  by it's name, and returns
--- the Category in which it is defined and the value it self.
-whereIsDefined :: SpecValue s => String -> RawSpec -> Maybe (Category, s)
-whereIsDefined n s =
-    let cats = M.keys $ enumSpec s
-    in listToMaybe $ mapMaybe
-            (\c -> lookupInCat n c s >>= \v -> if isDefine v then Just (c, v) else Nothing)
-                 cats
-
--- | Modify a specific `SpecValue` identified by it's name and Category.
-modifyInCat :: SpecValue s => (s -> s) -> String -> Category -> RawSpec -> RawSpec
-modifyInCat f n c s = maybe s (\v -> insertInCat (f v) n c s ) $ lookupInCat n c s
-
------------------------------------------------------------------------------
-
--- | lookup the value of an enum in a certain 'Category'.
-lookupEInCat :: String -> Category -> RawSpec -> Maybe EnumValue
-lookupEInCat = lookupInCat
-
--- | Checks whether or not a certain enum is exported by the 'Category'.
-isEInCat :: String -> Category -> RawSpec -> Bool
-isEInCat n c s = isJust $ lookupEInCat n c s
-
--- | Checks whether or not a certain enum is defined by the 'Category'.
-isEDefinedInCat :: String -> Category -> RawSpec -> Bool
-isEDefinedInCat n c s = maybe False isDefine $ lookupEInCat n c s
-
--- | lookup the 'Category' of the enum defenition.
-whereIsEDefined :: String -> RawSpec -> Maybe Category
-whereIsEDefined n s = fst `fmap` (whereIsDefined n s :: Maybe (Category, EnumValue))
-
------------------------------------------------------------------------------
-
--- | As 'lookupEInCat' but for a function
-lookupFInCat :: String -> Category -> RawSpec -> Maybe FuncValue
-lookupFInCat = lookupInCat
-
--- | As isEInCat but for a function
-isFInCat :: String -> Category -> RawSpec -> Bool
-isFInCat n c s = isJust $ lookupFInCat n c s
-
--- | As isEDefinedInCat but for a function
-isFDefinedInCat :: String -> Category -> RawSpec -> Bool
-isFDefinedInCat n c s = maybe False isDefine $ lookupFInCat n c s
-
--- | As whereIsEDefined but for a function
-whereIsFDefined :: String -> RawSpec -> Maybe Category
-whereIsFDefined n s = fst `fmap` (whereIsDefined n s :: Maybe (Category, FuncValue))
-
------------------------------------------------------------------------------
-
--- | Filters all the 'Category's from the 'RawSpec' which don't have a single
--- enum nor any function.
-filterEmpty :: RawSpec -> RawSpec
-filterEmpty rs =
-    let cats = allCategories rs
-        emptyCats = filter (\c -> M.null (categoryFuncs c rs)
-                                  && M.null (categoryEnums c rs))
-                        cats
-        enumSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ enumSpec rs
-        funcSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ funcSpec rs
-    in rs{enumSpec = enumSpec', funcSpec = funcSpec'}
-
------------------------------------------------------------------------------
-
-importFuncsFromCat :: Category -> Category -> RawSpec -> RawSpec
-importFuncsFromCat tc sc sp =
-    let addFuncs = M.map (\_ -> RedirectF sc) $  categoryFuncs sc sp
-    in sp{funcSpec = M.alter (\cur -> Just $ M.union (fromMaybe M.empty cur) addFuncs) tc $ funcSpec sp}
-
--- | Adds reuses for several 'Category's to the spec
-addReuses :: [(Category, [Category])] -> RawSpec -> RawSpec
-addReuses reuse sp = foldr addReuse sp reuse
-    where
-        addReuse (tc, scs) sp' = foldr (importFuncsFromCat tc) sp' scs

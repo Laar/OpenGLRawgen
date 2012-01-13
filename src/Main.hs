@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Main
--- Copyright   :  (c) 2011 Lars Corbijn
+-- Copyright   :  (c) 2011-2012 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
@@ -45,7 +45,7 @@ procNew = do
         Right rawSpec -> do
             reuses <- readFile rfuncP >>= return . parseReuses
             let reuses' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reuses
-                modules = makeRaw $ filterEmpty . addReuses reuses' $ rawSpec
+                modules = makeRaw $ cleanupSpec . addReuses reuses' $ rawSpec
                 -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m

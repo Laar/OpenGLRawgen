@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec
--- Copyright   :  (c) 2011 Lars Corbijn
+-- Copyright   :  (c) 2011-2012 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
@@ -13,8 +13,12 @@
 -----------------------------------------------------------------------------
 
 module Spec (
-    module Spec.RawSpec
+    module Spec.Lookup,
+    module Spec.Processing,
+    module Spec.RawSpec,
 ) where
 
+import Spec.Lookup
+import Spec.Processing
 import Spec.RawSpec
 

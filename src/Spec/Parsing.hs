@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.Parsing
--- Copyright   :  (c) 2011 Lars Corbijn
+-- Copyright   :  (c) 2011-12 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
@@ -18,12 +18,14 @@ module Spec.Parsing (
     parseReuses,
 ) where
 
-import Control.Monad.State as S
+import Control.Arrow((***))
+--import Control.Monad.State as S
 
-import Data.Function
+--import Data.Function
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
+import Data.Monoid
 import Spec.RawSpec
 
 import Language.Haskell.Exts.Syntax
@@ -55,15 +57,15 @@ parseSpecs esf gsf tmf = do
         tymap  <- tmLines tymapf >>= return . mkTypeMap
         fspec  <- funLines fspecf >>= return . extractFunctions
         let fspec' = parseFSpec fspec tymap
-        return $ mkRawSpec espec fspec'
+        return $ mappend espec fspec' --mkRawSpec espec fspec'
 
 -----------------------------------------------------------------------------
 
 -- | Parse the enumeration spec.
-parseEnumSpec :: [EnumLine] -> Either ParseError [(Category, [(String, EnumValue)])]
+parseEnumSpec :: [EnumLine] -> Either ParseError RawSpec -- [(Category, [(String, EnumValue)])]
 parseEnumSpec ls =
     let ls' = filter inputFilter ls
-    in parse pEnumSpec "EnumLines" ls' >>= return . nubSpec
+    in parse pEnumSpec "EnumLines" ls' -- >>= return . nubSpec
 
 type EP = GenParser EnumLine ()
 
@@ -73,15 +75,15 @@ inputFilter (Enum _ _ _) = True
 inputFilter (Use _ _)    = True
 inputFilter _            = False
 
-pEnumSpec :: EP [(Category, [(String, EnumValue)])]
-pEnumSpec = many pCategory'
+pEnumSpec :: EP RawSpec -- [(Category, [(String, EnumValue)])]
+pEnumSpec = mconcat <$> many pCategory'
 
 -- | Parse a category header and the enums that come with it.
-pCategory' :: EP (Category, [(String, EnumValue)])
+pCategory' :: EP RawSpec
 pCategory' = do
     cat <- pCategoryHeader
     vals <- many pGLValue
-    return $ (cat, vals)
+    return $ categoryRawSpec cat vals
 
 pCategoryHeader :: EP Category
 pCategoryHeader =  tokenPrim showValue nextPos testValue
@@ -106,31 +108,14 @@ pGLValue = tokenPrim showValue nextPos testValue
 
 -----------------------------------------------------------------------------
 
--- | Replace duplicate definitions by redirections.
-nubSpec :: [(Category, [(String, EnumValue)])] -> [(Category, [(String, EnumValue)])]
-nubSpec enumSpec = evalState (sequence $ map filterCat enumSpec) M.empty
-    where
-        filterCat (c, vals) = (sequence $ map (filterVal c) vals) >>= \vals' -> return (c, vals')
-        filterVal _ r@(_, Redirect _ _) = return r
-        filterVal c r@(n, ReUse _ t)   = do
-            defed <- gets (M.lookup n)
-            case defed of
-                Just c' -> return $ (n, Redirect c' t)
-                Nothing -> modify (M.insert n c) >> return r
-        filterVal c v@(n, Value _ t) = do
-            defed <- gets (M.lookup n)
-            case defed of
-                Just c' -> return $ (n, Redirect c' t)
-                Nothing -> modify (M.insert n c) >> return v
-
------------------------------------------------------------------------------
-
 -- | Parse (or process) the function as the are supplied by the openGL-api
 -- package.
-parseFSpec :: [Function] -> TypeMap -> [(Category, [(String, FuncValue)])]
+parseFSpec :: [Function] -> TypeMap -> RawSpec
 parseFSpec funcs tm =
-    map (\x -> (fst $ head x, map snd x)) -- pull out the categories
-    . groupBy ((==) `on` fst) -- group them by category
+--    map (\x -> (fst $ head x, map snd x)) -- pull out the categories
+--    . groupBy ((==) `on` fst) -- group them by category
+--    $ map (convertFunc tm) funcs
+    mconcat . map (uncurry categoryRawSpec . (id *** pure))
     $ map (convertFunc tm) funcs
 
 convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))

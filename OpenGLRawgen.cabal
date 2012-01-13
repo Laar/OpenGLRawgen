@@ -44,8 +44,9 @@ includes:
 install-includes:
 include-dirs:
 hs-source-dirs: src
-other-modules: Code.Compatibility Spec Spec.Parsing Spec.RawSpec
-               Code.GroupModule Code.Module Code.Builder Code.Raw
+other-modules: Spec.Lookup Spec.Processing Code.Compatibility Spec
+               Spec.Parsing Spec.RawSpec Code.GroupModule Code.Module Code.Builder
+               Code.Raw
 ghc-prof-options:
 ghc-shared-options:
 ghc-options: -Wall -O2
