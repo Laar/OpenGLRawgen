@@ -59,7 +59,7 @@ data RawSpec
 instance Monoid RawSpec where
     mempty = RawSpec M.empty M.empty
     mappend (RawSpec em1 fm1) (RawSpec em2 fm2)
-        = RawSpec (em1 `mappend` em2) (fm1 `mappend`fm2)
+        = RawSpec (M.unionWith mappend em1 em2) (M.unionWith mappend fm1 fm2)
 
 -----------------------------------------------------------------------------
 
