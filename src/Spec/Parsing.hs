@@ -172,9 +172,11 @@ lookupType :: String -> Passing -> TypeMap -> Type
 lookupType t _ _ | t == "cl_context" = tyCon "CLcontext"
                  | t == "cl_event"   = tyCon "CLevent"
 lookupType t p tm = case M.lookup t tm of
-    Just (t', ptr) -> (if ptr || p /= S.Value then TyApp (tyCon "Ptr") else id) $ convertType t'
+    Just (t', ptr) -> addPointer (p /= S.Value) . addPointer ptr $ convertType t'
     Nothing -> error $ "lookupType: Type not found " ++ show t
     where
+        addPointer :: Bool -> Type -> Type
+        addPointer addptr = if addptr then TyApp (tyCon "Ptr") else id
         convertType t' = case t' of
             Star        -> TyApp (tyCon "Ptr") (tyVar "a")
             GLbitfield  -> tyCon "GLbitfield"
@@ -210,7 +212,7 @@ lookupType t p tm = case M.lookup t tm of
             GLUquadric  -> error "Uquadric"
             GLushort    -> tyCon "GLushort"
             GLUtesselator -> error  "tesselator"
-            GLvoid      -> TyApp (tyCon "Ptr") (tyVar "a")
+            GLvoid      -> (tyVar "a")
             GLvoidStarConst -> TyApp (tyCon "Ptr") (tyVar "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
             GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
             GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
