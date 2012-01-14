@@ -19,6 +19,7 @@ module Spec.Parsing (
 ) where
 
 import Control.Arrow((***))
+import Control.Monad(msum)
 --import Control.Monad.State as S
 
 --import Data.Function
@@ -97,13 +98,14 @@ pGLValue = tokenPrim showValue nextPos testValue
     where
         showValue = show
 -- TODO : try to find a better way of determining the valuetype of the enum
-        testValue (Enum name value _) = Just (name, partialValue value $ valueType name)
-        testValue (Use ucat name)     = Just (name, Redirect ucat $ valueType name)
+        -- name in the second doesn't need to be extension scrapped
+        testValue (Enum name value _) = Just (removeExtension name, partialValue value . valueType $ name)
+        testValue (Use ucat name)     = Just (removeExtension name, Redirect ucat .  valueType $ name)
         testValue _                   = Nothing
         nextPos sp  _ _ = incSourceColumn sp 1
         partialValue (Hex v _ _)    = Value  v
         partialValue (Deci i)       = Value $ fromIntegral i
-        partialValue (Identifier i) = ReUse (fromMaybe i . stripPrefix "GL_" $ i)
+        partialValue (Identifier i) = ReUse (removeExtension . fromMaybe i . stripPrefix "GL_" $ i)
         valueType name = if "_BIT" `isInfixOf` name then tyCon "GLbitfield" else tyCon "GLenum"
 
 -----------------------------------------------------------------------------
@@ -121,7 +123,7 @@ parseFSpec funcs tm =
 convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
 convertFunc tm rf = (funCategory rf, (name, RawFunc ty))
     where
-        name = funName rf
+        name = removeExtension $ funName rf
         ty   = foldr (-->>)
             (convertRetType $ funReturnType rf)
             (map paramToType $ funParameters rf)
@@ -213,5 +215,34 @@ lookupType t p tm = case M.lookup t tm of
             GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
             GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
             GLdebugprocAMD -> tyCon "GLdebugprocAMD" -- lookup
+
+-----------------------------------------------------------------------------
+
+removeExtension :: String -> String
+removeExtension str =
+    let strr = reverse str
+        extensionsr = map reverse extensions
+        stripsr = map (flip stripPrefix strr) extensionsr
+        str' = fromMaybe str . fmap (reverse . strip_) $ msum stripsr
+        strip_ ('_':xs) = xs
+        strip_      xs  = xs
+    in str'
+
+extensions :: [String]
+extensions =
+    [ "3DFX"
+    , "AMD", "APPLE", "ARB", "ATI"
+    , "EXT"
+    , "GREMEDY"
+    , "HP"
+    , "IBM", "INGR", "INTEL"
+    , "MESAX", "MESA"
+    , "NV"
+    , "OES", "OML"
+    , "PGI"
+    , "REND"
+    , "S3", "SGIS", "SGIX", "SGI", "SUNX", "SUN"
+    , "WIN"
+    ]
 
 -----------------------------------------------------------------------------
