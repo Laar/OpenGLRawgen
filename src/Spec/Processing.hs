@@ -35,7 +35,7 @@ import Spec.RawSpec
 
 -- | Clean the 'RawSpec' in order to make it useable for codegeneration.
 cleanupSpec :: RawSpec -> RawSpec
-cleanupSpec = nubEnumSpec >>> filterEmpty >>> sortCategoryImports
+cleanupSpec = nubSpec >>> filterEmpty >>> sortCategoryImports
 
 
 -----------------------------------------------------------------------------
@@ -81,10 +81,10 @@ transformSpecMap f = T.sequence . M.mapWithKey processCategory
     where processCategory c = T.sequence . M.mapWithKey (f c)
 
 -- | Lifting 'transformSpecMap' to the 'RawSpec' level
-transformRawSpec :: (Monad m, SpecValue sv)
+_transformRawSpec :: (Monad m, SpecValue sv)
     => (Category -> ValueName -> sv -> m sv) -- the function to use
     -> RawSpec -> m RawSpec
-transformRawSpec f spec =
+_transformRawSpec f spec =
     transformSpecMap f (getPart spec) >>= \p' -> return $ setPart p' spec
 
 -----------------------------------------------------------------------------
@@ -92,24 +92,22 @@ transformRawSpec f spec =
 -- the state used
 type NubState = State (M.Map ValueName Category)
 
--- | Remove all duplicate definitions from the 'EnumSpec' part to prevent
+-- | Remove all duplicate definitions from the 'RawSpec' to prevent
 -- collisions.
-nubEnumSpec :: RawSpec -> RawSpec
-nubEnumSpec spec = evalState (transformRawSpec nubValue spec) M.empty
+nubSpec :: RawSpec -> RawSpec
+nubSpec spec =
+    let nubedSpec :: SpecValue sv => SpecMap sv
+        nubedSpec = evalState (transformSpecMap nubValue $ getPart spec) M.empty
+    in setPart (nubedSpec :: FuncSpec) . setPart (nubedSpec :: EnumSpec) $ spec
 
-
-nubValue :: Category -> ValueName -> EnumValue -> NubState EnumValue
-nubValue _ _ r@(Redirect _ _) = return r
-nubValue c n r@(ReUse _ t)   = do
+nubValue :: SpecValue sv => Category -> ValueName -> sv -> NubState sv
+nubValue c n val | isRedirect val = return val
+                 | otherwise  = do
     defed <- gets (M.lookup n)
     case defed of
-        Just c' -> return $ Redirect c' t
-        Nothing -> modify (M.insert n c) >> return r
-nubValue c n v@(Value _ t) = do
-    defed <- gets (M.lookup n)
-    case defed of
-        Just c' -> return $ Redirect c' t
-        Nothing -> modify (M.insert n c) >> return v
+        Just c' -> return $ toRedirect val c'
+        Nothing -> (when (isDefine val) $ modify (M.insert n c)) >> return val
+
 
 -----------------------------------------------------------------------------
 
