@@ -65,7 +65,7 @@ addCoreProfile
 addCoreProfile ma mi comp = do
      let catFilter (Version ma' mi' comp') =
             (ma' < ma || (ma' == ma && mi' <= mi)) -- version check
-            && (comp  || ma' < 3 || (ma' == 3 && mi == 0) || not comp') -- only import deprecated modules when needed
+            && (comp  || ma > 3 || (ma == 3 && mi == 0) || not comp') -- only import deprecated modules when needed
          catFilter _                 = False
      cats <- asksCategories (filter catFilter)
      mn <- askProfileModule ma mi comp
