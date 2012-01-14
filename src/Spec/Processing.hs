@@ -25,6 +25,7 @@ import Control.Monad.State
 
 import qualified Data.Map as M
 import Data.Maybe
+import Data.Monoid
 import Data.Traversable as T
 
 import Text.OpenGL.Spec(Category)
@@ -39,30 +40,31 @@ cleanupSpec = nubEnumSpec >>> filterEmpty >>> sortCategoryImports
 
 -----------------------------------------------------------------------------
 
-importFuncsFromCat :: Category -> Category -> RawSpec -> RawSpec
-importFuncsFromCat tc sc sp =
-    let addFuncs = M.map (\_ -> RedirectF sc) $  categoryFuncs sc sp
-    in modifyPart (M.alter (\cur -> Just $ M.union (fromMaybe M.empty cur) addFuncs) tc) sp
-
 -- | Adds reuses for several 'Category's to the spec
 addReuses :: [(Category, [Category])] -> RawSpec -> RawSpec
 addReuses reuse sp = foldr addReuse sp reuse
     where
         addReuse (tc, scs) sp' = foldr (importFuncsFromCat tc) sp' scs
 
+        importFuncsFromCat :: Category -> Category -> RawSpec -> RawSpec
+        importFuncsFromCat tarC srcC spec' =
+            let addFuncs = M.map (flip toRedirect srcC) $ categoryFuncs srcC spec'
+                addSpec  = valueMapSpec tarC addFuncs
+            in mappend spec' addSpec
+
 -- | Filters all the 'Category's from the 'RawSpec' which don't have a single
 -- enum nor any function.
 filterEmpty :: RawSpec -> RawSpec
-filterEmpty rs =
-    let cats = allCategories rs
-        emptyCats = filter (\c -> M.null (categoryFuncs c rs)
-                                  && M.null (categoryEnums c rs))
+filterEmpty spec =
+    let cats = allCategories spec
+        emptyCats = filter (\c -> M.null (categoryFuncs c spec)
+                                  && M.null (categoryEnums c spec))
                         cats
         enumSpec' :: EnumSpec
-        enumSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ getPart rs
+        enumSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ getPart spec
         funcSpec' :: FuncSpec
-        funcSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ getPart rs
-    in setPart enumSpec' $ setPart funcSpec' rs
+        funcSpec' = M.filterWithKey (\c _ -> not $ c `elem` emptyCats) $ getPart spec
+    in setPart enumSpec' $ setPart funcSpec' spec
 
 -----------------------------------------------------------------------------
 
@@ -82,8 +84,8 @@ transformSpecMap f = T.sequence . M.mapWithKey processCategory
 transformRawSpec :: (Monad m, SpecValue sv)
     => (Category -> ValueName -> sv -> m sv) -- the function to use
     -> RawSpec -> m RawSpec
-transformRawSpec f r =
-    transformSpecMap f (getPart r) >>= \p' -> return $ setPart p' r
+transformRawSpec f spec =
+    transformSpecMap f (getPart spec) >>= \p' -> return $ setPart p' spec
 
 -----------------------------------------------------------------------------
 
@@ -93,7 +95,7 @@ type NubState = State (M.Map ValueName Category)
 -- | Remove all duplicate definitions from the 'EnumSpec' part to prevent
 -- collisions.
 nubEnumSpec :: RawSpec -> RawSpec
-nubEnumSpec r = evalState (transformRawSpec nubValue r) M.empty
+nubEnumSpec spec = evalState (transformRawSpec nubValue spec) M.empty
 
 
 nubValue :: Category -> ValueName -> EnumValue -> NubState EnumValue
@@ -116,10 +118,10 @@ nubValue c n v@(Value _ t) = do
 -- to prevent import cycles.
 -- TODO import cylces may still ocure in aliases.
 sortCategoryImports :: RawSpec -> RawSpec
-sortCategoryImports rs =
+sortCategoryImports spec =
     let ms' :: SpecValue sv => SpecMap sv
-        ms' = runReader (evalStateT (transformSpecMap sortValue $ getPart rs) M.empty) rs
-    in setPart (ms' :: FuncSpec) . setPart (ms' :: EnumSpec) $ rs
+        ms' = runReader (evalStateT (transformSpecMap sortValue $ getPart spec) M.empty) spec
+    in setPart (ms' :: FuncSpec) . setPart (ms' :: EnumSpec) $ spec
 
 type SortState = StateT (M.Map ValueName Category) (Reader RawSpec)
 

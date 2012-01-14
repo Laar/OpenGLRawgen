@@ -27,11 +27,12 @@ module Spec.RawSpec (
 
     enumType,
 
+    singletonSpec, categoryRawSpec, valueMapSpec,
+
     -- * General functions on 'RawSpec'
     allCategories,
     categoryFuncs, categoryEnums,
 
-    singletonSpec, categoryRawSpec,
 ) where
 
 import Data.List(union)
@@ -64,12 +65,15 @@ instance Monoid RawSpec where
 
 -- | Create a 'RawSpec' with only a single 'SpecValue'.
 singletonSpec :: SpecValue sv => Category -> ValueName -> sv -> RawSpec
-singletonSpec c vn sv = setPart (M.singleton c $ M.singleton vn sv) mempty
+singletonSpec c vn sv = valueMapSpec c $ M.singleton vn sv
 
 -- | Create a 'RawSpec' from all the values in a specific 'Category'.
 categoryRawSpec :: SpecValue sv => Category->  [(ValueName, sv)] -> RawSpec
 categoryRawSpec c vals = setPart specMap mempty
     where specMap = M.singleton c $ M.fromList vals
+
+valueMapSpec :: SpecValue sv => Category -> ValueMap sv -> RawSpec
+valueMapSpec c sv = setPart (M.singleton c sv) mempty
 
 -----------------------------------------------------------------------------
 
