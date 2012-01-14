@@ -41,14 +41,16 @@ cleanupSpec = nubSpec >>> filterEmpty >>> sortCategoryImports
 -----------------------------------------------------------------------------
 
 -- | Adds reuses for several 'Category's to the spec
-addReuses :: [(Category, [Category])] -> RawSpec -> RawSpec
-addReuses reuse sp = foldr addReuse sp reuse
+addReuses :: [(Category, [Category])] -> [(Category, [Category])] -> RawSpec -> RawSpec
+addReuses reuseF reuseE spec =
+    let spec' = foldr (addReuse categoryFuncs) spec reuseF
+    in foldr (addReuse categoryEnums) spec' reuseE
     where
-        addReuse (tc, scs) sp' = foldr (importFuncsFromCat tc) sp' scs
+        addReuse f (tc, scs) sp' = foldr (importFuncsFromCat f tc) sp' scs
 
-        importFuncsFromCat :: Category -> Category -> RawSpec -> RawSpec
-        importFuncsFromCat tarC srcC spec' =
-            let addFuncs = M.map (flip toRedirect srcC) $ categoryFuncs srcC spec'
+        importFuncsFromCat :: SpecValue sv => (Category -> RawSpec -> ValueMap sv) -> Category -> Category -> RawSpec -> RawSpec
+        importFuncsFromCat f tarC srcC spec' =
+            let addFuncs = M.map (flip toRedirect srcC) $ f srcC spec'
                 addSpec  = valueMapSpec tarC addFuncs
             in mappend spec' addSpec
 

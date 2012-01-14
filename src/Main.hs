@@ -39,13 +39,16 @@ procNew = do
         fspecP  = "gl.spec"
         tmspecP = "gl.tm"
         rfuncP  = "reusefuncs"
+        renumP  = "reuseenums"
     erawSpec <- parseSpecs especP fspecP tmspecP
     case erawSpec of
         Left e -> print e
         Right rawSpec -> do
-            reuses <- readFile rfuncP >>= return . parseReuses
-            let reuses' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reuses
-                modules = makeRaw $ cleanupSpec . addReuses reuses' $ rawSpec
+            reusesF <- readFile rfuncP >>= return . parseReuses
+            reusesE <- readFile renumP >>= return . parseReuses
+            let reusesF' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reusesF
+                reusesE' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reusesE
+                modules = makeRaw $ cleanupSpec . addReuses reusesF' reusesE' $ rawSpec
                 -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
