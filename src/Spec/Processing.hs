@@ -112,7 +112,6 @@ nubValue c n val | isRedirect val = return val
         Just c' -> return $ toRedirect val c'
         Nothing -> (when (isDefine val) $ modify (M.insert n c)) >> return val
 
-
 -----------------------------------------------------------------------------
 
 -- | This changes the location of definition for all the Values in the spec
@@ -143,50 +142,54 @@ sortValue curCat vn sv = do
 
 -----------------------------------------------------------------------------
 
-type SEEState = State EnumSpec
-
--- TODO look at reuses
--- | Strips all the extension suffixes from the Enumerations. This is done
--- for all enumartions where either the target name doesn't exist or has the
--- same value.
-stripEnumExtensions :: EnumSpec -> EnumSpec
-stripEnumExtensions = execState stripState
+-- | Strips all the extension suffixes from the SpecValues. This is done
+-- for all values where either the target name doesn't exist or it's value
+-- has the same value.
+stripExtensions
+    :: SpecValue sv
+    => (sv -> sv -> Bool) -- can the extension be stripped?
+    -> (ValueName -> ValueName -> sv -> sv) -- updater for the rest of the specification
+    -> SpecMap sv -> SpecMap sv
+stripExtensions mPred updt = execState stripState
     where
-        stripState :: SEEState ()
+
+--        type SEEState sv = State (SpecMap sv)
+--        stripState :: SEEState sv ()
         stripState = do
             -- all names that end with an extension
             names <- gets (filter (\n -> removeEnumExtension n /= n)
                             . M.keys . M.fold mappend M.empty) -- all the enum names
-            sequence_ $ map tryStrip names
+            sequence_ . flip map names $ (\n -> tryStrip n >>= \st ->
+                when st (renameAll n $ removeEnumExtension n))
 
-        tryStrip :: ValueName -> SEEState ()
+--        tryStrip :: ValueName -> SEEState sv Bool
         tryStrip name = do
             let name' = removeEnumExtension name
             Just (_, def) <- gets (whereIsDefined' name) -- look this value up
             def' <- gets (whereIsDefined' name') -- lookup the value it could be changed into
-            case def' of
-                Nothing -> renameAll name name' -- there is none, so change it
-                Just (_, Value i' t') -> case def of -- only change it if they are the same
-                    Value i t | i' == i && t' == t -> renameAll name name'
-                    _         -> return ()
-                Just _ -> return ()
-        renameAll :: ValueName -> ValueName -> SEEState ()
+            return $ case def' of
+                Nothing -> True -- there is none, so change it
+                Just (_, vdef) -> mPred vdef def
+--        renameAll :: ValueName -> ValueName -> sv SEEState ()
         renameAll oldN newN =
             modify
-                (updateReUses . fmap -- update the reuses and all the names
-                    (\vs -> fromMaybe vs $
+                (M.map (M.map (updt oldN newN)) -- update the rest
+                . fmap (\vs -> fromMaybe vs $ -- update the values with the correct name
                         (M.lookup oldN vs >>= -- lookup the old value, ensuring there is one that can be renamed
                         \value -> return . M.alter (Just . fromMaybe value) newN -- add/keep the new one
                                          . M.delete oldN -- remove the old one
                                          $ vs
                 )))
-            where
-                updateReUses :: EnumSpec -> EnumSpec
-                updateReUses = M.map (M.map updateReUse)
-                    where
-                        updateReUse (ReUse n t) | n == oldN = ReUse newN t
-                        updateReUse v           = v
 
+-- TODO look at reuses
+-- | Specific implementation of `stripExtensions` for enums.
+stripEnumExtensions :: EnumSpec -> EnumSpec
+stripEnumExtensions = stripExtensions mPred updateReUse
+    where
+        mPred (Value i t) (Value i' t') = i == i' && t == t'
+        mPred _           _             = False
+        updateReUse oldN newN (ReUse n t) | n == oldN = ReUse newN t
+        updateReUse _    _    v           = v
 
 -----------------------------------------------------------------------------
 
