@@ -128,12 +128,13 @@ parseFSpec funcs tm =
     $ map (convertFunc tm) funcs
 
 convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
-convertFunc tm rf = (funCategory rf, (name, RawFunc ty))
+convertFunc tm rf = (funCategory rf, (name, RawFunc ty alias))
     where
-        name = removeFuncExtension $ funName rf
+        name = funName rf
         ty   = foldr (-->>)
             (convertRetType $ funReturnType rf)
             (map paramToType $ funParameters rf)
+        alias = funAlias rf
         paramToType (Parameter _ t _ p) = lookupType t p tm
 
 -----------------------------------------------------------------------------

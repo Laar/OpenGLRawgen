@@ -21,7 +21,7 @@ module Spec.Processing (
 
 import Control.Arrow((>>>))
 import Control.Monad.Reader
-import Control.Monad.State
+import Control.Monad.State.Strict
 
 import qualified Data.Map as M
 import Data.Maybe
@@ -31,12 +31,14 @@ import Data.Traversable as T
 import Text.OpenGL.Spec(Category)
 
 import Spec.Lookup
-import Spec.Parsing(removeEnumExtension)
+import Spec.Parsing(removeEnumExtension, removeFuncExtension)
 import Spec.RawSpec
+
+-----------------------------------------------------------------------------
 
 -- | Clean the 'RawSpec' in order to make it useable for codegeneration.
 cleanupSpec :: RawSpec -> RawSpec
-cleanupSpec = modifyPart stripEnumExtensions >>> nubSpec
+cleanupSpec = modifyPart stripEnumExtensions >>> modifyPart stripFuncExtensions >>> nubSpec
             >>> filterEmpty >>> sortCategoryImports
 
 
@@ -142,39 +144,48 @@ sortValue curCat vn sv = do
 
 -----------------------------------------------------------------------------
 
--- | Strips all the extension suffixes from the SpecValues. This is done
--- for all values where either the target name doesn't exist or it's value
--- has the same value.
-stripExtensions
+
+-- | Renames all the names for a type of `SpecValue`. This is done in three
+-- steps, first the names are selected that should be renamed (fst arg) then
+-- a new name is chosen (snd arg). If there is a value with this name the
+-- decision to rename comes from (trd arg), if there is no value the rename
+-- takes place automatically. To update the rest of the `SpecValue`s the
+-- (fth arg) is applied to all values with the old and new name.
+renameValues
     :: SpecValue sv
-    => (sv -> sv -> Bool) -- can the extension be stripped?
+    => (ValueName -> Bool) -- can it be renamed
+    -> (ValueName -> sv -> ValueName) -- which name should it get
+    -> (sv -> sv -> Bool) -- can it be merged? fst the original, snd the target.
     -> (ValueName -> ValueName -> sv -> sv) -- updater for the rest of the specification
     -> SpecMap sv -> SpecMap sv
-stripExtensions mPred updt = execState stripState
+renameValues nPred strip mPred updt = execState stripState
     where
 
 --        type SEEState sv = State (SpecMap sv)
 --        stripState :: SEEState sv ()
         stripState = do
             -- all names that end with an extension
-            names <- gets (filter (\n -> removeEnumExtension n /= n)
+            names <- gets (filter nPred
                             . M.keys . M.fold mappend M.empty) -- all the enum names
-            sequence_ . flip map names $ (\n -> tryStrip n >>= \st ->
-                when st (renameAll n $ removeEnumExtension n))
+            sequence_ . flip map names $ (\n -> tryStrip n >>= \n' ->
+                maybe (return ()) (renameAll n) n')
 
 --        tryStrip :: ValueName -> SEEState sv Bool
         tryStrip name = do
-            let name' = removeEnumExtension name
             Just (_, def) <- gets (whereIsDefined' name) -- look this value up
-            def' <- gets (whereIsDefined' name') -- lookup the value it could be changed into
-            return $ case def' of
-                Nothing -> True -- there is none, so change it
-                Just (_, vdef) -> mPred vdef def
+            let name' = strip name def
+            if name' == name
+             then return Nothing
+             else do
+                def' <- gets (whereIsDefined' name') -- lookup the value it could be changed into
+                return $ case def' of
+                    Nothing -> Just name' -- there is none, so change it
+                    Just (_, vdef) -> if mPred def vdef then Just name' else Nothing
 --        renameAll :: ValueName -> ValueName -> sv SEEState ()
         renameAll oldN newN =
             modify
                 (M.map (M.map (updt oldN newN)) -- update the rest
-                . fmap (\vs -> fromMaybe vs $ -- update the values with the correct name
+                . M.map (\vs -> fromMaybe vs $ -- update the values with the correct name
                         (M.lookup oldN vs >>= -- lookup the old value, ensuring there is one that can be renamed
                         \value -> return . M.alter (Just . fromMaybe value) newN -- add/keep the new one
                                          . M.delete oldN -- remove the old one
@@ -182,14 +193,32 @@ stripExtensions mPred updt = execState stripState
                 )))
 
 -- TODO look at reuses
--- | Specific implementation of `stripExtensions` for enums.
+-- | Strips all the extension from Enums, if the name is already in use the
+-- values should match to merge.
 stripEnumExtensions :: EnumSpec -> EnumSpec
-stripEnumExtensions = stripExtensions mPred updateReUse
+stripEnumExtensions = renameValues nPred stripN mPred updateReUse
     where
-        mPred (Value i t) (Value i' t') = i == i' && t == t'
-        mPred _           _             = False
+        nPred n    = n /= removeEnumExtension n
+        stripN n _ = removeEnumExtension n
+        mPred = (==)
         updateReUse oldN newN (ReUse n t) | n == oldN = ReUse newN t
         updateReUse _    _    v           = v
+
+-- | Strips the extensions from Functions, this is done if the alias exists
+-- for the function (then strip to the alias), or if it has no alias and the
+-- stripped function doesn't exist (stripped to the extensionless one).
+stripFuncExtensions :: FuncSpec -> FuncSpec
+stripFuncExtensions = renameValues nPred stripN mPred updateAliases
+    where
+        nPred n    = n /= removeFuncExtension n -- It should have an extension to have an alias, as core functions aren't aliased
+        stripN n (RawFunc _ a) = fromMaybe (removeFuncExtension n) a -- select the alias if possible
+        stripN n _ = error $ "stripFuncExtensions: No definition for: " ++ n
+        -- In case the name is already in use, only merge when it's the alias.
+        mPred (RawFunc _ a) _ = isJust a
+        mPred _ _  = error $ "stripFuncExtensions: No definition"
+        updateAliases oldN newN f@(RawFunc t a) =
+            maybe f (\a' -> if a' == oldN then RawFunc t (Just newN) else f) a
+        updateAliases _    _    f               = f
 
 -----------------------------------------------------------------------------
 

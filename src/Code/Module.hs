@@ -103,7 +103,7 @@ addFunc :: Category -> (String, FuncValue) -> Builder ()
 addFunc c (n, v) = do
     addExport $ (EVar . UnQual) name
     case v of
-        RawFunc ty -> addFFIDecls ty
+        RawFunc ty _ -> addFFIDecls ty
         RedirectF guessc -> addReuse guessc
     where
         name = toFuncName n

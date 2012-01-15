@@ -105,15 +105,15 @@ type FuncMap = ValueMap FuncValue
 
 -- | The specification of how the function is defined
 data FuncValue
-    -- | FFI import of the given type
-    = RawFunc   Type
+    -- | FFI import of the given type, with the alias
+    = RawFunc   Type (Maybe String)
     -- The function is imported. The 'Category' is again purely a hint
     | RedirectF Category
     deriving (Eq, Ord, Show)
 
 isFDefine :: FuncValue -> Bool
-isFDefine (RawFunc _) = True
-isFDefine _           = False
+isFDefine (RawFunc _ _ ) = True
+isFDefine _              = False
 
 -----------------------------------------------------------------------------
 
