@@ -5,3 +5,4 @@ VERSION_3_3 ARB_blend_func_extended, ARB_sampler_objects, ARB_timer_query, ARB_v
 VERSION_4_0 ARB_draw_indirect, ARB_gpu_shader_fp64, ARB_shader_subroutine, ARB_tessellation_shader, ARB_transform_feedback2, ARB_transform_feedback3
 VERSION_4_1 ARB_ES2_compatibility, ARB_get_program_binary, ARB_separate_shader_objects, ARB_vertex_attrib_64bit, ARB_viewport_array
 VERSION_4_2 ARB_base_instance,ARB_transform_feedback_instanced, ARB_internalformat_query, ARB_shader_atomic_counters, ARB_shader_image_load_store, ARB_texture_storage
+ARB_fragment_program  ARB_vertex_program

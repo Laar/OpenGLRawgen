@@ -1,0 +1,53 @@
+name: OpenGLRawTest
+version: 0.1.0.0
+license: BSD3
+license-file: 
+maintainer: NONE
+bug-reports: 
+homepage: 
+category: Graphics
+synopsis: 
+description:
+build-type: Simple
+cabal-version:  >= 1.6
+extra-source-files:
+   include/CTypes.h
+
+flag UseNativeWindowsLibraries
+   description:
+      When compiling under Windows, use the native libraries instead of e.g. the
+      ones coming with Cygwin.
+
+flag UseGlXGetProcAddress
+   description:
+      Use glXGetProcAddress instead of dlsym on non-Windows/-Darwin platforms.
+
+library
+   exposed-modules:
+   other-modules:
+   c-sources:
+      cbits/HsOpenGLRaw.c
+   hs-Source-Dirs: src
+   include-dirs: include
+   build-depends: base >= 3 && < 5
+   ghc-options: -Wall -fno-warn-duplicate-exports
+   if impl(ghc)
+      build-depends: ghc-prim
+   if os(windows) && flag(UseNativeWindowsLibraries)
+      cpp-options: "-DCALLCONV=stdcall"
+      cc-options: "-DUSE_WGLGETPROCADDRESS"
+      extra-libraries: opengl32
+   else
+      cpp-options: "-DCALLCONV=ccall"
+      if !os(darwin) && flag(UseGlXGetProcAddress)
+         cc-options: "-DUSE_GLXGETPROCADDRESS"
+      else
+         cc-options: "-DUSE_DLSYM"
+      if os(darwin)
+         frameworks: OpenGL
+      else
+         extra-libraries: GL
+
+source-repository head
+  type:     git
+  location: https://github.com/haskell-opengl/OpenGLRaw

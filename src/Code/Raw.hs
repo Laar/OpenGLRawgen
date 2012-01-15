@@ -1,14 +1,15 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.New.Raw
--- Copyright   :
--- License     :  AllRightsReserved
+-- Module      :  Code.Raw
+-- Copyright   :  (c) 2011 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
 -- Stability   :
 -- Portability :
 --
--- |
+-- | This module groups all the builders into a single one to build the
+-- OpenGLRaw package.
 --
 -----------------------------------------------------------------------------
 
@@ -17,25 +18,64 @@ module Code.Raw (
 ) where
 
 import Control.Monad.Reader
+import Data.Function(on)
+import Data.List(sortBy)
 
 import Spec
 
 import Language.Haskell.Exts.Syntax
-import Code.New.ModuleBuilder
-import Code.New.Package
+import Code.Generating.ModuleBuilder
+import Code.Generating.Package
 
 import Code.Builder
+import Code.GroupModule
 import Code.Module
 
+import Text.OpenGL.Spec(Category(..))
+
+import Code.Compatibility
+
+-----------------------------------------------------------------------------
+
+-- | Build the OpenGLRaw Package from the 'RawSpec'.
 makeRaw :: RawSpec -> Package Module
 makeRaw s =
     let packbuild = runReader (execBuilder emptyBuilder buildRaw) s
     in package packbuild
 
-buildRaw :: Builder ()
-buildRaw = buildRawImports
+-- | The builder that really builds the Raw package by combining other
+-- builders.
+buildRaw :: RawPBuilder ()
+buildRaw = do
+    buildRawImports
+    addCoreProfiles
+    addVendorModules
+    addLatestProfileToRaw
+    addCompatibilityModules
 
-buildRawImports :: Builder ()
+-- | Builder for the ffi import modules.
+buildRawImports :: RawPBuilder ()
 buildRawImports = do
     cats <- asks allCategories
-    sequence_ $ map buildModule cats
+    sequence_ $ map defineRawImport cats
+
+-- | Builds a single ffi import module, by executing 'buildModule'.
+defineRawImport :: Category -> RawPBuilder ()
+defineRawImport c = do
+    mn <- askCategoryModule c
+    ex <- isExposedCategory c
+    defineModule mn ex $ buildModule c
+
+-- | Adds the latest CoreProfile to the base (...Raw) package
+addLatestProfileToRaw :: RawPBuilder ()
+addLatestProfileToRaw = do
+    -- head is used as there ought to be at least a single CoreProfile available
+    Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
+    latestProf <- askProfileModule ma mi False
+    bm <- askBaseModule
+    liftModBuilder' bm $ do
+        ensureImport latestProf
+        addExport $ EModuleContents latestProf
+    where
+        catRanking (Version ma mi False) = (-ma, -mi)
+        catRanking _                     = (1, 1)

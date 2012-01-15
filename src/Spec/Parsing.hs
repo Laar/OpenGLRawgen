@@ -1,30 +1,39 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.Parsing
--- Copyright   :
--- License     :  AllRightsReserved
+-- Copyright   :  (c) 2011-12 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
 -- Stability   :
 -- Portability :
 --
--- |
+-- | The parser build over the the parsers in openGL-api , and a simple
+-- parser to parse the reuse entries.
 --
 -----------------------------------------------------------------------------
 
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
+    extensions,
+    removeFuncExtension,
+    removeEnumExtension,
 ) where
 
-import Data.Function
+import Control.Arrow((***))
+import Control.Monad(msum)
+--import Control.Monad.State as S
+
+--import Data.Function
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
+import Data.Monoid
 import Spec.RawSpec
 
 import Language.Haskell.Exts.Syntax
-import Code.Utils
+import Code.Generating.Utils
 
 import Control.Applicative
 import Text.ParserCombinators.Parsec hiding
@@ -32,9 +41,12 @@ import Text.ParserCombinators.Parsec hiding
 
 import Text.OpenGL.Api as A
 import Text.OpenGL.Spec as S hiding (Value)
+import qualified Text.OpenGL.Spec as S
 
 -----------------------------------------------------------------------------
 
+-- | Parse the needed OpenGL spec files and generate a 'RawSpec' based on
+-- them.
 parseSpecs
     :: FilePath         -- ^ The path to \"enumext.spec\"
     -> FilePath         -- ^ The path to \"gl.spec\"
@@ -44,20 +56,20 @@ parseSpecs esf gsf tmf = do
     especf <- readFile esf
     fspecf <- readFile gsf
     tymapf <- readFile tmf
-    -- hFlush stdout
-    return $ do -- Either ParseError monad
+    return $ do -- (Either ParseError) monad
         espec  <- enumLines especf >>= parseEnumSpec
         tymap  <- tmLines tymapf >>= return . mkTypeMap
         fspec  <- funLines fspecf >>= return . extractFunctions
         let fspec' = parseFSpec fspec tymap
-        return $ mkRawSpec espec fspec'
+        return $ mappend espec fspec' --mkRawSpec espec fspec'
 
 -----------------------------------------------------------------------------
 
-parseEnumSpec :: [EnumLine] -> Either ParseError [(Category, [(String, EnumValue)])]
+-- | Parse the enumeration spec.
+parseEnumSpec :: [EnumLine] -> Either ParseError RawSpec -- [(Category, [(String, EnumValue)])]
 parseEnumSpec ls =
     let ls' = filter inputFilter ls
-    in parse pEnumSpec "EnumLines" ls'
+    in parse pEnumSpec "EnumLines" ls' -- >>= return . nubSpec
 
 type EP = GenParser EnumLine ()
 
@@ -67,14 +79,15 @@ inputFilter (Enum _ _ _) = True
 inputFilter (Use _ _)    = True
 inputFilter _            = False
 
-pEnumSpec :: EP [(Category, [(String, EnumValue)])]
-pEnumSpec = many pCategory'
+pEnumSpec :: EP RawSpec -- [(Category, [(String, EnumValue)])]
+pEnumSpec = mconcat <$> many pCategory'
 
-pCategory' :: EP (Category, [(String, EnumValue)])
+-- | Parse a category header and the enums that come with it.
+pCategory' :: EP RawSpec
 pCategory' = do
     cat <- pCategoryHeader
     vals <- many pGLValue
-    return $ (cat, vals)
+    return $ categoryRawSpec cat vals
 
 pCategoryHeader :: EP Category
 pCategoryHeader =  tokenPrim showValue nextPos testValue
@@ -88,34 +101,45 @@ pGLValue = tokenPrim showValue nextPos testValue
     where
         showValue = show
 -- TODO : try to find a better way of determining the valuetype of the enum
-        testValue (Enum name value _) = Just (name, partialValue value $ valueType name)
-        testValue (Use ucat name)     = Just (name, Redirect ucat $ valueType name)
+        -- name in the second doesn't need to be extension scrapped
+        testValue (Enum name value _) = Just (name, partialValue value . valueType $ name)
+        testValue (Use ucat name)     = Just (name, Redirect ucat .  valueType $ name)
         testValue _                   = Nothing
         nextPos sp  _ _ = incSourceColumn sp 1
         partialValue (Hex v _ _)    = Value  v
         partialValue (Deci i)       = Value $ fromIntegral i
         partialValue (Identifier i) = ReUse (fromMaybe i . stripPrefix "GL_" $ i)
-        valueType name = if "_BIT" `isInfixOf` name then tyCon "GLbitfield" else tyCon "GLenum"
+        valueType name = if isBitfieldName $ removeEnumExtension name then tyCon "GLbitfield" else tyCon "GLenum"
+        isBitfieldName name = or
+            [ "_BIT" `isSuffixOf` name
+            , ("_ALL_" `isInfixOf` name  || "ALL_" `isPrefixOf` name)&& "_BITS" `isSuffixOf` name
+            ]
 
 -----------------------------------------------------------------------------
 
-parseFSpec :: [Function] -> TypeMap -> [(Category, [(String, FuncValue)])]
+-- | Parse (or process) the function as the are supplied by the openGL-api
+-- package.
+parseFSpec :: [Function] -> TypeMap -> RawSpec
 parseFSpec funcs tm =
-    map (\x -> (fst $ head x, map snd x)) -- pull out the categories
-    . groupBy ((==) `on` fst) -- group em by category
+--    map (\x -> (fst $ head x, map snd x)) -- pull out the categories
+--    . groupBy ((==) `on` fst) -- group them by category
+--    $ map (convertFunc tm) funcs
+    mconcat . map (uncurry categoryRawSpec . (id *** pure))
     $ map (convertFunc tm) funcs
 
 convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
-convertFunc tm rf = (funCategory rf, (name, RawFunc ty))
+convertFunc tm rf = (funCategory rf, (name, RawFunc ty alias))
     where
         name = funName rf
         ty   = foldr (-->>)
             (convertRetType $ funReturnType rf)
             (map paramToType $ funParameters rf)
-        paramToType (Parameter _ t _ _) = lookupType t tm
+        alias = funAlias rf
+        paramToType (Parameter _ t _ p) = lookupType t p tm
 
 -----------------------------------------------------------------------------
 
+-- | Parse the reuses from a string.
 parseReuses :: String -> Either ParseError [(Category, [Category])]
 parseReuses = parse (many pReuseLine <* eof) "reuse"
 
@@ -131,30 +155,36 @@ pReuseLine = (,) <$> (pCategory <* blanks) <*> (sepBy pCategory (char ',' *> bla
 
 -----------------------------------------------------------------------------
 
+-- | Convert the 'ReturnType' supplied by openGL-api to a type useable for
+-- Language.Haskell.Exts
 convertRetType :: ReturnType -> Type
 convertRetType rt = addIOType $ case rt of
     Boolean      -> tyCon "GLboolean"
     BufferOffset -> tyCon "GLsizeiptr"
     ErrorCode    -> tyCon "GLenum" -- TODO lookup
-    FramebufferStatus -> tyCon "GLenum" -- TODO lookup
+    FramebufferStatus -> tyCon "GLenum" -- lookup
     GLEnum       -> tyCon "GLenum"
-    HandleARB    -> tyCon "GLuint" -- TODO lookup
+    HandleARB    -> tyCon "GLuint" -- lookup
     Int32        -> tyCon "GLint"
-    S.List       -> tyCon "GLuint" -- TODO lookup
+    S.List       -> tyCon "GLuint" -- lookup
     S.String     -> TyApp (tyCon "Ptr") (tyCon "GLchar")
     Sync         -> tyCon "GLsync"
     UInt32       -> tyCon "GLuint"
     Void         -> unit_tycon
     VoidPointer  -> TyApp (tyCon "Ptr") (tyVar "a") -- TODO improve the type variable
-    VdpauSurfaceNV -> tyCon "GLuint" -- TODO lookup
+    VdpauSurfaceNV -> tyCon "GLintptr" -- lookup
 
-lookupType :: String -> TypeMap -> Type
-lookupType t _ | t == "cl_context" = tyCon "CLcontext"
-               | t == "cl_event"   = tyCon "CLevent"
-lookupType t tm = case M.lookup t tm of
-    Just (t', ptr) -> (if ptr then TyApp (tyCon "Ptr") else id) $ convertType t'
+-- | Convert the type supplied by openGL-api to a type useable for
+-- Language.Haskell.Exts
+lookupType :: String -> Passing -> TypeMap -> Type
+lookupType t _ _ | t == "cl_context" = tyCon "CLcontext"
+                 | t == "cl_event"   = tyCon "CLevent"
+lookupType t p tm = case M.lookup t tm of
+    Just (t', ptr) -> addPointer (p /= S.Value) . addPointer ptr $ convertType t'
     Nothing -> error $ "lookupType: Type not found " ++ show t
     where
+        addPointer :: Bool -> Type -> Type
+        addPointer addptr = if addptr then TyApp (tyCon "Ptr") else id
         convertType t' = case t' of
             Star        -> TyApp (tyCon "Ptr") (tyVar "a")
             GLbitfield  -> tyCon "GLbitfield"
@@ -169,8 +199,8 @@ lookupType t tm = case M.lookup t tm of
 --            GLenumWithTrailingComma -- removed from the source
             GLfloat     -> tyCon "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> tyCon "GLushort" -- TODO lookup
-            GLhandleARB -> tyCon "GLuint" -- TODO lookup
+            GLhalfNV    -> tyCon "GLushort" -- lookup
+            GLhandleARB -> tyCon "GLhandle"--tyCon "GLuint" -- lookup
             GLint       -> tyCon "GLint"
             GLint64     -> tyCon "GLint64"
             GLint64EXT  -> tyCon "GLint64"
@@ -190,10 +220,43 @@ lookupType t tm = case M.lookup t tm of
             GLUquadric  -> error "Uquadric"
             GLushort    -> tyCon "GLushort"
             GLUtesselator -> error  "tesselator"
-            GLvoid      -> TyApp (tyCon "Ptr") (tyVar "a")
-            GLvoidStarConst -> tyCon "GLuint" -- TODO lookup ??
-            GLvdpauSurfaceNV -> tyCon "GLuint" -- TODO lookup
-            GLdebugprocARB -> tyCon "GLuint" -- TODO lookup error "Debug ARB"
-            GLdebugprocAMD -> tyCon "GLuint" -- TODO lookup error  "DebugAMD"
+            GLvoid      -> (tyVar "a")
+            GLvoidStarConst -> TyApp (tyCon "Ptr") (tyVar "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
+            GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
+            GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
+            GLdebugprocAMD -> tyCon "GLdebugprocAMD" -- lookup
+
+-----------------------------------------------------------------------------
+
+removeFuncExtension :: String -> String
+removeFuncExtension = removeExtension extensions
+
+removeEnumExtension :: String -> String
+removeEnumExtension = removeExtension (map ('_':) extensions)
+
+removeExtension :: [String] -> String -> String
+removeExtension exts str =
+    let strr = reverse str
+        extensionsr = map reverse exts
+        stripsr = map (flip stripPrefix strr) extensionsr
+        str' = fromMaybe str . fmap reverse $ msum stripsr
+    in str'
+
+extensions :: [String]
+extensions =
+    [ "3DFX"
+    , "AMD", "APPLE", "ARB", "ATI"
+    , "EXT"
+    , "GREMEDY"
+    , "HP"
+    , "IBM", "INGR", "INTEL"
+    , "MESAX", "MESA"
+    , "NV"
+    , "OES", "OML"
+    , "PGI"
+    , "REND"
+    , "S3", "SGIS", "SGIX", "SGI", "SUNX", "SUN"
+    , "WIN"
+    ]
 
 -----------------------------------------------------------------------------

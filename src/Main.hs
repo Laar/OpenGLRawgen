@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Main
--- Copyright   :
--- License     :  AllRightsReserved
+-- Copyright   :  (c) 2011-2012 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :
 -- Stability   :
@@ -18,20 +18,20 @@ module Main (
 
 
 import Language.Haskell.Exts.Pretty
-import Code.Utils
+import Code.Generating.Utils
 
-import Code.New.Package
+import Code.Generating.Package
 
-import Spec()
+import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
 import Code.Raw
 import Code.Module(replaceCallConv)
 
+-----------------------------------------------------------------------------
+
 main :: IO ()
 main = procNew
-
-
 
 procNew :: IO ()
 procNew = do
@@ -39,14 +39,24 @@ procNew = do
         fspecP  = "gl.spec"
         tmspecP = "gl.tm"
         rfuncP  = "reusefuncs"
+        renumP  = "reuseenums"
     erawSpec <- parseSpecs especP fspecP tmspecP
     case erawSpec of
         Left e -> print e
         Right rawSpec -> do
-            _ <- readFile rfuncP >>= return . parseReuses
-            let modules = makeRaw rawSpec
+            reusesF <- readFile rfuncP >>= return . parseReuses
+            reusesE <- readFile renumP >>= return . parseReuses
+            let reusesF' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reusesF
+                reusesE' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reusesE
+                modules = makeRaw $ cleanupSpec . addReuses reusesF' reusesE' $ rawSpec
+                -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
                     in  safeWriteFile ("output/" ++ moduleNameToPath mn ++ ".hs") msc
+            -- write out the modules
             processModules' pmodule modules
-                >> safeWriteFile "output/modules.txt" (unlines . map (\n -> "      " ++ moduleNameToName n ++ ","). fst $ listModules modules)
+            -- and a list of exposed and internal modules.
+                >> safeWriteFile "output/modulesE.txt" (unlines .
+                    map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules)
+                >> safeWriteFile "output/modulesI.txt" (unlines .
+                    map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules)

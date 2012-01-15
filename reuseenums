@@ -1,0 +1,3 @@
+VERSION_1_2 ARB_imaging
+VERSION_1_2_DEPRECATED ARB_imaging_DEPRECATED
+ARB_fragment_program ARB_vertex_program
