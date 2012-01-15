@@ -112,7 +112,7 @@ pGLValue = tokenPrim showValue nextPos testValue
         valueType name = if isBitfieldName $ removeEnumExtension name then tyCon "GLbitfield" else tyCon "GLenum"
         isBitfieldName name = or
             [ "_BIT" `isSuffixOf` name
-            , "_ALL" `isInfixOf` name && "_BITS" `isSuffixOf` name
+            , ("_ALL_" `isInfixOf` name  || "ALL_" `isPrefixOf` name)&& "_BITS" `isSuffixOf` name
             ]
 
 -----------------------------------------------------------------------------
