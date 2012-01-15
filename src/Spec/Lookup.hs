@@ -17,7 +17,8 @@ module Spec.Lookup (
     -- * Lookup functions
 
     -- ** Geeralised lookup functions
-    lookupInCat, whereIsDefined,
+    lookupInCat, lookupInCat',
+    whereIsDefined, whereIsDefined',
 
     -- ** Enum lookup functions
     isEInCat,
@@ -39,16 +40,19 @@ import Spec.RawSpec
 
 -- | Look a `SpecValue` up by it's name in a certain category
 lookupInCat :: SpecValue s => ValueName -> Category -> RawSpec -> Maybe s
-lookupInCat n c s = M.lookup c (getPart s) >>= M.lookup n
+lookupInCat n c = lookupInCat' n c . getPart
+
+lookupInCat' :: SpecValue sv => ValueName -> Category -> SpecMap sv -> Maybe sv
+lookupInCat' n c sm = M.lookup c sm >>= M.lookup n
 
 -- | Look for the defenition of a `SpecValue`  by it's name, and returns
 -- the Category in which it is defined and the value it self.
 whereIsDefined :: SpecValue s => ValueName -> RawSpec -> Maybe (Category, s)
-whereIsDefined n s =
-    let cats = allCategories s
-    in listToMaybe $ mapMaybe
-            (\c -> lookupInCat n c s >>= \v -> if isDefine v then Just (c, v) else Nothing)
-                 cats
+whereIsDefined vn = whereIsDefined' vn . getPart
+
+whereIsDefined' :: SpecValue sv => ValueName -> SpecMap sv -> Maybe (Category, sv)
+whereIsDefined' vn sm = listToMaybe . M.toList . M.filter isDefine . M.mapMaybe (M.lookup vn) $ sm
+
 
 -----------------------------------------------------------------------------
 

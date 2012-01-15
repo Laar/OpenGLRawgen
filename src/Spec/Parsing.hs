@@ -16,6 +16,9 @@
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
+    extensions,
+    removeFuncExtension,
+    removeEnumExtension,
 ) where
 
 import Control.Arrow((***))
@@ -99,14 +102,18 @@ pGLValue = tokenPrim showValue nextPos testValue
         showValue = show
 -- TODO : try to find a better way of determining the valuetype of the enum
         -- name in the second doesn't need to be extension scrapped
-        testValue (Enum name value _) = Just (removeEnumExtension name, partialValue value . valueType $ name)
-        testValue (Use ucat name)     = Just (removeEnumExtension name, Redirect ucat .  valueType $ name)
+        testValue (Enum name value _) = Just (name, partialValue value . valueType $ name)
+        testValue (Use ucat name)     = Just (name, Redirect ucat .  valueType $ name)
         testValue _                   = Nothing
         nextPos sp  _ _ = incSourceColumn sp 1
         partialValue (Hex v _ _)    = Value  v
         partialValue (Deci i)       = Value $ fromIntegral i
-        partialValue (Identifier i) = ReUse (removeEnumExtension . fromMaybe i . stripPrefix "GL_" $ i)
-        valueType name = if "_BIT" `isInfixOf` name then tyCon "GLbitfield" else tyCon "GLenum"
+        partialValue (Identifier i) = ReUse (fromMaybe i . stripPrefix "GL_" $ i)
+        valueType name = if isBitfieldName $ removeEnumExtension name then tyCon "GLbitfield" else tyCon "GLenum"
+        isBitfieldName name = or
+            [ "_BIT" `isSuffixOf` name
+            , "_ALL" `isInfixOf` name && "_BITS" `isSuffixOf` name
+            ]
 
 -----------------------------------------------------------------------------
 
