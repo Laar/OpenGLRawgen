@@ -211,13 +211,13 @@ stripFuncExtensions :: FuncSpec -> FuncSpec
 stripFuncExtensions = renameValues nPred stripN mPred updateAliases
     where
         nPred n    = n /= removeFuncExtension n -- It should have an extension to have an alias, as core functions aren't aliased
-        stripN n (RawFunc _ a) = fromMaybe (removeFuncExtension n) a -- select the alias if possible
+        stripN n (RawFunc _ _ a) = fromMaybe (removeFuncExtension n) a -- select the alias if possible
         stripN n _ = error $ "stripFuncExtensions: No definition for: " ++ n
         -- In case the name is already in use, only merge when it's the alias.
-        mPred (RawFunc _ a) _ = isJust a
+        mPred (RawFunc _ _ a) _ = isJust a
         mPred _ _  = error $ "stripFuncExtensions: No definition"
-        updateAliases oldN newN f@(RawFunc t a) =
-            maybe f (\a' -> if a' == oldN then RawFunc t (Just newN) else f) a
+        updateAliases oldN newN f@(RawFunc n t a) =
+            maybe f (\a' -> if a' == oldN then RawFunc n t (Just newN) else f) a
         updateAliases _    _    f               = f
 
 -----------------------------------------------------------------------------

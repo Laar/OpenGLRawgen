@@ -128,7 +128,7 @@ parseFSpec funcs tm =
     $ map (convertFunc tm) funcs
 
 convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
-convertFunc tm rf = (funCategory rf, (name, RawFunc ty alias))
+convertFunc tm rf = (funCategory rf, (name, RawFunc name ty alias))
     where
         name = funName rf
         ty   = foldr (-->>)
