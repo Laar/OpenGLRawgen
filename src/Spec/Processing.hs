@@ -21,7 +21,7 @@ module Spec.Processing (
 
 import Control.Arrow((>>>))
 import Control.Monad.Reader
-import Control.Monad.State.Strict
+import Control.Monad.State
 
 import qualified Data.Map as M
 import Data.Maybe
@@ -38,8 +38,8 @@ import Spec.RawSpec
 
 -- | Clean the 'RawSpec' in order to make it useable for codegeneration.
 cleanupSpec :: RawSpec -> RawSpec
-cleanupSpec = modifyPart stripEnumExtensions >>> modifyPart stripFuncExtensions >>> nubSpec
-            >>> filterEmpty >>> sortCategoryImports
+cleanupSpec = -- modifyPart stripEnumExtensions >>> modifyPart stripFuncExtensions >>>
+    nubSpec >>> filterEmpty >>> sortCategoryImports
 
 
 -----------------------------------------------------------------------------
