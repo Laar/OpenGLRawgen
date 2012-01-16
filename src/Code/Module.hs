@@ -34,6 +34,7 @@ import Code.Generating.ModuleBuilder
 
 import Text.OpenGL.Spec(Category, showCategory)
 import Spec
+import Spec.Parsing(removeEnumExtension, removeFuncExtension)
 
 -----------------------------------------------------------------------------
 
@@ -85,7 +86,7 @@ enumDecl name valExp vtype =
 
 -- | Convert a string into to enum Name used.
 toEnumName :: String -> Name
-toEnumName n = Ident $ "gl_" ++ n
+toEnumName n = Ident $ "gl_" ++ removeEnumExtension n
 
 
 -- | Adds the imports needed when there is at least a single enumvalue
@@ -169,7 +170,7 @@ toFuncName = Ident . toFuncName'
 
 -- | See 'toFuncName'
 toFuncName' :: String -> String
-toFuncName' n = "gl" ++ n
+toFuncName' n = "gl" ++ removeFuncExtension n
 
 -- | Adds the imports, etc. needed when there is a FFI function import. The
 -- 'FuncValue's are needed to check if there is any such function.

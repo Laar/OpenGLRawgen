@@ -38,8 +38,8 @@ import Spec.RawSpec
 
 -- | Clean the 'RawSpec' in order to make it useable for codegeneration.
 cleanupSpec :: RawSpec -> RawSpec
-cleanupSpec = modifyPart stripEnumExtensions >>> modifyPart stripFuncExtensions >>> nubSpec
-            >>> filterEmpty >>> sortCategoryImports
+cleanupSpec = -- modifyPart stripEnumExtensions >>> modifyPart stripFuncExtensions >>>
+    nubSpec >>> filterEmpty >>> sortCategoryImports
 
 
 -----------------------------------------------------------------------------
