@@ -103,7 +103,7 @@ addFunc :: Category -> (String, FuncValue) -> Builder ()
 addFunc c (n, v) = do
     addExport $ (EVar . UnQual) name
     case v of
-        RawFunc ty _ -> addFFIDecls ty
+        RawFunc gln ty _ -> addFFIDecls gln ty
         RedirectF guessc -> addReuse guessc
     where
         name = toFuncName n
@@ -116,7 +116,7 @@ addFunc c (n, v) = do
         -- declerations for each function. One for the FFI import, one for the
         -- retrieving the 'FuncPtr' to the functions and one for the real
         -- invoker used to call the GL-function.
-        addFFIDecls ty = do
+        addFFIDecls gln ty = do
             emod <- askExtensionModule
             let dynEntry = Ident $ "dyn_" ++ toFuncName' n
                 ptrEntry = Ident $ "ptr_" ++ toFuncName' n
@@ -144,7 +144,7 @@ addFunc c (n, v) = do
                        , oneLiner ptrEntry []
                             ( expVar "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
                             @@ (Lit . String $ "GL_" ++ showCategory c)
-                            @@ (Lit . String $ unname name))
+                            @@ (Lit . String $ toFuncName' gln))
                        ]
 
 -- | The temporary 'CallConv' used.

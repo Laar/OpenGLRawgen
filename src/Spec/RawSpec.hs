@@ -105,15 +105,16 @@ type FuncMap = ValueMap FuncValue
 
 -- | The specification of how the function is defined
 data FuncValue
-    -- | FFI import of the given type, with the alias
-    = RawFunc   Type (Maybe String)
+    -- | FFI import of the given type, with the alias and the GLfunction
+    -- name for which the pointer should be used.
+    = RawFunc  String Type (Maybe String)
     -- The function is imported. The 'Category' is again purely a hint
     | RedirectF Category
     deriving (Eq, Ord, Show)
 
 isFDefine :: FuncValue -> Bool
-isFDefine (RawFunc _ _ ) = True
-isFDefine _              = False
+isFDefine (RawFunc _ _ _ ) = True
+isFDefine _                = False
 
 -----------------------------------------------------------------------------
 
