@@ -25,8 +25,6 @@ module Main.Options (
     getOptions,
 ) where
 
-import Data.Either(lefts, rights)
-import Data.Maybe(mapMaybe)
 import Data.Monoid
 
 import Text.OpenGL.Spec(Extension)
@@ -47,15 +45,19 @@ getOptions = do
           (_,_,errs) -> ioError (userError $ concat errs ++ usageInfo header options)
       where header = "Usage: OpenGLRawgen [OPTION...]"
 
-options :: [OptDescr (Either RawGenFlag RawGenOpt)]
+options :: [OptDescr (IO RawGenOptions)]
 options =
     [ Option ['o'] ["old-comp"]
-        (NoArg $ Left RawCompatibility)    "Create backward compatiblity modules"
+        (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
-        (ReqArg (Right . NoExtension . read) "VENDOR")  "No vendor modules for the specified vendor"
+        (ReqArg (return . (\v -> RawGenOptions [] [v]) . read) "VENDOR")  "No vendor modules for the specified vendor"
     , Option [] ["no-vendorf"]
-        (ReqArg (Right . NoExtensionf ) "FILE")   "No vendor modules from file"
+        (ReqArg extensionFile "FILE")   "No vendor modules from file"
     ]
+    where
+        flag f = NoArg . return $ RawGenOptions [f] []
+        extensionFile f = readFile f >>=
+            (\es -> return $ RawGenOptions [] es) . map read . concatMap words . lines
 
 -- | Config flags used by the generator
 data RawGenFlag
@@ -63,25 +65,10 @@ data RawGenFlag
     -- previous versions of OpenGLRaw
     deriving (Eq, Ord, Show)
 
--- | Options that can be parsed
-data RawGenOpt
-    = NoExtension Extension -- ^ create no modules for the given `Extension`
-    | NoExtensionf FilePath -- ^ As `NoExtension` but the `Extension`s are read from file
-
 -- | Parse the options from the commandline into `RawGenOptions`
-mkOptions :: ([Either RawGenFlag RawGenOpt], [String]) -> IO RawGenOptions
-mkOptions (opts, _) = do
-    let flags = lefts  opts
-        opts' = rights opts
-        nExts = mapMaybe nExt opts'
-        nExt (NoExtension e) = Just e
-        nExt _               = Nothing
-
-        nExtf (NoExtensionf f) = readFile f >>=
-            return . map read . concatMap words . lines
-        nExtf _  = return []
-    nExtfs <- sequence $ map nExtf opts'
-    return $ RawGenOptions flags (nExts ++ concat nExtfs)
+mkOptions :: ([IO RawGenOptions], [String]) -> IO RawGenOptions
+mkOptions (opts, _) =
+    sequence opts >>= return . mconcat
 
 -- | Represents the options given to the generator
 data RawGenOptions
