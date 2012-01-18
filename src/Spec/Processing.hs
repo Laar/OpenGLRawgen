@@ -13,7 +13,7 @@
 -- thus clean enough, to generate the code.
 --
 -- Processing the SpecFiles as they are supplied on the website
--- (http://www.opengl.org/registry/) is quite a task as they are not very
+-- <http://www.opengl.org/registry/> is quite a task as they are not very
 -- well formated for this (not to mention the 'errors').
 --
 -- The spec that is processed should be ready for generating code. The code
