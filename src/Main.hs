@@ -28,6 +28,8 @@ import Spec.Parsing(parseSpecs, parseReuses)
 import Code.Raw
 import Code.Module(replaceCallConv)
 
+import Main.Options
+
 -----------------------------------------------------------------------------
 
 main :: IO ()
@@ -35,6 +37,7 @@ main = procNew
 
 procNew :: IO ()
 procNew = do
+    opts <- getOptions
     let especP  = "enumext.spec"
         fspecP  = "gl.spec"
         tmspecP = "gl.tm"
@@ -48,7 +51,7 @@ procNew = do
             reusesE <- readFile renumP >>= return . parseReuses
             let reusesF' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reusesF
                 reusesE' = either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id reusesE
-                modules = makeRaw $ cleanupSpec . addReuses reusesF' reusesE' $ rawSpec
+                modules = makeRaw opts $ cleanupSpec opts . addReuses reusesF' reusesE' $ rawSpec
                 -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m

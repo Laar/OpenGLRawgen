@@ -6,9 +6,8 @@ license: BSD3
 license-file: LICENSE
 copyright:
 maintainer:
-build-depends: parsec -any, opengl-api -any, mtl -any,
-               haskell-src-exts -any, containers -any, base >=4,
-               CodeGenerating -any
+build-depends: CodeGenerating -any, base >=4, containers -any,
+               haskell-src-exts -any, mtl -any, opengl-api -any, parsec -any
 stability:
 homepage:
 package-url:
@@ -44,9 +43,9 @@ includes:
 install-includes:
 include-dirs:
 hs-source-dirs: src
-other-modules: Spec.Lookup Spec.Processing Code.Compatibility Spec
-               Spec.Parsing Spec.RawSpec Code.GroupModule Code.Module Code.Builder
-               Code.Raw
+other-modules: Main.Options Spec.Lookup Spec.Processing
+               Code.Compatibility Spec Spec.Parsing Spec.RawSpec Code.GroupModule
+               Code.Module Code.Builder Code.Raw
 ghc-prof-options:
 ghc-shared-options:
 ghc-options: -Wall -O2
