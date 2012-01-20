@@ -21,9 +21,13 @@ module Main.Options (
     hasFlag,
     dropExtension,
 
+    enumextFile, glFile, tmFile,
     -- * Retrieving the options
     getOptions,
 ) where
+
+import Data.Maybe
+import System.FilePath((</>))
 
 import Text.OpenGL.Spec(Extension)
 
@@ -51,6 +55,14 @@ options =
         (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No vendor modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
+    , Option ['e'] ["enumext"]
+        (ReqArg (\f r -> return r{rgEnum = Just f}) "FILE") "The enumext.spec file to use"
+    , Option ['g'] ["gl"]
+        (ReqArg (\f r -> return r{rgGL = Just f}) "FILE") "The gl.spec file to use"
+    , Option ['t'] ["tm"]
+        (ReqArg (\f r -> return r{rgTM = Just f}) "FILE") "The gl.tm file to use"
+    , Option ['d'] ["dir"]
+        (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
     ]
     where
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
@@ -71,15 +83,23 @@ mkOptions (opts, _) = foldl (>>=) (return defaultOptions) opts
 -- | Represents the options given to the generator
 data RawGenOptions
     = RawGenOptions
-    { rgFlags :: [RawGenFlag] -- ^ The given flags.
-    , rgNoExtension :: [Extension] -- ^ The `Extension`s that should be dropped
+    { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
+    , rgNoExtension :: [Extension]      -- ^ The `Extension`s that should be dropped
+    , rgEnum        :: Maybe FilePath   -- ^ The location of the enumext.spec file.
+    , rgGL          :: Maybe FilePath   -- ^ The location of the gl.spec file.
+    , rgTM          :: Maybe FilePath   -- ^ The location of the gl.tm file.
+    , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     }
 
 defaultOptions :: RawGenOptions
 defaultOptions
     = RawGenOptions
-    { rgFlags = []
+    { rgFlags       = []
     , rgNoExtension = []
+    , rgEnum        = Nothing
+    , rgGL          = Nothing
+    , rgTM          = Nothing
+    , rgFilesDir    = Nothing
     }
 
 -- | Query whether a flag has been given on the commandline.
@@ -89,3 +109,11 @@ hasFlag f o = f `elem` rgFlags o
 -- | Check wheter an `Extension` should be removed
 dropExtension :: Extension -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
+
+enumextFile, glFile, tmFile :: RawGenOptions -> FilePath
+enumextFile = getFile rgEnum "enumext.spec"
+glFile      = getFile rgGL   "gl.spec"
+tmFile      = getFile rgTM   "gl.tm"
+getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
+getFile directGet name rgo =
+    fromMaybe (maybe id (</>) (rgFilesDir rgo) $ name) $ directGet rgo

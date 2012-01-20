@@ -38,9 +38,9 @@ main = procNew
 procNew :: IO ()
 procNew = do
     opts <- getOptions
-    let especP  = "enumext.spec"
-        fspecP  = "gl.spec"
-        tmspecP = "gl.tm"
+    let especP  = enumextFile   opts
+        fspecP  = glFile        opts
+        tmspecP = tmFile        opts
         rfuncP  = "reusefuncs"
         renumP  = "reuseenums"
     erawSpec <- parseSpecs especP fspecP tmspecP
