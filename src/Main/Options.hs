@@ -22,6 +22,7 @@ module Main.Options (
     dropExtension,
 
     enumextFile, glFile, tmFile,
+    freuseFile, ereuseFile,
     -- * Retrieving the options
     getOptions,
 ) where
@@ -61,6 +62,10 @@ options =
         (ReqArg (\f r -> return r{rgGL = Just f}) "FILE") "The gl.spec file to use"
     , Option ['t'] ["tm"]
         (ReqArg (\f r -> return r{rgTM = Just f}) "FILE") "The gl.tm file to use"
+    , Option []    ["freuses"]
+        (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The function reuse file"
+    , Option []    ["ereuses"]
+        (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The enum reuse file"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
     ]
@@ -88,6 +93,8 @@ data RawGenOptions
     , rgEnum        :: Maybe FilePath   -- ^ The location of the enumext.spec file.
     , rgGL          :: Maybe FilePath   -- ^ The location of the gl.spec file.
     , rgTM          :: Maybe FilePath   -- ^ The location of the gl.tm file.
+    , rgEReuse      :: Maybe FilePath   -- ^ The location of the enum reuse file.
+    , rgFReuse      :: Maybe FilePath   -- ^ The location of the function reuse file.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     }
 
@@ -99,6 +106,8 @@ defaultOptions
     , rgEnum        = Nothing
     , rgGL          = Nothing
     , rgTM          = Nothing
+    , rgEReuse      = Nothing
+    , rgFReuse      = Nothing
     , rgFilesDir    = Nothing
     }
 
@@ -110,10 +119,14 @@ hasFlag f o = f `elem` rgFlags o
 dropExtension :: Extension -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
-enumextFile, glFile, tmFile :: RawGenOptions -> FilePath
+enumextFile, glFile, tmFile, freuseFile, ereuseFile :: RawGenOptions -> FilePath
 enumextFile = getFile rgEnum "enumext.spec"
 glFile      = getFile rgGL   "gl.spec"
 tmFile      = getFile rgTM   "gl.tm"
+
+freuseFile = getFile rgEReuse "reuseenums"
+ereuseFile = getFile rgFReuse "reusefuncs"
+
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =
     fromMaybe (maybe id (</>) (rgFilesDir rgo) $ name) $ directGet rgo

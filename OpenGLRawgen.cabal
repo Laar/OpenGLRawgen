@@ -7,8 +7,8 @@ license-file: LICENSE
 copyright:
 maintainer:
 build-depends: CodeGenerating -any, base >=4, containers -any,
-               filepath -any, haskell-src-exts -any, mtl -any, opengl-api -any,
-               parsec -any
+               directory -any, filepath -any, haskell-src-exts -any, mtl -any,
+               opengl-api -any, parsec -any
 stability:
 homepage:
 package-url:

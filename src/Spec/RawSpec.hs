@@ -17,6 +17,7 @@ module Spec.RawSpec (
 
     -- * The 'RawSpec' and associated types and functions
     RawSpec(),
+    Category() , -- ^ Convenience
     SpecValue(..),
     ValueName, ValueMap, SpecMap,
 
