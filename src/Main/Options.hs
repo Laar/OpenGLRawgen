@@ -25,8 +25,6 @@ module Main.Options (
     getOptions,
 ) where
 
-import Data.Monoid
-
 import Text.OpenGL.Spec(Extension)
 
 import System.Console.GetOpt
@@ -45,19 +43,20 @@ getOptions = do
           (_,_,errs) -> ioError (userError $ concat errs ++ usageInfo header options)
       where header = "Usage: OpenGLRawgen [OPTION...]"
 
-options :: [OptDescr (IO RawGenOptions)]
+options :: [OptDescr (RawGenOptions -> IO RawGenOptions)]
 options =
     [ Option ['o'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
-        (ReqArg (return . (\v -> RawGenOptions [] [v]) . read) "VENDOR")  "No vendor modules for the specified vendor"
+        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No vendor modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     ]
     where
-        flag f = NoArg . return $ RawGenOptions [f] []
-        extensionFile f = readFile f >>=
-            (\es -> return $ RawGenOptions [] es) . map read . concatMap words . lines
+        flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
+        flag f = NoArg $ \rgo -> return rgo{rgFlags = f : rgFlags rgo }
+        extensionFile f = \r -> readFile f >>=
+            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map read . concatMap words . lines
 
 -- | Config flags used by the generator
 data RawGenFlag
@@ -66,9 +65,8 @@ data RawGenFlag
     deriving (Eq, Ord, Show)
 
 -- | Parse the options from the commandline into `RawGenOptions`
-mkOptions :: ([IO RawGenOptions], [String]) -> IO RawGenOptions
-mkOptions (opts, _) =
-    sequence opts >>= return . mconcat
+mkOptions :: ([RawGenOptions -> IO RawGenOptions], [String]) -> IO RawGenOptions
+mkOptions (opts, _) = foldl (>>=) (return defaultOptions) opts
 
 -- | Represents the options given to the generator
 data RawGenOptions
@@ -77,9 +75,12 @@ data RawGenOptions
     , rgNoExtension :: [Extension] -- ^ The `Extension`s that should be dropped
     }
 
-instance Monoid RawGenOptions where
-    mappend (RawGenOptions f1 e1) (RawGenOptions f2 e2) = RawGenOptions (f1 ++ f2) (e1 ++ e2)
-    mempty = RawGenOptions [] []
+defaultOptions :: RawGenOptions
+defaultOptions
+    = RawGenOptions
+    { rgFlags = []
+    , rgNoExtension = []
+    }
 
 -- | Query whether a flag has been given on the commandline.
 hasFlag :: RawGenFlag -> RawGenOptions -> Bool
