@@ -24,6 +24,7 @@ module Main.Options (
     enumextFile, glFile, tmFile,
     freuseFile, ereuseFile,
     stripNames, mkExtensionGroups,
+    outputDir,
     -- * Retrieving the options
     getOptions,
 ) where
@@ -52,7 +53,7 @@ getOptions = do
 
 options :: [OptDescr (RawGenOptions -> IO RawGenOptions)]
 options =
-    [ Option ['o'] ["old-comp"]
+    [ Option ['c'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
         (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No modules for the specified vendor"
@@ -75,9 +76,11 @@ options =
     , Option ['S'] ["no-strip"]
         (NoArg $ \r -> return r{rgStripName = False}) "Disables striping of the extension suffixes from names"
     , Option ['g'] ["groups"]
-        (NoArg $ \r -> return r{rgEGrouping = True}) "Disables the generation of Extension group modules"
+        (NoArg $ \r -> return r{rgEGrouping = True}) "Enables the generation of Extension group modules"
     , Option ['G'] ["no-groups"]
         (NoArg $ \r -> return r{rgEGrouping = False}) "Disables the generation of Extension group modules"
+    , Option ['o'] ["output"]
+        (ReqArg (\d r -> return r{rgOutputDir = d}) "DIR") "The output directory"
     ]
     where
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
@@ -110,6 +113,7 @@ data RawGenOptions
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     , rgStripName   :: Bool             -- ^ Strip the names of extensions
     , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
+    , rgOutputDir   :: FilePath
     }
 
 defaultOptions :: RawGenOptions
@@ -125,6 +129,7 @@ defaultOptions
     , rgFilesDir    = Nothing
     , rgStripName   = False
     , rgEGrouping   = True
+    , rgOutputDir   = ""
     }
 
 -----------------------------------------------------------------------------
@@ -154,5 +159,8 @@ stripNames = rgStripName
 
 mkExtensionGroups :: RawGenOptions -> Bool
 mkExtensionGroups = rgEGrouping
+
+outputDir :: RawGenOptions -> FilePath
+outputDir = rgOutputDir
 
 -----------------------------------------------------------------------------

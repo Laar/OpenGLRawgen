@@ -2,7 +2,7 @@ Config flags:  ""
 Build flags:   ""
 Haddock flags: ""
 Executable flags:
-               "--no-vendorf=novendor"
+               "--no-vendorf=novendor -o output -c"
 Install flags: ""
 Register flags:
                ""

@@ -48,7 +48,7 @@ probably not complete, but these are the major points.)
 
 ### Core modules
 The major change is probably that the core modules have been rearranged
-. With the -o flag given to the generator there will also be some
+. With the -c flag given to the generator there will also be some
 compatibility modules to make the transition easier. In addition all
 the types that are generated are exported from all modules. `Raw.hs`
 now exports the latest OpenGL specification in stead of all values.

@@ -19,6 +19,7 @@ module Main (
 -----------------------------------------------------------------------------
 
 import System.Directory
+import System.FilePath((</>))
 
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
@@ -46,17 +47,18 @@ procNew = do
         Left e -> print e
         Right rawSpec -> do
             rawSpec' <- processReuses opts rawSpec
-            let modules = makeRaw opts . cleanupSpec opts $ rawSpec'
+            let oDir = outputDir opts
+                modules = makeRaw opts . cleanupSpec opts $ rawSpec'
                 -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
-                    in  safeWriteFile ("output/" ++ moduleNameToPath mn ++ ".hs") msc
+                    in  safeWriteFile (oDir </> moduleNameToPath mn ++ ".hs") msc
             -- write out the modules
             processModules' pmodule modules
             -- and a list of exposed and internal modules.
-                >> safeWriteFile "output/modulesE.txt" (unlines .
+                >> safeWriteFile (oDir </> "modulesE.txt") (unlines .
                     map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules)
-                >> safeWriteFile "output/modulesI.txt" (unlines .
+                >> safeWriteFile (oDir </> "modulesI.txt") (unlines .
                     map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules)
 
 -- | Parse and process the reuse files. It generates no warning if there is
