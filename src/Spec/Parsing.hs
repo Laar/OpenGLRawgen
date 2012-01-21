@@ -16,16 +16,11 @@
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
-    extensions,
-    removeFuncExtension,
-    removeEnumExtension,
+--    extensions,
 ) where
 
 import Control.Arrow((***))
-import Control.Monad(msum)
---import Control.Monad.State as S
 
---import Data.Function
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
@@ -96,24 +91,20 @@ pCategoryHeader =  tokenPrim showValue nextPos testValue
           testValue _             = Nothing
           nextPos sp  _        _ = incSourceColumn sp 1
 
-pGLValue :: EP (String, EnumValue)
+pGLValue :: EP (EnumName, EnumValue)
 pGLValue = tokenPrim showValue nextPos testValue
     where
         showValue = show
 -- TODO : try to find a better way of determining the valuetype of the enum
         -- name in the second doesn't need to be extension scrapped
-        testValue (Enum name value _) = Just (name, partialValue value . valueType $ name)
-        testValue (Use ucat name)     = Just (name, Redirect ucat .  valueType $ name)
+        testValue (Enum name value _) = Just (wrapName name, partialValue value . valueType $ name)
+        testValue (Use ucat name)     = Just (wrapName name, Redirect ucat . valueType $ name)
         testValue _                   = Nothing
         nextPos sp  _ _ = incSourceColumn sp 1
         partialValue (Hex v _ _)    = Value  v
         partialValue (Deci i)       = Value $ fromIntegral i
-        partialValue (Identifier i) = ReUse (fromMaybe i . stripPrefix "GL_" $ i)
-        valueType name = if isBitfieldName $ removeEnumExtension name then tyCon "GLbitfield" else tyCon "GLenum"
-        isBitfieldName name = or
-            [ "_BIT" `isSuffixOf` name
-            , ("_ALL_" `isInfixOf` name  || "ALL_" `isPrefixOf` name)&& "_BITS" `isSuffixOf` name
-            ]
+        partialValue (Identifier i) = ReUse (wrapName . fromMaybe i . stripPrefix "GL_" $ i)
+        valueType name = if isBitfieldName name then tyCon "GLbitfield" else tyCon "GLenum"
 
 -----------------------------------------------------------------------------
 
@@ -127,8 +118,8 @@ parseFSpec funcs tm =
     mconcat . map (uncurry categoryRawSpec . (id *** pure))
     $ map (convertFunc tm) funcs
 
-convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
-convertFunc tm rf = (funCategory rf, (name, RawFunc name ty alias))
+convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
+convertFunc tm rf = (funCategory rf, (wrapName name, RawFunc name ty alias))
     where
         name = funName rf
         ty   = foldr (-->>)
@@ -225,38 +216,5 @@ lookupType t p tm = case M.lookup t tm of
             GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
             GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
             GLdebugprocAMD -> tyCon "GLdebugprocAMD" -- lookup
-
------------------------------------------------------------------------------
-
-removeFuncExtension :: String -> String
-removeFuncExtension = removeExtension extensions
-
-removeEnumExtension :: String -> String
-removeEnumExtension = removeExtension (map ('_':) extensions)
-
-removeExtension :: [String] -> String -> String
-removeExtension exts str =
-    let strr = reverse str
-        extensionsr = map reverse exts
-        stripsr = map (flip stripPrefix strr) extensionsr
-        str' = fromMaybe str . fmap reverse $ msum stripsr
-    in str'
-
-extensions :: [String]
-extensions =
-    [ "3DFX"
-    , "AMD", "APPLE", "ARB", "ATI"
-    , "EXT"
-    , "GREMEDY"
-    , "HP"
-    , "IBM", "INGR", "INTEL"
-    , "MESAX", "MESA"
-    , "NV"
-    , "OES", "OML"
-    , "PGI"
-    , "REND"
-    , "S3", "SGIS", "SGIX", "SGI", "SUNX", "SUN"
-    , "WIN"
-    ]
 
 -----------------------------------------------------------------------------
