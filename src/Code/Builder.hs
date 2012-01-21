@@ -26,7 +26,7 @@ module Code.Builder (
     ensureImport,
 
     -- * Options related helpers
-    asksOption, whenOption, unlessOption,
+    asksOption, whenOption, unlessOption, unwrapNameBuilder,
 
     -- * Ask-ers for module locations
     askBaseModule,
@@ -99,6 +99,9 @@ unlessOption :: BuildableModule bm
     => (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
 unlessOption f b = asksOption f >>= \p -> unless p b
 
+unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
+unwrapNameBuilder = lift . lift . asks . unwrapName
+
 -----------------------------------------------------------------------------
 
 -- | Asks the location of several basic modules
@@ -145,26 +148,26 @@ ensureImport m = do
 
 -- | Asks the category where a certain enum is defined, if it's not defined
 -- the result will be Nothing
-askECategory :: String -> Builder (Maybe Category)
+askECategory :: EnumName -> Builder (Maybe Category)
 askECategory n = asks (whereIsEDefined n)
 
 -- | Same as 'askECategory' but  with a guess that the given category also
 -- exports the enum. If this guess is correct then that category will be
 -- returned.
-askECategory' :: String -> Category -> Builder (Maybe Category)
+askECategory' :: EnumName -> Category -> Builder (Maybe Category)
 askECategory' n guess = do
     isInCat <- asks (isEInCat n guess)
     if isInCat then return $ Just guess else askECategory n
 
 -- | Asks the category where a certain function is defined, if it's not
 -- defined the result will be Nothing
-askFCategory :: String -> Builder (Maybe Category)
+askFCategory :: FuncName -> Builder (Maybe Category)
 askFCategory n = asks (whereIsFDefined n)
 
 -- | Same as 'askFCategory' but  with a guess that the given category also
 -- exports the function. If this guess is correct then that category will be
 -- returned.
-askFCategory' :: String -> Category -> Builder (Maybe Category)
+askFCategory' :: FuncName -> Category -> Builder (Maybe Category)
 askFCategory' n guess = do
     isInCat <- asks (isFInCat n guess)
     if isInCat then return $ Just guess else askFCategory n
