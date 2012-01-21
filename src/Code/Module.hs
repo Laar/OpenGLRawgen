@@ -146,7 +146,7 @@ addFunc c (n, v) = do
                        , oneLiner ptrEntry []
                             ( expVar "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
                             @@ (Lit . String $ "GL_" ++ showCategory c)
-                            @@ (Lit . String $ rawToFuncName gln))
+                            @@ (Lit . String $ "gl" ++ gln))
                        ]
 
 -- | The temporary 'CallConv' used.
@@ -164,10 +164,6 @@ replaceCallConv r = go
         go []                               = []
         go ('s':'t':'d':'c':'a':'l':'l':xs) = r ++ go xs
         go (x                          :xs) = x : go xs
-
--- | The raw version of `toFuncName'` which never removes extensions
-rawToFuncName :: String -> String
-rawToFuncName n = "gl" ++ n
 
 -- | Adds the imports, etc. needed when there is a FFI function import. The
 -- 'FuncValue's are needed to check if there is any such function.

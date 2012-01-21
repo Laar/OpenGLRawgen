@@ -52,17 +52,14 @@ import Text.OpenGL.Spec (Category)
 
 import Main.Options
 
-type EnumSpec = M.Map Category EnumMap
-type FuncSpec = M.Map Category FuncMap
-
 -----------------------------------------------------------------------------
 
 
 -- | The full representation of the specification needed to build OpenGLRaw
 data RawSpec
     = RawSpec
-    { enumSpec :: SpecMap EnumValue
-    , funcSpec :: SpecMap FuncValue
+    { enumSpec :: EnumSpec
+    , funcSpec :: FuncSpec
     }
 
 instance Monoid RawSpec where
@@ -90,6 +87,8 @@ specMapSpec sm = setPart sm mempty
 
 -- | The representation of the enum values in a category
 type EnumMap = ValueMap EnumValue
+-- | The total representation of enums in the spec.
+type EnumSpec = SpecMap EnumValue
 
 -- | The real values of an enum
 data EnumValue
@@ -112,7 +111,10 @@ enumType (Value    _ t) = t
 enumType (Redirect _ t) = t
 enumType (ReUse    _ t) = t
 
+-- | Representation of functions in a `Category`.
 type FuncMap = ValueMap FuncValue
+-- | Representation of all functions in the spec.
+type FuncSpec = SpecMap FuncValue
 
 -- | The specification of how the function is defined
 data FuncValue
