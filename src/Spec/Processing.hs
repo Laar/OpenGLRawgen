@@ -72,7 +72,7 @@ module Spec.Processing (
 
 import Control.Arrow((>>>))
 import Control.Monad.Reader
-import Control.Monad.State.Strict
+import Control.Monad.State
 
 import qualified Data.Map as M
 import Data.Maybe
@@ -96,7 +96,6 @@ cleanupSpec opts =
    \(spec, delSpec) -> -- delSpec is a specification of all deleted values.
     -- modifyPart stripEnumExtensions >>> modifyPart stripFuncExtensions >>>
     (nubSpec >>> filterEmpty >>> sortCategoryImports delSpec) spec
-
 
 -----------------------------------------------------------------------------
 
