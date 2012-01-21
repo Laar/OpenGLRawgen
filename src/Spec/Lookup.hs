@@ -21,6 +21,8 @@ module Spec.Lookup (
     isDefinedInCat,
 ) where
 
+-----------------------------------------------------------------------------
+
 import qualified Data.Map as M
 import Data.Maybe
 

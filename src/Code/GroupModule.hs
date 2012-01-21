@@ -21,16 +21,18 @@ module Code.GroupModule (
     mkGroupModule,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Control.Monad.Reader
 import Data.Maybe(mapMaybe)
 import Data.List(nub)
+
+import Text.OpenGL.Spec(Category(..), Extension)
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 import Code.Generating.ModuleBuilder
 import Code.Builder
-
-import Text.OpenGL.Spec(Category(..), Extension)
 
 -----------------------------------------------------------------------------
 
@@ -44,6 +46,8 @@ mkGroupModule cats = do
             cm <- askCategoryModule c
             addImport $ importAll cm
             addExport $ EModuleContents cm
+
+-----------------------------------------------------------------------------
 
 -- | Add all the core profiles. See also 'addCoreProfile'.
 addCoreProfiles :: RawPBuilder ()
@@ -76,6 +80,8 @@ addCoreProfile ma mi comp = do
         ensureImport tyMod
         addExport $ EModuleContents tyMod
 
+-----------------------------------------------------------------------------
+
 -- | Asks a list of all 'Extensions' that are used in the spec. This is
 -- essentially a list of all Vendors (ATI, NV, etc.), EXT and ARB
 askExtensionGroups :: RawPBuilder [Extension]
@@ -100,3 +106,5 @@ addVendorModule e = do
     mn <- askVendorModule e
     cats <- asksCategories (filter catFilter)
     defineModule mn True $ mkGroupModule cats
+
+-----------------------------------------------------------------------------

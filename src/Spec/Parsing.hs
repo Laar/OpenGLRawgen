@@ -19,6 +19,8 @@ module Spec.Parsing (
 --    extensions,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Control.Arrow((***))
 
 import Data.List

@@ -70,6 +70,8 @@ module Spec.Processing (
     addReuses,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Control.Arrow((>>>))
 import Control.Monad.Reader
 import Control.Monad.State
@@ -80,11 +82,10 @@ import Data.Traversable as T
 
 import Text.OpenGL.Spec(Category(Extension), Extension)
 
-import Spec.Lookup
---import Spec.Parsing(removeEnumExtension, removeFuncExtension)
-import Spec.RawSpec
-
 import Main.Options
+
+import Spec.Lookup
+import Spec.RawSpec
 
 -----------------------------------------------------------------------------
 
@@ -244,3 +245,5 @@ filterCategories p spec =
 ---- | Modify a specific `SpecValue` identified by it's name and Category.
 --modifyInCat :: SpecValue s => (s -> s) -> ValueName -> Category -> RawSpec -> RawSpec
 --modifyInCat f n c s = maybe s (\v -> insertInCat (f v) n c s ) $ lookupInCat n c s
+
+-----------------------------------------------------------------------------

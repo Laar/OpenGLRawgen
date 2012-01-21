@@ -27,13 +27,13 @@ import Control.Monad.Reader
 import qualified Data.Map as M
 import Data.Maybe(fromMaybe)
 
+import Text.OpenGL.Spec(showCategory)
+import Spec
+
 import Code.Generating.Utils
 import Language.Haskell.Exts.Syntax
 import Code.Builder
 import Code.Generating.ModuleBuilder
-
-import Text.OpenGL.Spec(showCategory)
-import Spec
 
 -----------------------------------------------------------------------------
 

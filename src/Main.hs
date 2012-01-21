@@ -16,20 +16,19 @@ module Main (
     main
 ) where
 
+-----------------------------------------------------------------------------
+
 import System.Directory
 
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
-
 import Code.Generating.Package
-
-import Spec
-import Spec.Parsing(parseSpecs, parseReuses)
 
 import Code.Raw
 import Code.Module(replaceCallConv)
-
 import Main.Options
+import Spec
+import Spec.Parsing(parseSpecs, parseReuses)
 
 -----------------------------------------------------------------------------
 
@@ -79,3 +78,5 @@ processReuses o spec = do
                         -- unwraping the error layer
                         . either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id
                         . parseReuses $ reuses
+
+-----------------------------------------------------------------------------

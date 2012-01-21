@@ -17,24 +17,25 @@ module Code.Raw (
     makeRaw,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Control.Monad.Reader
 import Data.Function(on)
 import Data.List(sortBy)
 
-import Spec
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.ModuleBuilder
 import Code.Generating.Package
 
-import Code.Builder
-import Code.GroupModule
-import Code.Module
-
+import Main.Options
+import Spec
 import Text.OpenGL.Spec(Category(..))
 
+import Code.Builder
 import Code.Compatibility
-import Main.Options
+import Code.GroupModule
+import Code.Module
 
 -----------------------------------------------------------------------------
 
@@ -54,6 +55,8 @@ buildRaw = do
     addLatestProfileToRaw
 
     whenOption (hasFlag RawCompatibility) addCompatibilityModules
+
+-----------------------------------------------------------------------------
 
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()
@@ -81,3 +84,5 @@ addLatestProfileToRaw = do
     where
         catRanking (Version ma mi False) = (-ma, -mi)
         catRanking _                     = (1, 1)
+
+-----------------------------------------------------------------------------

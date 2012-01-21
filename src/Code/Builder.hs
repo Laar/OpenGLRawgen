@@ -249,3 +249,5 @@ recapUnderscores :: String -> String
 recapUnderscores []             = []
 recapUnderscores ('_' : x : xs) = toUpper x : recapUnderscores xs
 recapUnderscores (      x : xs) =         x : recapUnderscores xs
+
+-----------------------------------------------------------------------------

@@ -40,6 +40,8 @@ module Spec.RawSpec (
     isBitfieldName,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Control.Monad(msum)
 
 import Data.List(union, stripPrefix, isPrefixOf, isInfixOf, isSuffixOf)
@@ -252,6 +254,5 @@ isBitfieldName name =
         [ "_BIT" `isSuffixOf` name'
         , ("_ALL_" `isInfixOf` name' || "ALL_" `isPrefixOf` name') && "_BITS" `isSuffixOf` name'
         ]
-
 
 -----------------------------------------------------------------------------

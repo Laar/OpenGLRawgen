@@ -28,6 +28,8 @@ module Main.Options (
     getOptions,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Data.Maybe
 import System.FilePath((</>))
 
@@ -35,7 +37,6 @@ import Text.OpenGL.Spec(Extension)
 
 import System.Console.GetOpt
 import System.Environment(getArgs)
-
 
 -----------------------------------------------------------------------------
 
@@ -94,6 +95,8 @@ data RawGenFlag
 mkOptions :: ([RawGenOptions -> IO RawGenOptions], [String]) -> IO RawGenOptions
 mkOptions (opts, _) = foldl (>>=) (return defaultOptions) opts
 
+-----------------------------------------------------------------------------
+
 -- | Represents the options given to the generator
 data RawGenOptions
     = RawGenOptions
@@ -124,6 +127,8 @@ defaultOptions
     , rgEGrouping   = True
     }
 
+-----------------------------------------------------------------------------
+
 -- | Query whether a flag has been given on the commandline.
 hasFlag :: RawGenFlag -> RawGenOptions -> Bool
 hasFlag f o = f `elem` rgFlags o
@@ -149,3 +154,5 @@ stripNames = rgStripName
 
 mkExtensionGroups :: RawGenOptions -> Bool
 mkExtensionGroups = rgEGrouping
+
+-----------------------------------------------------------------------------
