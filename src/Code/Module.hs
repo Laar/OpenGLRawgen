@@ -73,7 +73,7 @@ addEnum c (n, t) = do
 -- the same category (and therefor preventing imports from the same module)
 addImport' :: Category -> EnumName -> Builder ()
 addImport' c iname = do
-    ic <- askECategory iname >>= return . fromMaybe (error $ "addEnum: Couldn't find: " ++ show iname)
+    ic <- askCategory iname >>= return . fromMaybe (error $ "addEnum: Couldn't find: " ++ show iname)
     when (ic /= c) $ do
         -- only here translate it as the category lookup should be done on the original name
         iname' <- unwrapNameBuilder iname
@@ -108,7 +108,7 @@ addFunc c (n, v) = do
     where
         -- Adds an import, if it's nessacery, for the function
         addReuse guessc name = do
-            ic <- askFCategory' n guessc
+            ic <- askCategory' n guessc
                 >>= return . fromMaybe (error $ "addFunc: Couldn't find : " ++ show n)
             when (ic /= c) $ askCategoryPImport ic [IVar $ name] >>= addImport
         -- Adds the declaration used to import this function, there are three

@@ -75,7 +75,6 @@ import Control.Monad.Reader
 import Control.Monad.State
 
 import qualified Data.Map as M
-import Data.Maybe
 import Data.Monoid
 import Data.Traversable as T
 

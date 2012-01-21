@@ -20,9 +20,7 @@ module Spec.Parsing (
 ) where
 
 import Control.Arrow((***))
---import Control.Monad.State as S
 
---import Data.Function
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
@@ -100,7 +98,7 @@ pGLValue = tokenPrim showValue nextPos testValue
 -- TODO : try to find a better way of determining the valuetype of the enum
         -- name in the second doesn't need to be extension scrapped
         testValue (Enum name value _) = Just (wrapName name, partialValue value . valueType $ name)
-        testValue (Use ucat name)     = Just (wrapName name, Redirect ucat .  valueType $ name)
+        testValue (Use ucat name)     = Just (wrapName name, Redirect ucat . valueType $ name)
         testValue _                   = Nothing
         nextPos sp  _ _ = incSourceColumn sp 1
         partialValue (Hex v _ _)    = Value  v

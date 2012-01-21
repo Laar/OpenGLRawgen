@@ -16,25 +16,27 @@
 
 module Spec.RawSpec (
 
-    -- * The 'RawSpec' and associated types and functions
+    -- * The `RawSpec` and associated types and functions
+    -- ** The `RawSpec` and associates
     RawSpec(),
     Category() , -- ^ Convenience
     SpecValue(..),
     ValueMap, SpecMap,
 
-    EnumSpec, FuncSpec,
-
-    EnumValue(..), EnumName,
-    FuncValue(..), FuncName,
+    -- ** The contents of the spec
+    EnumValue(..), EnumName, EnumSpec,
+    FuncValue(..), FuncName, FuncSpec,
 
     enumType,
 
+    -- ** Creating the rawspec
     singletonSpec, categoryRawSpec, valueMapSpec, specMapSpec,
 
     -- * General functions on 'RawSpec'
     allCategories,
     categoryFuncs, categoryEnums,
 
+    -- * Exported for parsing
     isBitfieldName,
 ) where
 
@@ -206,12 +208,15 @@ instance SpecValue FuncValue where
 
 -----------------------------------------------------------------------------
 
+-- | Removes the extension suffix from a function name.
 removeFuncExtension :: String -> String
 removeFuncExtension = removeExtension extensions
 
+-- | Removes the extension suffix from an enum name.
 removeEnumExtension :: String -> String
 removeEnumExtension = removeExtension (map ('_':) extensions)
 
+-- | Removes the extension (one from the list) from a name, if it has one.
 removeExtension :: [String] -> String -> String
 removeExtension exts str =
     let strr = reverse str
@@ -237,6 +242,7 @@ extensions =
     , "WIN"
     ]
 
+-- | Check wheter the name for an enum is a bitfield or an enum.
 isBitfieldName :: String -> Bool
 isBitfieldName name =
     let name' = removeEnumExtension name

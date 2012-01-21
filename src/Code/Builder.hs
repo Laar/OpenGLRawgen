@@ -48,8 +48,7 @@ module Code.Builder (
     isExposedCategory,
     askCorePath,
     asksCategories,
-    askECategory, askECategory',
-    askFCategory, askFCategory',
+    askCategory, askCategory',
 
 ) where
 
@@ -146,31 +145,19 @@ ensureImport m = do
 
 -----------------------------------------------------------------------------
 
--- | Asks the category where a certain enum is defined, if it's not defined
--- the result will be Nothing
-askECategory :: EnumName -> Builder (Maybe Category)
-askECategory n = asks (whereIsEDefined n)
-
--- | Same as 'askECategory' but  with a guess that the given category also
--- exports the enum. If this guess is correct then that category will be
--- returned.
-askECategory' :: EnumName -> Category -> Builder (Maybe Category)
-askECategory' n guess = do
-    isInCat <- asks (isEInCat n guess)
-    if isInCat then return $ Just guess else askECategory n
-
--- | Asks the category where a certain function is defined, if it's not
+-- | Asks the category where a certain `ValueName` is defined, if it's not
 -- defined the result will be Nothing
-askFCategory :: FuncName -> Builder (Maybe Category)
-askFCategory n = asks (whereIsFDefined n)
+askCategory :: SpecValue sv => ValueName sv -> Builder (Maybe Category)
+askCategory n = asks (whereIsDefined' n)
 
--- | Same as 'askFCategory' but  with a guess that the given category also
--- exports the function. If this guess is correct then that category will be
+-- | Same as 'askCategory' but  with a guess that the given category also
+-- exports the value. If this guess is correct then that category will be
 -- returned.
-askFCategory' :: FuncName -> Category -> Builder (Maybe Category)
-askFCategory' n guess = do
-    isInCat <- asks (isFInCat n guess)
-    if isInCat then return $ Just guess else askFCategory n
+askCategory' :: SpecValue sv
+    => ValueName sv -> Category -> Builder (Maybe Category)
+askCategory' n guess = do
+    inCat <- asks (isInCat n guess)
+    if inCat then return $ Just guess else askCategory n
 
 -----------------------------------------------------------------------------
 
