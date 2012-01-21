@@ -50,7 +50,7 @@ buildRaw :: RawPBuilder ()
 buildRaw = do
     buildRawImports
     addCoreProfiles
-    addVendorModules
+    whenOption mkExtensionGroups addVendorModules
     addLatestProfileToRaw
 
     whenOption (hasFlag RawCompatibility) addCompatibilityModules

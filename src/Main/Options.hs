@@ -23,6 +23,7 @@ module Main.Options (
 
     enumextFile, glFile, tmFile,
     freuseFile, ereuseFile,
+    stripNames, mkExtensionGroups,
     -- * Retrieving the options
     getOptions,
 ) where
@@ -53,7 +54,7 @@ options =
     [ Option ['o'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
-        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No vendor modules for the specified vendor"
+        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     , Option ['e'] ["enumext"]
@@ -68,6 +69,14 @@ options =
         (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The enum reuse file"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
+    , Option ['s'] ["strip"]
+        (NoArg $ \r -> return r{rgStripName = True, rgEGrouping = False}) "Enables striping of the extension suffixes from names, implies -G"
+    , Option ['S'] ["no-strip"]
+        (NoArg $ \r -> return r{rgStripName = False}) "Disables striping of the extension suffixes from names"
+    , Option ['g'] ["groups"]
+        (NoArg $ \r -> return r{rgEGrouping = True}) "Disables the generation of Extension group modules"
+    , Option ['G'] ["no-groups"]
+        (NoArg $ \r -> return r{rgEGrouping = False}) "Disables the generation of Extension group modules"
     ]
     where
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
@@ -96,6 +105,8 @@ data RawGenOptions
     , rgEReuse      :: Maybe FilePath   -- ^ The location of the enum reuse file.
     , rgFReuse      :: Maybe FilePath   -- ^ The location of the function reuse file.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
+    , rgStripName   :: Bool             -- ^ Strip the names of extensions
+    , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
     }
 
 defaultOptions :: RawGenOptions
@@ -109,6 +120,8 @@ defaultOptions
     , rgEReuse      = Nothing
     , rgFReuse      = Nothing
     , rgFilesDir    = Nothing
+    , rgStripName   = False
+    , rgEGrouping   = True
     }
 
 -- | Query whether a flag has been given on the commandline.
@@ -130,3 +143,9 @@ ereuseFile = getFile rgFReuse "reusefuncs"
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =
     fromMaybe (maybe id (</>) (rgFilesDir rgo) $ name) $ directGet rgo
+
+stripNames :: RawGenOptions -> Bool
+stripNames = rgStripName
+
+mkExtensionGroups :: RawGenOptions -> Bool
+mkExtensionGroups = rgEGrouping

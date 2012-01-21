@@ -35,6 +35,7 @@ import Code.Generating.ModuleBuilder
 import Text.OpenGL.Spec(showCategory)
 import Spec
 import Spec.Parsing(removeEnumExtension, removeFuncExtension)
+import Main.Options
 
 -----------------------------------------------------------------------------
 
@@ -57,16 +58,17 @@ buildModule c = do
 -- current category. This information is needed to prevent import loops.
 addEnum :: Category -> (String, EnumValue) -> Builder ()
 addEnum c (n, t) = do
+    name <- toEnumName n
     addExport $ (EVar . UnQual) name
     case t of
         Redirect _ _ -> addImport' c n
-        Value val ty -> addValue (Lit $ Int val) ty
+        Value val ty -> addValue (Lit $ Int val) ty name
         ReUse reuseval ty -> do
-                    addValue (eVar $ toEnumName reuseval) ty
+                    reuseName <- toEnumName reuseval
+                    addValue (eVar $ reuseName) ty name
                     addImport' c reuseval
     where
-        name  = toEnumName n
-        addValue val ty = do
+        addValue val ty name = do
             addDecls $ enumDecl name val ty
 
 -- | Adds an import for a value, the category is needed to check it's not in
@@ -74,7 +76,10 @@ addEnum c (n, t) = do
 addImport' :: Category -> String -> Builder ()
 addImport' c iname = do
     ic <- askECategory iname >>= return . fromMaybe (error $ "addEnum: Couldn't find: " ++ show iname)
-    when (ic /= c) $ askCategoryPImport ic [IVar $ toEnumName iname] >>= addImport
+    when (ic /= c) $ do
+        -- only here translate it as the category lookup should be done on the original name
+        iname' <- toEnumName iname
+        askCategoryPImport ic [IVar iname'] >>= addImport
 
 -- | The declerations to define the enum, which will look like
 -- > enumName :: enumType
@@ -85,8 +90,11 @@ enumDecl name valExp vtype =
     , oneLiner name [] valExp]
 
 -- | Convert a string into to enum Name used.
-toEnumName :: String -> Name
-toEnumName n = Ident $ "gl_" ++ removeEnumExtension n
+toEnumName :: String -> Builder Name
+toEnumName n = do
+    sn <- asksOption stripNames
+    let n' = if sn then removeEnumExtension n else n
+    return $ Ident $ "gl_" ++ n'
 
 
 -- | Adds the imports needed when there is at least a single enumvalue
@@ -102,14 +110,14 @@ addCondEImports evs = when (any isDefine evs) $ do
 -- import of the local category.
 addFunc :: Category -> (String, FuncValue) -> Builder ()
 addFunc c (n, v) = do
-    addExport $ (EVar . UnQual) name
+    name <- toFuncName' n
+    addExport . EVar . unQual $  name
     case v of
-        RawFunc gln ty _ -> addFFIDecls gln ty
-        RedirectF guessc -> addReuse guessc
+        RawFunc gln ty _ -> addFFIDecls gln ty name
+        RedirectF guessc -> addReuse guessc (Ident name)
     where
-        name = toFuncName n
         -- Adds an import, if it's nessacery, for the function
-        addReuse guessc = do
+        addReuse guessc name = do
             ic <- askFCategory' n guessc
                 >>= return . fromMaybe (error $ "addFunc: Couldn't find : " ++ show n)
             when (ic /= c) $ askCategoryPImport ic [IVar $ name] >>= addImport
@@ -117,10 +125,11 @@ addFunc c (n, v) = do
         -- declerations for each function. One for the FFI import, one for the
         -- retrieving the 'FuncPtr' to the functions and one for the real
         -- invoker used to call the GL-function.
-        addFFIDecls gln ty = do
+        addFFIDecls gln ty name = do
             emod <- askExtensionModule
-            let dynEntry = Ident $ "dyn_" ++ toFuncName' n
-                ptrEntry = Ident $ "ptr_" ++ toFuncName' n
+            let dynEntry = Ident $ "dyn_" ++ name
+                ptrEntry = Ident $ "ptr_" ++ name
+                name' = Ident name
             -- | Adds the FFI import decl of the form
             --
             -- > foreign import stdcall unsafe "dynamic" dyn_funcName ::
@@ -131,8 +140,8 @@ addFunc c (n, v) = do
             --
             -- > funcName :: FuncType -> IO FuncResultType
             -- > funcName = dyn_FuncName ptr_FuncName
-            addDecls $ [oneTypeSig name ty,
-                        oneLiner name [] (eVar dynEntry @@ eVar ptrEntry)
+            addDecls $ [oneTypeSig name' ty,
+                        oneLiner name' [] (eVar dynEntry @@ eVar ptrEntry)
                        ]
             -- | Adds the function used for the function pointer
             --
@@ -145,7 +154,7 @@ addFunc c (n, v) = do
                        , oneLiner ptrEntry []
                             ( expVar "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
                             @@ (Lit . String $ "GL_" ++ showCategory c)
-                            @@ (Lit . String $ toFuncName' gln))
+                            @@ (Lit . String $ rawToFuncName gln))
                        ]
 
 -- | The temporary 'CallConv' used.
@@ -165,12 +174,15 @@ replaceCallConv r = go
         go (x                          :xs) = x : go xs
 
 -- | Convert a String into the name used for the function
-toFuncName :: String -> Name
-toFuncName = Ident . toFuncName'
+toFuncName' :: String -> Builder String
+toFuncName' n = do
+    sn <- asksOption stripNames
+    let n' = if sn then removeFuncExtension n else n
+    return $ rawToFuncName n'
 
--- | See 'toFuncName'
-toFuncName' :: String -> String
-toFuncName' n = "gl" ++ removeFuncExtension n
+-- | The raw version of `toFuncName'` which never removes extensions
+rawToFuncName :: String -> String
+rawToFuncName n = "gl" ++ n
 
 -- | Adds the imports, etc. needed when there is a FFI function import. The
 -- 'FuncValue's are needed to check if there is any such function.
