@@ -52,7 +52,7 @@ buildModule c = do
 
 -----------------------------------------------------------------------------
 
--- Adds the enum value pair to the current module, the category is the
+-- | Adds the enum value pair to the current module, the category is the
 -- current category. This information is needed to prevent import loops.
 addEnum :: Category -> (EnumName, EnumValue) -> Builder ()
 addEnum c (n, t) = do
@@ -122,20 +122,20 @@ addFunc c (n, v) = do
             -- an unsafe function.
             let dynEntry = Ident $ "dyn_" ++ unname name
                 ptrEntry = Ident $ "ptr_" ++ unname name
-            -- | Adds the FFI import decl of the form
+            -- Adds the FFI import decl of the form
             --
             -- > foreign import stdcall unsafe "dynamic" dyn_funcName ::
             -- >   InvokerModulePath.Invoker (FuncType -> IO FuncResultType)
             addDecl $  ForImp noSrcLoc callConv PlayRisky "dynamic" dynEntry
                             (TyApp (TyCon . Qual emod $ Ident "Invoker") ty)
-            -- | Adds the used/exported function.
+            -- Adds the used/exported function.
             --
             -- > funcName :: FuncType -> IO FuncResultType
             -- > funcName = dyn_FuncName ptr_FuncName
             addDecls $ [oneTypeSig name ty,
                         oneLiner name [] (eVar dynEntry @@ eVar ptrEntry)
                        ]
-            -- | Adds the function used for the function pointer
+            -- Adds the function used for the function pointer
             --
             -- > {-# NOINLINE ptr_funcName #-}
             -- > ptr_FuncName :: FuncPtr a
