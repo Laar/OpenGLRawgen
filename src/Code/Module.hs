@@ -32,7 +32,7 @@ import Language.Haskell.Exts.Syntax
 import Code.Builder
 import Code.Generating.ModuleBuilder
 
-import Text.OpenGL.Spec(Category, showCategory)
+import Text.OpenGL.Spec(showCategory)
 import Spec
 import Spec.Parsing(removeEnumExtension, removeFuncExtension)
 

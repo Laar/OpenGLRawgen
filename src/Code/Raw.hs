@@ -34,24 +34,25 @@ import Code.Module
 import Text.OpenGL.Spec(Category(..))
 
 import Code.Compatibility
+import Main.Options
 
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the 'RawSpec'.
-makeRaw :: RawSpec -> Package Module
-makeRaw s =
-    let packbuild = runReader (execBuilder emptyBuilder buildRaw) s
+makeRaw :: RawGenOptions -> RawSpec -> Package Module
+makeRaw opts s =
+    let packbuild = runReader (execBuilder emptyBuilder (buildRaw opts)) s
     in package packbuild
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
-buildRaw :: RawPBuilder ()
-buildRaw = do
+buildRaw :: RawGenOptions -> RawPBuilder ()
+buildRaw opts = do
     buildRawImports
     addCoreProfiles
     addVendorModules
     addLatestProfileToRaw
-    addCompatibilityModules
+    when (hasFlag RawCompatibility opts) addCompatibilityModules
 
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()

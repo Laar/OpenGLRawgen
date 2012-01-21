@@ -32,8 +32,6 @@ module Spec.Lookup (
 import qualified Data.Map as M
 import Data.Maybe
 
-import Text.OpenGL.Spec (Category)
-
 import Spec.RawSpec
 
 -----------------------------------------------------------------------------

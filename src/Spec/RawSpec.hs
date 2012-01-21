@@ -17,6 +17,7 @@ module Spec.RawSpec (
 
     -- * The 'RawSpec' and associated types and functions
     RawSpec(),
+    Category() , -- ^ Convenience
     SpecValue(..),
     ValueName, ValueMap, SpecMap,
 
@@ -27,7 +28,7 @@ module Spec.RawSpec (
 
     enumType,
 
-    singletonSpec, categoryRawSpec, valueMapSpec,
+    singletonSpec, categoryRawSpec, valueMapSpec, specMapSpec,
 
     -- * General functions on 'RawSpec'
     allCategories,
@@ -69,11 +70,13 @@ singletonSpec c vn sv = valueMapSpec c $ M.singleton vn sv
 
 -- | Create a 'RawSpec' from all the values in a specific 'Category'.
 categoryRawSpec :: SpecValue sv => Category->  [(ValueName, sv)] -> RawSpec
-categoryRawSpec c vals = setPart specMap mempty
-    where specMap = M.singleton c $ M.fromList vals
+categoryRawSpec c vals = specMapSpec . M.singleton c $ M.fromList vals
 
 valueMapSpec :: SpecValue sv => Category -> ValueMap sv -> RawSpec
 valueMapSpec c sv = setPart (M.singleton c sv) mempty
+
+specMapSpec :: SpecValue sv => SpecMap sv -> RawSpec
+specMapSpec sm = setPart sm mempty
 
 -----------------------------------------------------------------------------
 
