@@ -25,6 +25,9 @@ module Code.Builder (
     addCategoryAndActivate,
     ensureImport,
 
+    -- * Options related helpers
+    asksOption, whenOption, unlessOption,
+
     -- * Ask-ers for module locations
     askBaseModule,
     askTypesInternalModule,
@@ -63,21 +66,38 @@ import Code.Generating.ModuleBuilder
 
 import Text.OpenGL.Spec as S
 import Spec
+import Main.Options
 
 -----------------------------------------------------------------------------
 
 -- | Builder for building modules from the spec.
-type Builder = ModuleBuilder Module (Reader RawSpec)
+type Builder = ModuleBuilder Module (ReaderT RawSpec (Reader RawGenOptions))
 -- | Builder to build the package from the spec.
-type RawPBuilder a = PackageBuilder Module (Reader RawSpec) a
+type RawPBuilder a = PackageBuilder Module (ReaderT RawSpec (Reader RawGenOptions)) a
 
 -- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
 -- a function can be used in both `Builder` and `RawPBuilder`.
-type GBuilder bm a = ModuleBuilder bm (Reader RawSpec) a
+type GBuilder bm a = ModuleBuilder bm (ReaderT RawSpec (Reader RawGenOptions)) a
 
 -- | The empty Package builder, with only the baseModule.
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
+
+-----------------------------------------------------------------------------
+
+-- | Retrieves an option from the builder.
+asksOption :: BuildableModule bm => (RawGenOptions -> a) -> GBuilder bm a
+asksOption = lift . lift . asks
+
+-- | Lifted version of `when`, to conditionally execute a builder
+whenOption :: BuildableModule bm
+    => (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
+whenOption f b = asksOption f >>= \p -> when p b
+
+-- | Lifted version of `unless`, to conditionally execute a builder
+unlessOption :: BuildableModule bm
+    => (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
+unlessOption f b = asksOption f >>= \p -> unless p b
 
 -----------------------------------------------------------------------------
 
