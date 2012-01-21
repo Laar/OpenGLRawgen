@@ -41,18 +41,19 @@ import Main.Options
 -- | Build the OpenGLRaw Package from the 'RawSpec'.
 makeRaw :: RawGenOptions -> RawSpec -> Package Module
 makeRaw opts s =
-    let packbuild = runReader (execBuilder emptyBuilder (buildRaw opts)) s
+    let packbuild = runReader (runReaderT (execBuilder emptyBuilder buildRaw) s) opts
     in package packbuild
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
-buildRaw :: RawGenOptions -> RawPBuilder ()
-buildRaw opts = do
+buildRaw :: RawPBuilder ()
+buildRaw = do
     buildRawImports
     addCoreProfiles
     addVendorModules
     addLatestProfileToRaw
-    when (hasFlag RawCompatibility opts) addCompatibilityModules
+
+    whenOption (hasFlag RawCompatibility) addCompatibilityModules
 
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()
