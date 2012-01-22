@@ -56,6 +56,7 @@ module Code.Builder (
 
 import Control.Monad.Reader
 import Data.Char
+import Data.List(partition)
 import Data.Maybe
 
 import Language.Haskell.Exts.Syntax
@@ -195,7 +196,7 @@ categoryModule (Version ma mi d) =
     ModuleName $ corePath <.> "Internal"
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n _) =
-    ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName ex n
+    ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName n
 categoryModule (S.Name n) = error $ "Category " ++ upperFirst (show n)
 
 -- | query whether or not the module of a certain category is an exposed
@@ -241,13 +242,41 @@ upperFirst (c:cs) = toUpper c : cs
 -- | Some module names don't start with a letter, this is corrected by adding
 -- the name of the extension which, at least with the current spec, does
 -- start with a letter.
-correctName :: Extension -> String -> String
-correctName ex n | isAlpha $ head n = upperFirst $            recapUnderscores n
-                 | otherwise        = upperFirst $ show ex ++ recapUnderscores n
+correctName :: String -> String
+correctName [] = []
+correctName (n:ns)
+    | isAlpha n = toUpper n : recapUnderscores ns
+    | otherwise =
+         let (start, rest) = partition (\c -> not $ c `elem` legalChars || c == '_') ns
+             nameStart = concatMap spellout (n:start)
+             legalize c | c `elem` legalChars = [c]
+                        | otherwise           = spellout c
+             nameEnd = concatMap legalize $ recapUnderscores rest
+         in nameStart ++ nameEnd
 
+-- | Removes underscores and capitalizes the letter following an underscore
 recapUnderscores :: String -> String
 recapUnderscores []             = []
 recapUnderscores ('_' : x : xs) = toUpper x : recapUnderscores xs
 recapUnderscores (      x : xs) =         x : recapUnderscores xs
+
+-- | List of legal `Char`s in a module name
+legalChars :: [Char]
+legalChars = ['A'..'z'] ++ "'_"
+
+-- | Spells illegal `Char`s as words, starting with a capital letter.
+spellout :: Char -> String
+spellout c = case c of
+    '0' -> "Zero"
+    '1' -> "One"
+    '2' -> "Two"
+    '3' -> "Three"
+    '4' -> "Four"
+    '5' -> "Five"
+    '6' -> "Six"
+    '7' -> "Seven"
+    '8' -> "Eight"
+    '9' -> "Nine"
+    _   -> error $ "spellout: not yet implemented for '" ++ c : "'."
 
 -----------------------------------------------------------------------------
