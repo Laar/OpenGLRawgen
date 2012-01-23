@@ -63,7 +63,7 @@ addEnum c (n, t) = do
         Value val ty -> addValue (Lit $ Int val) ty name
         ReUse reuseval ty -> do
                     reuseName <- unwrapNameBuilder reuseval
-                    addValue (eVar $ reuseName) ty name
+                    addValue (var $ reuseName) ty name
                     addImport' c reuseval
     where
         addValue val ty name = do
@@ -133,7 +133,7 @@ addFunc c (n, v) = do
             -- > funcName :: FuncType -> IO FuncResultType
             -- > funcName = dyn_FuncName ptr_FuncName
             addDecls $ [oneTypeSig name ty,
-                        oneLiner name [] (eVar dynEntry @@ eVar ptrEntry)
+                        oneLiner name [] (var dynEntry @@ var ptrEntry)
                        ]
             -- Adds the function used for the function pointer
             --
@@ -142,9 +142,9 @@ addFunc c (n, v) = do
             -- > ptr_FuncName = unsafePerformIO $
             -- >    ExtensionEntryModulePath.getExtensionEntry "GL_FUNC_CATEGORY" "funcName"
             addDecls $ [ InlineSig noSrcLoc False AlwaysActive (UnQual ptrEntry)
-                       , oneTypeSig ptrEntry (TyApp (tyCon "FunPtr") (tyVar "a"))
+                       , oneTypeSig ptrEntry (TyApp (tyCon' "FunPtr") (tyVar' "a"))
                        , oneLiner ptrEntry []
-                            ( expVar "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
+                            ( var' "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
                             @@ (Lit . String $ "GL_" ++ showCategory c)
                             @@ (Lit . String $ "gl" ++ gln))
                        ]

@@ -106,7 +106,7 @@ pGLValue = tokenPrim showValue nextPos testValue
         partialValue (Hex v _ _)    = Value  v
         partialValue (Deci i)       = Value $ fromIntegral i
         partialValue (Identifier i) = ReUse (wrapName . fromMaybe i . stripPrefix "GL_" $ i)
-        valueType name = if isBitfieldName name then tyCon "GLbitfield" else tyCon "GLenum"
+        valueType name = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
 
 -----------------------------------------------------------------------------
 
@@ -152,71 +152,71 @@ pReuseLine = (,) <$> (pCategory <* blanks) <*> (sepBy pCategory (char ',' *> bla
 -- Language.Haskell.Exts
 convertRetType :: ReturnType -> Type
 convertRetType rt = addIOType $ case rt of
-    Boolean      -> tyCon "GLboolean"
-    BufferOffset -> tyCon "GLsizeiptr"
-    ErrorCode    -> tyCon "GLenum" -- TODO lookup
-    FramebufferStatus -> tyCon "GLenum" -- lookup
-    GLEnum       -> tyCon "GLenum"
-    HandleARB    -> tyCon "GLuint" -- lookup
-    Int32        -> tyCon "GLint"
-    S.List       -> tyCon "GLuint" -- lookup
-    S.String     -> TyApp (tyCon "Ptr") (tyCon "GLchar")
-    Sync         -> tyCon "GLsync"
-    UInt32       -> tyCon "GLuint"
+    Boolean      -> tyCon' "GLboolean"
+    BufferOffset -> tyCon' "GLsizeiptr"
+    ErrorCode    -> tyCon' "GLenum" -- TODO lookup
+    FramebufferStatus -> tyCon' "GLenum" -- lookup
+    GLEnum       -> tyCon' "GLenum"
+    HandleARB    -> tyCon' "GLuint" -- lookup
+    Int32        -> tyCon' "GLint"
+    S.List       -> tyCon' "GLuint" -- lookup
+    S.String     -> TyApp (tyCon' "Ptr") (tyCon' "GLchar")
+    Sync         -> tyCon' "GLsync"
+    UInt32       -> tyCon' "GLuint"
     Void         -> unit_tycon
-    VoidPointer  -> TyApp (tyCon "Ptr") (tyVar "a") -- TODO improve the type variable
-    VdpauSurfaceNV -> tyCon "GLintptr" -- lookup
+    VoidPointer  -> TyApp (tyCon' "Ptr") (tyVar' "a") -- TODO improve the type variable
+    VdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
 
 -- | Convert the type supplied by openGL-api to a type useable for
 -- Language.Haskell.Exts
 lookupType :: String -> Passing -> TypeMap -> Type
-lookupType t _ _ | t == "cl_context" = tyCon "CLcontext"
-                 | t == "cl_event"   = tyCon "CLevent"
+lookupType t _ _ | t == "cl_context" = tyCon' "CLcontext"
+                 | t == "cl_event"   = tyCon' "CLevent"
 lookupType t p tm = case M.lookup t tm of
     Just (t', ptr) -> addPointer (p /= S.Value) . addPointer ptr $ convertType t'
     Nothing -> error $ "lookupType: Type not found " ++ show t
     where
         addPointer :: Bool -> Type -> Type
-        addPointer addptr = if addptr then TyApp (tyCon "Ptr") else id
+        addPointer addptr = if addptr then TyApp (tyCon' "Ptr") else id
         convertType t' = case t' of
-            Star        -> TyApp (tyCon "Ptr") (tyVar "a")
-            GLbitfield  -> tyCon "GLbitfield"
-            GLboolean   -> tyCon "GLboolean"
-            GLbyte      -> tyCon "GLbyte"
-            GLchar      -> tyCon "GLchar"
-            GLcharARB   -> tyCon "GLchar"
-            GLclampd    -> tyCon "GLclampd"
-            GLclampf    -> tyCon "GLclampf"
-            GLdouble    -> tyCon "GLdouble"
-            GLenum      -> tyCon "GLenum"
+            Star        -> TyApp (tyCon' "Ptr") (tyVar' "a")
+            GLbitfield  -> tyCon' "GLbitfield"
+            GLboolean   -> tyCon' "GLboolean"
+            GLbyte      -> tyCon' "GLbyte"
+            GLchar      -> tyCon' "GLchar"
+            GLcharARB   -> tyCon' "GLchar"
+            GLclampd    -> tyCon' "GLclampd"
+            GLclampf    -> tyCon' "GLclampf"
+            GLdouble    -> tyCon' "GLdouble"
+            GLenum      -> tyCon' "GLenum"
 --            GLenumWithTrailingComma -- removed from the source
-            GLfloat     -> tyCon "GLfloat"
+            GLfloat     -> tyCon' "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> tyCon "GLushort" -- lookup
-            GLhandleARB -> tyCon "GLhandle"--tyCon "GLuint" -- lookup
-            GLint       -> tyCon "GLint"
-            GLint64     -> tyCon "GLint64"
-            GLint64EXT  -> tyCon "GLint64"
-            GLintptr    -> tyCon "GLintptr"
-            GLintptrARB -> tyCon "GLintptr"
-            GLshort     -> tyCon "GLshort"
-            GLsizei     -> tyCon "GLsizei"
-            GLsizeiptr  -> tyCon "GLsizeiptr"
-            GLsizeiptrARB -> tyCon "GLsizeiptr"
-            GLsync      -> tyCon "GLsync"
-            GLubyte     -> tyCon "GLubyte"
+            GLhalfNV    -> tyCon' "GLushort" -- lookup
+            GLhandleARB -> tyCon' "GLhandle"--tyCon' "GLuint" -- lookup
+            GLint       -> tyCon' "GLint"
+            GLint64     -> tyCon' "GLint64"
+            GLint64EXT  -> tyCon' "GLint64"
+            GLintptr    -> tyCon' "GLintptr"
+            GLintptrARB -> tyCon' "GLintptr"
+            GLshort     -> tyCon' "GLshort"
+            GLsizei     -> tyCon' "GLsizei"
+            GLsizeiptr  -> tyCon' "GLsizeiptr"
+            GLsizeiptrARB -> tyCon' "GLsizeiptr"
+            GLsync      -> tyCon' "GLsync"
+            GLubyte     -> tyCon' "GLubyte"
             ConstGLubyte -> error "cubyte"
-            GLuint      -> tyCon "GLuint"
-            GLuint64    -> tyCon "GLuint64"
-            GLuint64EXT -> tyCon "GLuint64"
+            GLuint      -> tyCon' "GLuint"
+            GLuint64    -> tyCon' "GLuint64"
+            GLuint64EXT -> tyCon' "GLuint64"
             GLUnurbs    -> error "Unurbs"
             GLUquadric  -> error "Uquadric"
-            GLushort    -> tyCon "GLushort"
+            GLushort    -> tyCon' "GLushort"
             GLUtesselator -> error  "tesselator"
-            GLvoid      -> (tyVar "a")
-            GLvoidStarConst -> TyApp (tyCon "Ptr") (tyVar "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
-            GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
-            GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
-            GLdebugprocAMD -> tyCon "GLdebugprocAMD" -- lookup
+            GLvoid      -> (tyVar' "a")
+            GLvoidStarConst -> TyApp (tyCon' "Ptr") (tyVar' "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
+            GLvdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
+            GLdebugprocARB -> tyCon' "GLdebugprocARB" -- lookup
+            GLdebugprocAMD -> tyCon' "GLdebugprocAMD" -- lookup
 
 -----------------------------------------------------------------------------
