@@ -25,7 +25,7 @@ import Data.List(sortBy)
 
 
 import Language.Haskell.Exts.Syntax
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 import Code.Generating.Package
 
 import Main.Options
@@ -41,9 +41,9 @@ import Code.Module
 
 -- | Build the OpenGLRaw Package from the 'RawSpec'.
 makeRaw :: RawGenOptions -> RawSpec -> Package Module
-makeRaw opts s =
-    let packbuild = runReader (runReaderT (execBuilder emptyBuilder buildRaw) s) opts
-    in package packbuild
+makeRaw opts spec =
+    let packbuild = execRawPBuilder opts spec emptyBuilder buildRaw
+    in packages packbuild
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
@@ -78,9 +78,10 @@ addLatestProfileToRaw = do
     Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
-    liftModBuilder' bm $ do
+    _ <- liftModBuilder bm $ do
         ensureImport latestProf
         addExport $ EModuleContents latestProf
+    return ()
     where
         catRanking (Version ma mi False) = (-ma, -mi)
         catRanking _                     = (1, 1)

@@ -23,7 +23,7 @@ import Text.OpenGL.Spec(Category(Version))
 import Language.Haskell.Exts.Syntax
 import Code.Builder
 import Code.GroupModule
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 import Code.Generating.Utils
 
 -----------------------------------------------------------------------------

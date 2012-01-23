@@ -31,7 +31,7 @@ import Text.OpenGL.Spec(Category(..), Extension)
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 import Code.Builder
 
 -----------------------------------------------------------------------------

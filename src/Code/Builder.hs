@@ -24,6 +24,7 @@ module Code.Builder (
     emptyBuilder,
     addCategoryAndActivate,
     ensureImport,
+    execRawPBuilder,
 
     -- * Options related helpers
     asksOption, whenOption, unlessOption, unwrapNameBuilder,
@@ -55,6 +56,7 @@ module Code.Builder (
 -----------------------------------------------------------------------------
 
 import Control.Monad.Reader
+import Control.Monad.State
 import Data.Char
 import Data.List(partition)
 import Data.Maybe
@@ -62,7 +64,7 @@ import Data.Maybe
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 import Code.Generating.Package
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 
 import Text.OpenGL.Spec as S
 import Spec
@@ -77,26 +79,30 @@ type RawPBuilder a = PackageBuilder Module (ReaderT RawSpec (Reader RawGenOption
 
 -- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
 -- a function can be used in both `Builder` and `RawPBuilder`.
-type GBuilder bm a = ModuleBuilder bm (ReaderT RawSpec (Reader RawGenOptions)) a
+type GBuilder bm a = StateT bm (ReaderT RawSpec (Reader RawGenOptions)) a
 
 -- | The empty Package builder, with only the baseModule.
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
 
+execRawPBuilder :: RawGenOptions -> RawSpec
+    -> PackageBuild Module -> RawPBuilder a -> (PackageBuild Module)
+execRawPBuilder opts spec mods builder =
+    flip runReader opts $
+    flip runReaderT spec $
+    execStateT builder mods
 -----------------------------------------------------------------------------
 
 -- | Retrieves an option from the builder.
-asksOption :: BuildableModule bm => (RawGenOptions -> a) -> GBuilder bm a
+asksOption :: (RawGenOptions -> a) -> GBuilder bm a
 asksOption = lift . lift . asks
 
 -- | Lifted version of `when`, to conditionally execute a builder
-whenOption :: BuildableModule bm
-    => (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
+whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
 whenOption f b = asksOption f >>= \p -> when p b
 
 -- | Lifted version of `unless`, to conditionally execute a builder
-unlessOption :: BuildableModule bm
-    => (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
+unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
 unlessOption f b = asksOption f >>= \p -> unless p b
 
 unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
@@ -106,7 +112,7 @@ unwrapNameBuilder = lift . lift . asks . unwrapName
 
 -- | Asks the location of several basic modules
 askBaseModule, askTypesInternalModule, askTypesExposedModule, askExtensionModule
-    :: BuildableModule bm => GBuilder bm ModuleName
+    :: GBuilder bm ModuleName
 askBaseModule = return baseModule
 askTypesInternalModule = return typesInternalModule
 askTypesExposedModule = return typesExposedModule
@@ -114,7 +120,7 @@ askExtensionModule = return extensionModule
 
 -- | Asks the full import of several basic modules
 askBaseImport, askTypesInternalImport, askTypesExposedImport, askExtensionImport
-    :: BuildableModule bm => GBuilder bm ImportDecl
+    :: GBuilder bm ImportDecl
 askBaseImport           = return . importAll $ baseModule
 askTypesInternalImport          = return . importAll $ typesInternalModule
 askTypesExposedImport   = return . importAll $ typesExposedModule
@@ -123,8 +129,7 @@ askExtensionImport      = return . importAll $ extensionModule
 
 -- | Ask the module in which the functions and enums will be defined for
 -- that category
-askCategoryModule :: BuildableModule bm
-    => Category -> GBuilder bm ModuleName
+askCategoryModule :: Category -> GBuilder bm ModuleName
 askCategoryModule c = return . categoryModule $ c
 
 -- | Asks an importDecl to import the ImportSpec from the module of the
@@ -133,7 +138,7 @@ askCategoryPImport :: Category -> [ImportSpec] -> Builder ImportDecl
 askCategoryPImport c i = return $ partialImport (categoryModule c) i
 
 -- | Asks the categories defined by the Spec files.
-asksCategories :: (BuildableModule bm) => ([Category] -> a) -> GBuilder bm a
+asksCategories :: ([Category] -> a) -> GBuilder bm a
 asksCategories f = asks (f . allCategories)
 
 -----------------------------------------------------------------------------
@@ -187,7 +192,7 @@ corePath = moduleBase <.>  "Core"
 
 -- | Asks where the path of the Core modules is. Core modules are those who
 -- define the enums and functions from the OpenGL spec.
-askCorePath :: BuildableModule bm => GBuilder bm String
+askCorePath :: GBuilder bm String
 askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
@@ -201,7 +206,7 @@ categoryModule (S.Name n) = error $ "Category " ++ upperFirst (show n)
 
 -- | query whether or not the module of a certain category is an exposed
 -- module.
-isExposedCategory :: BuildableModule bm => Category -> GBuilder bm Bool
+isExposedCategory :: Category -> GBuilder bm Bool
 --isExposedCategory (Version _ _ _) = return False
 isExposedCategory _               = return True
 
@@ -211,7 +216,7 @@ addCategoryAndActivate :: Category -> RawPBuilder ()
 addCategoryAndActivate c = do
     cm <- askCategoryModule c
     isExt <- isExposedCategory c
-    addModuleAndActivate cm isExt
+    addModule cm isExt
 
 -- | Asks the 'ModuleName' of a specific core profile
 askProfileModule
