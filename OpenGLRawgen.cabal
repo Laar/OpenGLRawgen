@@ -1,14 +1,14 @@
 name: OpenGLRawgen
-version: 0.0.1
+version: 0.1.0
 cabal-version: -any
 build-type: Simple
 license: BSD3
 license-file: LICENSE
 copyright:
 maintainer:
-build-depends: parsec -any, opengl-api -any, mtl -any,
-               haskell-src-exts -any, containers -any, base >=4,
-               CodeGenerating -any
+build-depends: CodeGenerating -any, base >=4, containers -any,
+               directory -any, filepath -any, haskell-src-exts -any, mtl -any,
+               opengl-api -any, parsec -any
 stability:
 homepage:
 package-url:
@@ -44,12 +44,13 @@ includes:
 install-includes:
 include-dirs:
 hs-source-dirs: src
-other-modules: Spec.Lookup Spec.Processing Code.Compatibility Spec
-               Spec.Parsing Spec.RawSpec Code.GroupModule Code.Module Code.Builder
-               Code.Raw
-ghc-prof-options:
+other-modules: Spec Spec.Processing Spec.Parsing Spec.RawSpec
+               Spec.Lookup Main.Options Code.GroupModule Code.Module
+               Code.Compatibility Code.Builder Code.Raw
+               Paths_OpenGLRawgen
+ghc-prof-options: -rtsopts -prof -auto-all -caf-all
 ghc-shared-options:
-ghc-options: -Wall -O2
+ghc-options: -Wall -O2 -rtsopts
 hugs-options:
 nhc98-options:
 jhc-options:

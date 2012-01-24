@@ -18,7 +18,10 @@ module Spec (
     module Spec.RawSpec,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Spec.Lookup
 import Spec.Processing
 import Spec.RawSpec
 
+-----------------------------------------------------------------------------

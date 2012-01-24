@@ -16,16 +16,13 @@
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
-    extensions,
-    removeFuncExtension,
-    removeEnumExtension,
+--    extensions,
 ) where
 
-import Control.Arrow((***))
-import Control.Monad(msum)
---import Control.Monad.State as S
+-----------------------------------------------------------------------------
 
---import Data.Function
+import Control.Arrow((***))
+
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
@@ -96,24 +93,20 @@ pCategoryHeader =  tokenPrim showValue nextPos testValue
           testValue _             = Nothing
           nextPos sp  _        _ = incSourceColumn sp 1
 
-pGLValue :: EP (String, EnumValue)
+pGLValue :: EP (EnumName, EnumValue)
 pGLValue = tokenPrim showValue nextPos testValue
     where
         showValue = show
 -- TODO : try to find a better way of determining the valuetype of the enum
         -- name in the second doesn't need to be extension scrapped
-        testValue (Enum name value _) = Just (name, partialValue value . valueType $ name)
-        testValue (Use ucat name)     = Just (name, Redirect ucat .  valueType $ name)
+        testValue (Enum name value _) = Just (wrapName name, partialValue value . valueType $ name)
+        testValue (Use ucat name)     = Just (wrapName name, Redirect ucat . valueType $ name)
         testValue _                   = Nothing
         nextPos sp  _ _ = incSourceColumn sp 1
         partialValue (Hex v _ _)    = Value  v
         partialValue (Deci i)       = Value $ fromIntegral i
-        partialValue (Identifier i) = ReUse (fromMaybe i . stripPrefix "GL_" $ i)
-        valueType name = if isBitfieldName $ removeEnumExtension name then tyCon "GLbitfield" else tyCon "GLenum"
-        isBitfieldName name = or
-            [ "_BIT" `isSuffixOf` name
-            , ("_ALL_" `isInfixOf` name  || "ALL_" `isPrefixOf` name)&& "_BITS" `isSuffixOf` name
-            ]
+        partialValue (Identifier i) = ReUse (wrapName . fromMaybe i . stripPrefix "GL_" $ i)
+        valueType name = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
 
 -----------------------------------------------------------------------------
 
@@ -127,8 +120,8 @@ parseFSpec funcs tm =
     mconcat . map (uncurry categoryRawSpec . (id *** pure))
     $ map (convertFunc tm) funcs
 
-convertFunc :: TypeMap -> Function -> (Category, (String, FuncValue))
-convertFunc tm rf = (funCategory rf, (name, RawFunc ty alias))
+convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
+convertFunc tm rf = (funCategory rf, (wrapName name, RawFunc name ty alias))
     where
         name = funName rf
         ty   = foldr (-->>)
@@ -159,104 +152,71 @@ pReuseLine = (,) <$> (pCategory <* blanks) <*> (sepBy pCategory (char ',' *> bla
 -- Language.Haskell.Exts
 convertRetType :: ReturnType -> Type
 convertRetType rt = addIOType $ case rt of
-    Boolean      -> tyCon "GLboolean"
-    BufferOffset -> tyCon "GLsizeiptr"
-    ErrorCode    -> tyCon "GLenum" -- TODO lookup
-    FramebufferStatus -> tyCon "GLenum" -- lookup
-    GLEnum       -> tyCon "GLenum"
-    HandleARB    -> tyCon "GLuint" -- lookup
-    Int32        -> tyCon "GLint"
-    S.List       -> tyCon "GLuint" -- lookup
-    S.String     -> TyApp (tyCon "Ptr") (tyCon "GLchar")
-    Sync         -> tyCon "GLsync"
-    UInt32       -> tyCon "GLuint"
+    Boolean      -> tyCon' "GLboolean"
+    BufferOffset -> tyCon' "GLsizeiptr"
+    ErrorCode    -> tyCon' "GLenum" -- TODO lookup
+    FramebufferStatus -> tyCon' "GLenum" -- lookup
+    GLEnum       -> tyCon' "GLenum"
+    HandleARB    -> tyCon' "GLuint" -- lookup
+    Int32        -> tyCon' "GLint"
+    S.List       -> tyCon' "GLuint" -- lookup
+    S.String     -> TyApp (tyCon' "Ptr") (tyCon' "GLchar")
+    Sync         -> tyCon' "GLsync"
+    UInt32       -> tyCon' "GLuint"
     Void         -> unit_tycon
-    VoidPointer  -> TyApp (tyCon "Ptr") (tyVar "a") -- TODO improve the type variable
-    VdpauSurfaceNV -> tyCon "GLintptr" -- lookup
+    VoidPointer  -> TyApp (tyCon' "Ptr") (tyVar' "a") -- TODO improve the type variable
+    VdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
 
 -- | Convert the type supplied by openGL-api to a type useable for
 -- Language.Haskell.Exts
 lookupType :: String -> Passing -> TypeMap -> Type
-lookupType t _ _ | t == "cl_context" = tyCon "CLcontext"
-                 | t == "cl_event"   = tyCon "CLevent"
+lookupType t _ _ | t == "cl_context" = tyCon' "CLcontext"
+                 | t == "cl_event"   = tyCon' "CLevent"
 lookupType t p tm = case M.lookup t tm of
     Just (t', ptr) -> addPointer (p /= S.Value) . addPointer ptr $ convertType t'
     Nothing -> error $ "lookupType: Type not found " ++ show t
     where
         addPointer :: Bool -> Type -> Type
-        addPointer addptr = if addptr then TyApp (tyCon "Ptr") else id
+        addPointer addptr = if addptr then TyApp (tyCon' "Ptr") else id
         convertType t' = case t' of
-            Star        -> TyApp (tyCon "Ptr") (tyVar "a")
-            GLbitfield  -> tyCon "GLbitfield"
-            GLboolean   -> tyCon "GLboolean"
-            GLbyte      -> tyCon "GLbyte"
-            GLchar      -> tyCon "GLchar"
-            GLcharARB   -> tyCon "GLchar"
-            GLclampd    -> tyCon "GLclampd"
-            GLclampf    -> tyCon "GLclampf"
-            GLdouble    -> tyCon "GLdouble"
-            GLenum      -> tyCon "GLenum"
+            Star        -> TyApp (tyCon' "Ptr") (tyVar' "a")
+            GLbitfield  -> tyCon' "GLbitfield"
+            GLboolean   -> tyCon' "GLboolean"
+            GLbyte      -> tyCon' "GLbyte"
+            GLchar      -> tyCon' "GLchar"
+            GLcharARB   -> tyCon' "GLchar"
+            GLclampd    -> tyCon' "GLclampd"
+            GLclampf    -> tyCon' "GLclampf"
+            GLdouble    -> tyCon' "GLdouble"
+            GLenum      -> tyCon' "GLenum"
 --            GLenumWithTrailingComma -- removed from the source
-            GLfloat     -> tyCon "GLfloat"
+            GLfloat     -> tyCon' "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> tyCon "GLushort" -- lookup
-            GLhandleARB -> tyCon "GLhandle"--tyCon "GLuint" -- lookup
-            GLint       -> tyCon "GLint"
-            GLint64     -> tyCon "GLint64"
-            GLint64EXT  -> tyCon "GLint64"
-            GLintptr    -> tyCon "GLintptr"
-            GLintptrARB -> tyCon "GLintptr"
-            GLshort     -> tyCon "GLshort"
-            GLsizei     -> tyCon "GLsizei"
-            GLsizeiptr  -> tyCon "GLsizeiptr"
-            GLsizeiptrARB -> tyCon "GLsizeiptr"
-            GLsync      -> tyCon "GLsync"
-            GLubyte     -> tyCon "GLubyte"
+            GLhalfNV    -> tyCon' "GLushort" -- lookup
+            GLhandleARB -> tyCon' "GLhandle"--tyCon' "GLuint" -- lookup
+            GLint       -> tyCon' "GLint"
+            GLint64     -> tyCon' "GLint64"
+            GLint64EXT  -> tyCon' "GLint64"
+            GLintptr    -> tyCon' "GLintptr"
+            GLintptrARB -> tyCon' "GLintptr"
+            GLshort     -> tyCon' "GLshort"
+            GLsizei     -> tyCon' "GLsizei"
+            GLsizeiptr  -> tyCon' "GLsizeiptr"
+            GLsizeiptrARB -> tyCon' "GLsizeiptr"
+            GLsync      -> tyCon' "GLsync"
+            GLubyte     -> tyCon' "GLubyte"
             ConstGLubyte -> error "cubyte"
-            GLuint      -> tyCon "GLuint"
-            GLuint64    -> tyCon "GLuint64"
-            GLuint64EXT -> tyCon "GLuint64"
+            GLuint      -> tyCon' "GLuint"
+            GLuint64    -> tyCon' "GLuint64"
+            GLuint64EXT -> tyCon' "GLuint64"
             GLUnurbs    -> error "Unurbs"
             GLUquadric  -> error "Uquadric"
-            GLushort    -> tyCon "GLushort"
+            GLushort    -> tyCon' "GLushort"
             GLUtesselator -> error  "tesselator"
-            GLvoid      -> (tyVar "a")
-            GLvoidStarConst -> TyApp (tyCon "Ptr") (tyVar "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
-            GLvdpauSurfaceNV -> tyCon "GLintptr" -- lookup
-            GLdebugprocARB -> tyCon "GLdebugprocARB" -- lookup
-            GLdebugprocAMD -> tyCon "GLdebugprocAMD" -- lookup
-
------------------------------------------------------------------------------
-
-removeFuncExtension :: String -> String
-removeFuncExtension = removeExtension extensions
-
-removeEnumExtension :: String -> String
-removeEnumExtension = removeExtension (map ('_':) extensions)
-
-removeExtension :: [String] -> String -> String
-removeExtension exts str =
-    let strr = reverse str
-        extensionsr = map reverse exts
-        stripsr = map (flip stripPrefix strr) extensionsr
-        str' = fromMaybe str . fmap reverse $ msum stripsr
-    in str'
-
-extensions :: [String]
-extensions =
-    [ "3DFX"
-    , "AMD", "APPLE", "ARB", "ATI"
-    , "EXT"
-    , "GREMEDY"
-    , "HP"
-    , "IBM", "INGR", "INTEL"
-    , "MESAX", "MESA"
-    , "NV"
-    , "OES", "OML"
-    , "PGI"
-    , "REND"
-    , "S3", "SGIS", "SGIX", "SGI", "SUNX", "SUN"
-    , "WIN"
-    ]
+            GLvoid      -> (tyVar' "a")
+            GLvoidStarConst -> TyApp (tyCon' "Ptr") (tyVar' "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
+            GLvdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
+            GLdebugprocARB -> tyCon' "GLdebugprocARB" -- lookup
+            GLdebugprocAMD -> tyCon' "GLdebugprocAMD" -- lookup
 
 -----------------------------------------------------------------------------

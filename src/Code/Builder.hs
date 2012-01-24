@@ -24,6 +24,10 @@ module Code.Builder (
     emptyBuilder,
     addCategoryAndActivate,
     ensureImport,
+    execRawPBuilder,
+
+    -- * Options related helpers
+    asksOption, whenOption, unlessOption, unwrapNameBuilder,
 
     -- * Ask-ers for module locations
     askBaseModule,
@@ -45,45 +49,70 @@ module Code.Builder (
     isExposedCategory,
     askCorePath,
     asksCategories,
-    askECategory, askECategory',
-    askFCategory, askFCategory',
+    askCategory, askCategory',
 
 ) where
 
 -----------------------------------------------------------------------------
 
 import Control.Monad.Reader
+import Control.Monad.State
 import Data.Char
+import Data.List(partition)
 import Data.Maybe
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 import Code.Generating.Package
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 
 import Text.OpenGL.Spec as S
 import Spec
+import Main.Options
 
 -----------------------------------------------------------------------------
 
 -- | Builder for building modules from the spec.
-type Builder = ModuleBuilder Module (Reader RawSpec)
+type Builder = ModuleBuilder Module (ReaderT RawSpec (Reader RawGenOptions))
 -- | Builder to build the package from the spec.
-type RawPBuilder a = PackageBuilder Module (Reader RawSpec) a
+type RawPBuilder a = PackageBuilder Module (ReaderT RawSpec (Reader RawGenOptions)) a
 
 -- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
 -- a function can be used in both `Builder` and `RawPBuilder`.
-type GBuilder bm a = ModuleBuilder bm (Reader RawSpec) a
+type GBuilder bm a = StateT bm (ReaderT RawSpec (Reader RawGenOptions)) a
 
 -- | The empty Package builder, with only the baseModule.
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
 
+execRawPBuilder :: RawGenOptions -> RawSpec
+    -> PackageBuild Module -> RawPBuilder a -> (PackageBuild Module)
+execRawPBuilder opts spec mods builder =
+    flip runReader opts $
+    flip runReaderT spec $
+    execStateT builder mods
+-----------------------------------------------------------------------------
+
+-- | Retrieves an option from the builder.
+asksOption :: (RawGenOptions -> a) -> GBuilder bm a
+asksOption = lift . lift . asks
+
+-- | Lifted version of `when`, to conditionally execute a builder
+whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
+whenOption f b = asksOption f >>= \p -> when p b
+
+-- | Lifted version of `unless`, to conditionally execute a builder
+unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
+unlessOption f b = asksOption f >>= \p -> unless p b
+
+unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
+unwrapNameBuilder = lift . lift . asks . unwrapName
+
 -----------------------------------------------------------------------------
 
 -- | Asks the location of several basic modules
 askBaseModule, askTypesInternalModule, askTypesExposedModule, askExtensionModule
-    :: BuildableModule bm => GBuilder bm ModuleName
+    :: GBuilder bm ModuleName
 askBaseModule = return baseModule
 askTypesInternalModule = return typesInternalModule
 askTypesExposedModule = return typesExposedModule
@@ -91,7 +120,7 @@ askExtensionModule = return extensionModule
 
 -- | Asks the full import of several basic modules
 askBaseImport, askTypesInternalImport, askTypesExposedImport, askExtensionImport
-    :: BuildableModule bm => GBuilder bm ImportDecl
+    :: GBuilder bm ImportDecl
 askBaseImport           = return . importAll $ baseModule
 askTypesInternalImport          = return . importAll $ typesInternalModule
 askTypesExposedImport   = return . importAll $ typesExposedModule
@@ -100,8 +129,7 @@ askExtensionImport      = return . importAll $ extensionModule
 
 -- | Ask the module in which the functions and enums will be defined for
 -- that category
-askCategoryModule :: BuildableModule bm
-    => Category -> GBuilder bm ModuleName
+askCategoryModule :: Category -> GBuilder bm ModuleName
 askCategoryModule c = return . categoryModule $ c
 
 -- | Asks an importDecl to import the ImportSpec from the module of the
@@ -110,7 +138,7 @@ askCategoryPImport :: Category -> [ImportSpec] -> Builder ImportDecl
 askCategoryPImport c i = return $ partialImport (categoryModule c) i
 
 -- | Asks the categories defined by the Spec files.
-asksCategories :: (BuildableModule bm) => ([Category] -> a) -> GBuilder bm a
+asksCategories :: ([Category] -> a) -> GBuilder bm a
 asksCategories f = asks (f . allCategories)
 
 -----------------------------------------------------------------------------
@@ -123,31 +151,19 @@ ensureImport m = do
 
 -----------------------------------------------------------------------------
 
--- | Asks the category where a certain enum is defined, if it's not defined
--- the result will be Nothing
-askECategory :: String -> Builder (Maybe Category)
-askECategory n = asks (whereIsEDefined n)
-
--- | Same as 'askECategory' but  with a guess that the given category also
--- exports the enum. If this guess is correct then that category will be
--- returned.
-askECategory' :: String -> Category -> Builder (Maybe Category)
-askECategory' n guess = do
-    isInCat <- asks (isEInCat n guess)
-    if isInCat then return $ Just guess else askECategory n
-
--- | Asks the category where a certain function is defined, if it's not
+-- | Asks the category where a certain `ValueName` is defined, if it's not
 -- defined the result will be Nothing
-askFCategory :: String -> Builder (Maybe Category)
-askFCategory n = asks (whereIsFDefined n)
+askCategory :: SpecValue sv => ValueName sv -> Builder (Maybe Category)
+askCategory n = asks (whereIsDefined' n)
 
--- | Same as 'askFCategory' but  with a guess that the given category also
--- exports the function. If this guess is correct then that category will be
+-- | Same as 'askCategory' but  with a guess that the given category also
+-- exports the value. If this guess is correct then that category will be
 -- returned.
-askFCategory' :: String -> Category -> Builder (Maybe Category)
-askFCategory' n guess = do
-    isInCat <- asks (isFInCat n guess)
-    if isInCat then return $ Just guess else askFCategory n
+askCategory' :: SpecValue sv
+    => ValueName sv -> Category -> Builder (Maybe Category)
+askCategory' n guess = do
+    inCat <- asks (isInCat n guess)
+    if inCat then return $ Just guess else askCategory n
 
 -----------------------------------------------------------------------------
 
@@ -176,7 +192,7 @@ corePath = moduleBase <.>  "Core"
 
 -- | Asks where the path of the Core modules is. Core modules are those who
 -- define the enums and functions from the OpenGL spec.
-askCorePath :: BuildableModule bm => GBuilder bm String
+askCorePath :: GBuilder bm String
 askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
@@ -185,12 +201,12 @@ categoryModule (Version ma mi d) =
     ModuleName $ corePath <.> "Internal"
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n _) =
-    ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName ex n
+    ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName n
 categoryModule (S.Name n) = error $ "Category " ++ upperFirst (show n)
 
 -- | query whether or not the module of a certain category is an exposed
 -- module.
-isExposedCategory :: BuildableModule bm => Category -> GBuilder bm Bool
+isExposedCategory :: Category -> GBuilder bm Bool
 --isExposedCategory (Version _ _ _) = return False
 isExposedCategory _               = return True
 
@@ -200,7 +216,7 @@ addCategoryAndActivate :: Category -> RawPBuilder ()
 addCategoryAndActivate c = do
     cm <- askCategoryModule c
     isExt <- isExposedCategory c
-    addModuleAndActivate cm isExt
+    addModule cm isExt
 
 -- | Asks the 'ModuleName' of a specific core profile
 askProfileModule
@@ -231,11 +247,41 @@ upperFirst (c:cs) = toUpper c : cs
 -- | Some module names don't start with a letter, this is corrected by adding
 -- the name of the extension which, at least with the current spec, does
 -- start with a letter.
-correctName :: Extension -> String -> String
-correctName ex n | isAlpha $ head n = upperFirst $            recapUnderscores n
-                 | otherwise        = upperFirst $ show ex ++ recapUnderscores n
+correctName :: String -> String
+correctName [] = []
+correctName (n:ns)
+    | isAlpha n = toUpper n : recapUnderscores ns
+    | otherwise =
+         let (start, rest) = partition (\c -> not $ c `elem` legalChars || c == '_') ns
+             nameStart = concatMap spellout (n:start)
+             legalize c | c `elem` legalChars = [c]
+                        | otherwise           = spellout c
+             nameEnd = concatMap legalize $ recapUnderscores rest
+         in nameStart ++ nameEnd
 
+-- | Removes underscores and capitalizes the letter following an underscore
 recapUnderscores :: String -> String
 recapUnderscores []             = []
 recapUnderscores ('_' : x : xs) = toUpper x : recapUnderscores xs
 recapUnderscores (      x : xs) =         x : recapUnderscores xs
+
+-- | List of legal `Char`s in a module name
+legalChars :: [Char]
+legalChars = ['A'..'z'] ++ "'_"
+
+-- | Spells illegal `Char`s as words, starting with a capital letter.
+spellout :: Char -> String
+spellout c = case c of
+    '0' -> "Zero"
+    '1' -> "One"
+    '2' -> "Two"
+    '3' -> "Three"
+    '4' -> "Four"
+    '5' -> "Five"
+    '6' -> "Six"
+    '7' -> "Seven"
+    '8' -> "Eight"
+    '9' -> "Nine"
+    _   -> error $ "spellout: not yet implemented for '" ++ c : "'."
+
+-----------------------------------------------------------------------------

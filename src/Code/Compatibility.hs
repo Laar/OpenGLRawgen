@@ -16,13 +16,17 @@ module Code.Compatibility (
     addCompatibilityModules,
 ) where
 
+-----------------------------------------------------------------------------
+
+import Text.OpenGL.Spec(Category(Version))
+
 import Language.Haskell.Exts.Syntax
 import Code.Builder
 import Code.GroupModule
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 import Code.Generating.Utils
 
-import Text.OpenGL.Spec(Category(Version))
+-----------------------------------------------------------------------------
 
 addCompatibilityModules :: RawPBuilder ()
 addCompatibilityModules = do
@@ -46,3 +50,4 @@ addARBCompatibility = do
         modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
     defineModule modName True $ asksCategories (filter modFilter) >>= mkGroupModule
 
+-----------------------------------------------------------------------------

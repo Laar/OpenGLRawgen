@@ -17,31 +17,33 @@ module Code.Raw (
     makeRaw,
 ) where
 
+-----------------------------------------------------------------------------
+
 import Control.Monad.Reader
 import Data.Function(on)
 import Data.List(sortBy)
 
-import Spec
 
 import Language.Haskell.Exts.Syntax
-import Code.Generating.ModuleBuilder
+import Code.Generating.Builder
 import Code.Generating.Package
 
-import Code.Builder
-import Code.GroupModule
-import Code.Module
-
+import Main.Options
+import Spec
 import Text.OpenGL.Spec(Category(..))
 
+import Code.Builder
 import Code.Compatibility
+import Code.GroupModule
+import Code.Module
 
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the 'RawSpec'.
-makeRaw :: RawSpec -> Package Module
-makeRaw s =
-    let packbuild = runReader (execBuilder emptyBuilder buildRaw) s
-    in package packbuild
+makeRaw :: RawGenOptions -> RawSpec -> Package Module
+makeRaw opts spec =
+    let packbuild = execRawPBuilder opts spec emptyBuilder buildRaw
+    in packages packbuild
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
@@ -49,9 +51,12 @@ buildRaw :: RawPBuilder ()
 buildRaw = do
     buildRawImports
     addCoreProfiles
-    addVendorModules
+    whenOption mkExtensionGroups addVendorModules
     addLatestProfileToRaw
-    addCompatibilityModules
+
+    whenOption (hasFlag RawCompatibility) addCompatibilityModules
+
+-----------------------------------------------------------------------------
 
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()
@@ -73,9 +78,12 @@ addLatestProfileToRaw = do
     Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
-    liftModBuilder' bm $ do
+    _ <- liftModBuilder bm $ do
         ensureImport latestProf
         addExport $ EModuleContents latestProf
+    return ()
     where
         catRanking (Version ma mi False) = (-ma, -mi)
         catRanking _                     = (1, 1)
+
+-----------------------------------------------------------------------------
