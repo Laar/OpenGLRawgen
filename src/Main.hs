@@ -18,7 +18,9 @@ module Main (
 
 -----------------------------------------------------------------------------
 
+import Control.Monad(when)
 import System.Directory
+import System.Exit(exitSuccess)
 import System.FilePath((</>))
 
 import Language.Haskell.Exts.Pretty
@@ -31,6 +33,10 @@ import Main.Options
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
+-- needed for the version
+import Data.Version(showVersion)
+import Paths_OpenGLRawgen(version)
+
 -----------------------------------------------------------------------------
 
 main :: IO ()
@@ -39,6 +45,9 @@ main = procNew
 procNew :: IO ()
 procNew = do
     opts <- getOptions
+    when (hasFlag Help opts)        $ putStrLn usage >> exitSuccess
+    when (hasFlag VersionThis opts) $ printVersion >> exitSuccess
+
     let especP  = enumextFile   opts
         fspecP  = glFile        opts
         tmspecP = tmFile        opts
@@ -80,5 +89,8 @@ processReuses o spec = do
                         -- unwraping the error layer
                         . either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id
                         . parseReuses $ reuses
+
+printVersion :: IO ()
+printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version
 
 -----------------------------------------------------------------------------

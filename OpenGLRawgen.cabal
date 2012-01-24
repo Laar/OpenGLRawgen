@@ -47,9 +47,10 @@ hs-source-dirs: src
 other-modules: Spec Spec.Processing Spec.Parsing Spec.RawSpec
                Spec.Lookup Main.Options Code.GroupModule Code.Module
                Code.Compatibility Code.Builder Code.Raw
-ghc-prof-options:
+               Paths_OpenGLRawgen
+ghc-prof-options: -rtsopts -prof -auto-all -caf-all
 ghc-shared-options:
-ghc-options: -Wall -O2
+ghc-options: -Wall -O2 -rtsopts
 hugs-options:
 nhc98-options:
 jhc-options:

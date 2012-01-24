@@ -18,6 +18,7 @@ module Main.Options (
     RawGenOptions,
     RawGenFlag(..),
     -- ** Queries the set of options for certain values.
+    usage,
     hasFlag,
     dropExtension,
 
@@ -48,12 +49,19 @@ getOptions = do
     argv <- getArgs
     case getOpt Permute options argv of
           (o,n,[]  ) -> mkOptions (o,n)
-          (_,_,errs) -> ioError (userError $ concat errs ++ usageInfo header options)
-      where header = "Usage: OpenGLRawgen [OPTION...]"
+          (_,_,errs) -> ioError (userError $ concat errs ++ usage)
+
+usage :: String
+usage = usageInfo header options
+    where header = "Usage: OpenGLRawgen [OPTION...]"
 
 options :: [OptDescr (RawGenOptions -> IO RawGenOptions)]
 options =
-    [ Option ['c'] ["old-comp"]
+    [ Option ['h'] ["help"]
+        (flag Help)                "Prints the usage"
+    , Option ['v'] ["version"]
+        (flag VersionThis)          "Prints the version"
+    , Option ['c'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
         (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No modules for the specified vendor"
@@ -92,6 +100,8 @@ options =
 data RawGenFlag
     = RawCompatibility -- ^ Create modules for backward compatibility with
     -- previous versions of OpenGLRaw
+    | VersionThis -- ^ Print the version of the program and exits
+    | Help    -- ^ Prints the help and exits
     deriving (Eq, Ord, Show)
 
 -- | Parse the options from the commandline into `RawGenOptions`
