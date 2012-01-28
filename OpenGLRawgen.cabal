@@ -6,9 +6,9 @@ license: BSD3
 license-file: LICENSE
 copyright:
 maintainer:
-build-depends: CodeGenerating -any, base >=4, containers -any,
-               directory -any, filepath -any, haskell-src-exts -any, mtl -any,
-               opengl-api -any, parsec -any
+build-depends: CodeGenerating >=0.1.0 && <0.2.0, base >=4,
+               containers -any, directory -any, filepath -any,
+               haskell-src-exts -any, mtl -any, opengl-api -any, parsec -any
 stability:
 homepage:
 package-url:
