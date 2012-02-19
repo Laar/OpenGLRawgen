@@ -172,7 +172,10 @@ addFunctionConditionals fvs = when (any isDefine fvs) $  do
     askTypesInternalModule >>= ensureImport
     let forPtr = ModuleName "Foreign.Ptr"
     ensureImport forPtr
-    let pragma = (LanguagePragma (SrcLoc "" 0 0)  [Ident "ForeignFunctionInterface", Ident "CPP" ])
-    hffi <- hasPragma pragma
     askExtensionModule >>= ensureImport
-    when (not hffi) $ addPragma pragma
+    let cppPragma = LanguageP $ Ident "CPP"
+        ffiPragma = LanguageP $ Ident "ForeignFunctionInterface"
+    hcpp <- hasPragma cppPragma
+    when (not hcpp) $ addPragma cppPragma
+    hffi <- hasPragma ffiPragma
+    when (not hffi) $ addPragma ffiPragma
