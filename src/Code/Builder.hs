@@ -59,7 +59,6 @@ import Control.Monad.Reader
 import Control.Monad.State
 import Data.Char
 import Data.List(partition)
-import Data.Maybe
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
@@ -73,7 +72,7 @@ import Main.Options
 -----------------------------------------------------------------------------
 
 -- | Builder for building modules from the spec.
-type Builder = ModuleBuilder Module (ReaderT RawSpec (Reader RawGenOptions))
+type Builder = SModuleBuilder Module (ReaderT RawSpec (Reader RawGenOptions))
 -- | Builder to build the package from the spec.
 type RawPBuilder a = PackageBuilder Module (ReaderT RawSpec (Reader RawGenOptions)) a
 
@@ -147,7 +146,7 @@ asksCategories f = asks (f . allCategories)
 ensureImport :: ModuleName -> Builder ()
 ensureImport m = do
     imp <- getImport m
-    when (isNothing imp) $ addImport (importAll m)
+    when (null imp) $ addImport (importAll m)
 
 -----------------------------------------------------------------------------
 
