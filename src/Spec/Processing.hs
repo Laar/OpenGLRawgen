@@ -202,7 +202,7 @@ sortValue curCat vn sv = do
 --        getDelDef :: SpecValue sv => ValueName -> SortState sv
         getDelDef vn' = lift . lift $
             asks (whereIsDefined vn') >>=
-                maybe (error $ "SpecValue " ++ show vn ++ " is nowhere defined")
+                maybe (error $ "sortValue: SpecValue " ++ show vn ++ " is nowhere defined")
                       (return . snd)
 
 -----------------------------------------------------------------------------
