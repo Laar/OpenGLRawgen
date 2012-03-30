@@ -15,7 +15,39 @@
 --
 --------------------------------------------------------------------------------
 
-module Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal where
+module Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal(
+    GLbitfield(..),
+    GLboolean(..),
+    GLbyte(..),
+    GLchar(..),
+    GLclampf(..),
+    GLclampd(..),
+    GLdouble(..),
+    GLenum(..),
+    GLfloat(..),
+    GLhalf(..),
+    GLint(..),
+    GLintptr(..),
+    GLshort(..),
+    GLsizei(..),
+    GLsizeiptr(..),
+    GLubyte(..),
+    GLuint(..),
+    GLushort(..),
+    GLint64(..),
+    GLuint64(..),
+
+    GLsync(..),
+    GLhandle(..),
+
+    CLevent(..),
+    CLcontext(..),
+
+    GLdebugprocARB(..),
+    GLdebugprocAMD(..),
+
+    module Foreign.C.Types,
+) where
 
 import Data.Bits
 import Data.Int
