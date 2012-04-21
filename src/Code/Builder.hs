@@ -201,7 +201,7 @@ categoryModule (Version ma mi d) =
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n _) =
     ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName n
-categoryModule (S.Name n) = error $ "Category " ++ upperFirst (show n)
+categoryModule (S.Name n) = error $ "categoryModule: Category with only a name " ++ upperFirst (show n)
 
 -- | query whether or not the module of a certain category is an exposed
 -- module.

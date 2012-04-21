@@ -1,6 +1,6 @@
 # enumext.spec - list of GL enumerants for glext.h header
 #
-# $Revision: 15267 $ on $Date: 2011-08-08 00:37:03 -0700 (Mon, 08 Aug 2011) $
+# $Revision: 16728 $ on $Date: 2012-01-26 02:57:23 -0800 (Thu, 26 Jan 2012) $
 
 # This is derived from the master GL enumerant registry (enum.spec).
 #
@@ -1117,8 +1117,6 @@ VERSION_3_0 enum:
 	MINOR_VERSION					= 0x821C
 	NUM_EXTENSIONS					= 0x821D
 	CONTEXT_FLAGS					= 0x821E
-	DEPTH_BUFFER					= 0x8223
-	STENCIL_BUFFER					= 0x8224
 	COMPRESSED_RED					= 0x8225
 	COMPRESSED_RG					= 0x8226
 	CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT		= 0x0001
@@ -7303,4 +7301,28 @@ AMD_multi_draw_indirect enum:
 EXT_framebuffer_multisample_blit_scaled enum:
 	SCALED_RESOLVE_FASTEST_EXT			= 0x90BA
 	SCALED_RESOLVE_NICEST_EXT			= 0x90BB
+
+###############################################################################
+
+# Extension #410 TBD
+# NV_path_rendering enum:
+
+###############################################################################
+
+# Extension #411
+AMD_pinned_memory enum:
+	EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD		= 0x9160
+
+###############################################################################
+
+# Extension #412 - WGL_NV_DX_interop2
+
+###############################################################################
+
+# Extension #413
+AMD_stencil_operation_extended enum:
+	SET_AMD						= 0x874A
+	REPLACE_VALUE_AMD				= 0x874B
+	STENCIL_OP_VALUE_AMD				= 0x874C
+	STENCIL_BACK_OP_VALUE_AMD			= 0x874D
 
