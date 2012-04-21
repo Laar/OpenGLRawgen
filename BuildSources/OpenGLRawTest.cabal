@@ -33,6 +33,8 @@ library
    ghc-options: -Wall -fno-warn-duplicate-exports
    if impl(ghc)
       build-depends: ghc-prim
+      -- these require 6.8, but that's pretty conservative these days
+      extensions: StandaloneDeriving, DeriveDataTypeable
    if os(windows) && flag(UseNativeWindowsLibraries)
       cpp-options: "-DCALLCONV=stdcall"
       cc-options: "-DUSE_WGLGETPROCADDRESS"
