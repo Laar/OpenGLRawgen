@@ -76,7 +76,7 @@ options =
     , Option []    ["freuses"]
         (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The function reuse file"
     , Option []    ["ereuses"]
-        (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The enum reuse file"
+        (ReqArg (\f r -> return r{rgEReuse = Just f}) "FILE") "The enum reuse file"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
     , Option ['s'] ["strip"]
@@ -157,8 +157,8 @@ enumextFile = getFile rgEnum "enumext.spec"
 glFile      = getFile rgGL   "gl.spec"
 tmFile      = getFile rgTM   "gl.tm"
 
-freuseFile = getFile rgEReuse "reuseenums"
-ereuseFile = getFile rgFReuse "reusefuncs"
+freuseFile = getFile rgFReuse "reusefuncs"
+ereuseFile = getFile rgEReuse "reuseenums"
 
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =
