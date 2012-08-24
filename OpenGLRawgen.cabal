@@ -1,5 +1,5 @@
 name: OpenGLRawgen
-version: 0.1.0
+version: 0.1.1
 cabal-version: -any
 build-type: Simple
 license: BSD3
@@ -47,7 +47,6 @@ hs-source-dirs: src
 other-modules: Spec Spec.Processing Spec.Parsing Spec.RawSpec
                Spec.Lookup Main.Options Code.GroupModule Code.Module
                Code.Compatibility Code.Builder Code.Raw
-               Paths_OpenGLRawgen
 ghc-prof-options: -rtsopts -prof -auto-all -caf-all
 ghc-shared-options:
 ghc-options: -Wall -O2 -rtsopts
