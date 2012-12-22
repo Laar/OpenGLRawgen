@@ -1,0 +1,49 @@
+The original design of the generator is quite complex, especially the
+processing of the spec is a hard task (partially caused by the input
+files). The intermediate representation makes the processing rules
+quite a bit harder. Therefore a new design was made where the
+intermediate representation is simpler and the processing simpler.
+
+
+Old design:
+Per category a map from entity (function of enum) to it's value. There
+are several steps in the process
+- Remove duplicate definitions (and replace all but one by reuses).
+- Filtering empty categories.
+- Sorting values to get the imports right (no circular dependencies).
+- Ensuring there is a definition for entities that are reused from a
+    deleted category.
+- Adding reuses from a different file.
+As you can see most of the functions are there to get the right
+definition or reuse value in the right category. After all things have
+been sorted the module generating is quite simple as the spec specifies
+exactly what the module should contain (including if it's a reuse or a
+definition).
+
+The problem is that the processing steps are too complex. This is
+caused by a bad design of the intermediate datatype (RawSpec).
+
+New design:
+Split the definitions of the entities and what entities are used in a
+module. Thus the RawSpec contains two maps per entity type, one
+defining all the values and one defining what values (by name) are used
+in each category.
+
+This directly eliminates all trouble with keeping the right type of
+definition/reuse in each category as a category now only keeps track of
+names. Most of the processing steps look quite simple now,
+- Removing duplicates is no longer necessary.
+- Empty categories are no longer added (as the parsing step is far
+  simpler).
+- Sorting values for imports is no longer needed (see next paragraph).
+- There are always definitions availible.
+- Adding reuses is quite simple.
+
+However this change results in that the module generator no longer gets
+information on whether an entity should be defined or reexported (it
+only has names to work on). This is tackeled by letting the generator
+keep a mapping of defined entities and there location. When a module
+should contain an entity the generator looks it up, when it already
+exists a reexport is added else a new definition is outputed and the
+entity is added. By using this solution the import problem is also
+solved as imports can only be done of already generated modules.
