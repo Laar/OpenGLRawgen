@@ -28,9 +28,10 @@ main-is: Main.hs
 buildable: True
 hs-source-dirs: src
 other-modules:
-  Spec Spec.Processing
-  Spec.Parsing Spec.RawSpec
-  Spec.Lookup
+  Spec
+  Spec.Processing
+  Spec.Parsing
+  Spec.RawSpec
   Main.Options
   Code.GroupModule
   Code.Module

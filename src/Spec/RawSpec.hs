@@ -21,9 +21,10 @@ module Spec.RawSpec (
     RawSpec(),
     Category() , -- Convenience
     SpecValue(wrapName, unwrapName),
+    ValueName(),
 
     -- ** TODO sort
-    lookupValue, categoryValues, addValue, addLocation,
+    lookupValue, categoryValues, addValue, addLocation, deleteCategory,
 
     -- ** The contents of the spec
     EnumValue(..), EnumName,
@@ -70,6 +71,8 @@ instance Monoid RawSpec where
 
 type ValueMap sv    = M.Map (ValueName sv) sv
 type LocationMap sv = M.Map Category [ValueName sv]
+type ELocationMap 	= LocationMap EnumValue
+type FLocationMap 	= LocationMap FuncValue
 
 
 -----------------------------------------------------------------------------
@@ -98,6 +101,11 @@ addValue vn val = modifyValueMap (M.insert vn val)
 addLocation :: SpecValue sv
     => Category -> ValueName sv -> RawSpec -> RawSpec
 addLocation cat vn = modifyLocationMap (M.insertWith union cat [vn])
+
+deleteCategory :: Category -> RawSpec -> RawSpec
+deleteCategory c
+	= modifyLocationMap (M.delete c :: ELocationMap -> ELocationMap)
+	. modifyLocationMap (M.delete c :: FLocationMap -> FLocationMap)
 
 -----------------------------------------------------------------------------
 
