@@ -20,11 +20,12 @@ module Spec.RawSpec (
     -- ** The `RawSpec` and associates
     RawSpec(),
     Category() , -- Convenience
-    SpecValue(wrapName, unwrapName),
+    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
     ValueName(),
 
     -- ** TODO sort
     lookupValue, categoryValues, addValue, addLocation, deleteCategory,
+    DefineMap, emptyDefineMap,
 
     -- ** The contents of the spec
     EnumValue(..), EnumName,
@@ -76,6 +77,17 @@ type FLocationMap 	= LocationMap FuncValue
 
 
 -----------------------------------------------------------------------------
+
+type DefMap sv = M.Map (ValueName sv) Category
+
+data DefineMap
+    = DefMap
+    { enumDMap :: DefMap EnumValue
+    , funcDMap :: DefMap FuncValue
+    }
+
+emptyDefineMap :: DefineMap
+emptyDefineMap = DefMap M.empty M.empty
 
 -----------------------------------------------------------------------------
 
@@ -136,6 +148,10 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     modifyLocationMap   :: (LocationMap sv -> LocationMap sv)
                                 -> RawSpec -> RawSpec
 
+    getDefLocation      :: (ValueName sv) -> DefineMap -> Maybe Category
+    addDefLocation      :: (ValueName sv) -> Category
+                                -> DefineMap -> DefineMap
+
 type EnumName = ValueName EnumValue
 
 instance SpecValue EnumValue where
@@ -150,6 +166,8 @@ instance SpecValue EnumValue where
     modifyValueMap    f r   = r{enumVMap = f $ enumVMap r}
     getLocationMap          = enumLMap
     modifyLocationMap f r   = r{enumLMap = f $ enumLMap r}
+    getDefLocation    n d   = M.lookup n $ enumDMap d
+    addDefLocation    n c d = d{enumDMap = M.insert n c $ enumDMap d}
 
 type FuncName = ValueName FuncValue
 
@@ -165,6 +183,8 @@ instance SpecValue FuncValue where
     modifyValueMap    f r   = r{funcVMap = f $ funcVMap r}
     getLocationMap  = funcLMap
     modifyLocationMap f r   = r{funcLMap = f $ funcLMap r}
+    getDefLocation    n d   = M.lookup n $ funcDMap d
+    addDefLocation    n c d = d{funcDMap = M.insert n c $ funcDMap d}
 
 -----------------------------------------------------------------------------
 

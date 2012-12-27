@@ -49,7 +49,8 @@ module Code.Builder (
     isExposedCategory,
     askCorePath,
     asksCategories,
-    askCategory, askCategory',
+    getDefineLoc,
+    addDefineLoc,
 
 ) where
 
@@ -71,14 +72,16 @@ import Main.Options
 
 -----------------------------------------------------------------------------
 
+type BuilderBase = StateT DefineMap (ReaderT RawSpec (Reader RawGenOptions))
+
 -- | Builder for building modules from the spec.
-type Builder = SModuleBuilder Module (ReaderT RawSpec (Reader RawGenOptions))
+type Builder = SModuleBuilder Module BuilderBase
 -- | Builder to build the package from the spec.
-type RawPBuilder a = PackageBuilder Module (ReaderT RawSpec (Reader RawGenOptions)) a
+type RawPBuilder a = PackageBuilder Module BuilderBase a
 
 -- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
 -- a function can be used in both `Builder` and `RawPBuilder`.
-type GBuilder bm a = StateT bm (ReaderT RawSpec (Reader RawGenOptions)) a
+type GBuilder bm a = StateT bm BuilderBase a
 
 -- | The empty Package builder, with only the baseModule.
 emptyBuilder :: PackageBuild Module
@@ -89,12 +92,13 @@ execRawPBuilder :: RawGenOptions -> RawSpec
 execRawPBuilder opts spec mods builder =
     flip runReader opts $
     flip runReaderT spec $
+    flip evalStateT emptyDefineMap $
     execStateT builder mods
 -----------------------------------------------------------------------------
 
 -- | Retrieves an option from the builder.
 asksOption :: (RawGenOptions -> a) -> GBuilder bm a
-asksOption = lift . lift . asks
+asksOption = lift . lift . lift . asks
 
 -- | Lifted version of `when`, to conditionally execute a builder
 whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
@@ -105,7 +109,7 @@ unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
 unlessOption f b = asksOption f >>= \p -> unless p b
 
 unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
-unwrapNameBuilder = lift . lift . asks . unwrapName
+unwrapNameBuilder = lift . lift . lift . asks . unwrapName
 
 -----------------------------------------------------------------------------
 
@@ -150,19 +154,14 @@ ensureImport m = do
 
 -----------------------------------------------------------------------------
 
--- | Asks the category where a certain `ValueName` is defined, if it's not
+-- | Gets the category where a certain `ValueName` is defined, if it's not
 -- defined the result will be Nothing
-askCategory :: SpecValue sv => ValueName sv -> Builder (Maybe Category)
-askCategory n = asks (whereIsDefined' n)
+getDefineLoc :: SpecValue sv => ValueName sv -> GBuilder a  (Maybe Category)
+getDefineLoc = lift . gets . getDefLocation
 
--- | Same as 'askCategory' but  with a guess that the given category also
--- exports the value. If this guess is correct then that category will be
--- returned.
-askCategory' :: SpecValue sv
-    => ValueName sv -> Category -> Builder (Maybe Category)
-askCategory' n guess = do
-    inCat <- asks (isInCat n guess)
-    if inCat then return $ Just guess else askCategory n
+-- | Adds the location of a value.
+addDefineLoc :: SpecValue sv => ValueName sv -> Category -> Builder ()
+addDefineLoc vn cat = lift $ modify (addDefLocation vn cat)
 
 -----------------------------------------------------------------------------
 

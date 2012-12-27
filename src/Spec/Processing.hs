@@ -85,7 +85,7 @@ import Spec.RawSpec
 -- | Clean the 'RawSpec' in order to make it useable for codegeneration.
 cleanupSpec :: RawGenOptions -> RawSpec -> RawSpec
 cleanupSpec opts =
-   filterExtensions (not . flip dropExtension opts)
+   filterExtensions (flip dropExtension opts)
 
 -----------------------------------------------------------------------------
 -- | Adds reuses for several `Category`s to the spec
@@ -93,10 +93,15 @@ addReuses
     :: [(Category, [Category])] -- ^ Function reuses
     -> [(Category, [Category])] -- ^ Enum reuses
     -> RawSpec -> RawSpec
-addReuses reuseF reuseE spec = undefined
+addReuses reuseF reuseE spec = foldr ($) spec $ enumAdds ++ funcAdds
+   where
+        enumAdds = map (uncurry
+            $ addReuse (undefined :: EnumValue)) reuseE
+        funcAdds = map (uncurry
+            $ addReuse (undefined :: FuncValue)) reuseF
 
-addReuse 
-    :: SpecValue sv 
+addReuse
+    :: SpecValue sv
     => sv -> Category -> [Category] 
     -> RawSpec -> RawSpec
 addReuse dummyValue cat addFrom rawSpec =
@@ -113,7 +118,7 @@ filterExtensions predicate rawspec
 	= foldr deleteCategory rawspec filterCats
     where
         eFilter (Extension e _ _) = predicate e
-        eFilter _                 = True
+        eFilter _                 = False
         filterCats = filter eFilter $ allCategories rawspec
 
 -----------------------------------------------------------------------------
