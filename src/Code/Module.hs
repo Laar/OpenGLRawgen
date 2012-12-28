@@ -23,7 +23,7 @@ module Code.Module (
 -----------------------------------------------------------------------------
 
 import Control.Monad
-import Control.Monad.Reader
+import Data.Maybe(fromMaybe)
 
 import Text.OpenGL.Spec(showCategory)
 import Spec
@@ -39,8 +39,8 @@ import Code.Generating.Builder
 -- enumeration values for the category
 buildModule :: Category -> Builder ()
 buildModule c = do
-    funcs <- asks $ categoryValues c
-    enums <- asks $ categoryValues c
+    funcs <- getsRawSpec $ categoryValues c
+    enums <- getsRawSpec $ categoryValues c
 
     enumDefs <- fmap and . sequence . map (addEnum c) $ enums
     funcDefs <- fmap and . sequence . map (addFunc c) $ funcs
@@ -54,13 +54,24 @@ buildModule c = do
 -- current category. This information is needed to prevent import loops.
 addEnum :: Category -> EnumName -> Builder Bool
 addEnum c n = do
-    Just (Value val ty) <- asks $ lookupValue n
     name <- unwrapNameBuilder n
     addExport $ (EVar . UnQual) name
     loc <- getDefineLoc n
     case loc of
-        Nothing -> addEnumValue (Lit $ Int val) ty name >> addDefineLoc n c >> return True
         Just c' -> askCategoryPImport c' [IVar name] >>= addImport >> return False
+        Nothing -> do
+            Just x <- enumLookup n --getsRawSpec $ lookupValue n
+            case x of
+                Value val ty -> do
+                    addEnumValue (Lit $ Int val) ty name
+                    addDefineLoc n c
+                    return True
+                ReUse reuseName ty -> do
+                    reuseName' <- unwrapNameBuilder reuseName
+                    addEnumValue (var $ reuseName') ty name
+                    addImport' reuseName reuseName'
+                    addDefineLoc n c
+                    return True
 {-    case t of
         Redirect _ _ -> addImport' c n
         Value val ty -> addValue (Lit $ Int val) ty name
@@ -72,6 +83,10 @@ addEnum c n = do
     where
         addEnumValue val ty name = do
             addDecls $ enumDecl name val ty
+        addImport' :: EnumName -> Name -> Builder ()
+        addImport' ename iname = do
+            ic <- getDefineLoc ename >>= return . fromMaybe (error $ "Couldn't find " ++ show iname)
+            when (ic /= c) $ askCategoryPImport ic [IVar iname] >>= addImport
 
 -- | Adds an import for a value, the category is needed to check it's not in
 -- the same category (and therefor preventing imports from the same module)
@@ -104,7 +119,7 @@ addCondEImports = askTypesInternalModule >>= ensureImport
 -- import of the local category.
 addFunc :: Category -> FuncName -> Builder Bool
 addFunc c n = do
-    Just (RawFunc gln ty _) <- asks $ lookupValue n
+    Just (RawFunc gln ty _) <- getsRawSpec $ lookupValue n
     name <- unwrapNameBuilder n
     addExport . EVar . UnQual $  name
     loc <- getDefineLoc n

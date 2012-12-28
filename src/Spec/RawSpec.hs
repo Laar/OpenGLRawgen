@@ -25,7 +25,7 @@ module Spec.RawSpec (
 
     -- ** TODO sort
     lookupValue, categoryValues, addValue, addLocation, deleteCategory,
-    DefineMap, emptyDefineMap,
+    DefineMap, emptyDefineMap, swapEnumValue,
 
     -- ** The contents of the spec
     EnumValue(..), EnumName,
@@ -95,6 +95,7 @@ emptyDefineMap = DefMap M.empty M.empty
 data EnumValue
     -- | A localy defined enumvalue
     = Value     Integer   Type
+    | ReUse     EnumName  Type
     deriving(Eq, Ord, Show)
 
 
@@ -118,6 +119,16 @@ deleteCategory :: Category -> RawSpec -> RawSpec
 deleteCategory c
 	= modifyLocationMap (M.delete c :: ELocationMap -> ELocationMap)
 	. modifyLocationMap (M.delete c :: FLocationMap -> FLocationMap)
+
+swapEnumValue :: EnumName -> RawSpec -> RawSpec
+swapEnumValue e1 rawSpec = case lookupValue e1 rawSpec of
+    Just (ReUse e2 ty) ->
+        let mv2@(Just v2) = lookupValue e2 rawSpec
+            rawSpec' = addValue e1 v2
+                     . addValue e2 (ReUse e1 ty)
+                     $ rawSpec
+        in maybe rawSpec (const rawSpec') mv2
+    _ -> rawSpec
 
 -----------------------------------------------------------------------------
 

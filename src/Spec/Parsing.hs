@@ -25,7 +25,9 @@ module Spec.Parsing (
 import Control.Monad.State
 import Control.Monad.Writer
 
+import Data.List(stripPrefix)
 import qualified Data.Map as M
+import Data.Maybe(fromMaybe)
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
@@ -90,13 +92,15 @@ addEnumLocation name = do
     tell . Endo $ addLocation cat (wrapName name :: EnumName)
 
 addEnumValue :: String -> S.Value -> EP ()
-addEnumValue name v = case v of
-    Identifier _ -> return ()
-    Hex  i _ _   -> addValue' i
-    Deci i       -> addValue' $ fromIntegral i
+addEnumValue name v = addValue' $ case v of
+    Hex  i _ _   -> Value i ty
+    Deci i       -> Value (fromIntegral i) ty
+    Identifier i ->
+        let i' = wrapName . fromMaybe i . stripPrefix "GL_" $ i
+        in ReUse i' ty
     where
-        addValue' :: Integer -> EP ()
-        addValue' i = tell . Endo $ addValue (wrapName name) (Value i ty)
+        addValue' :: EnumValue -> EP ()
+        addValue' enumVal = tell . Endo $ addValue (wrapName name) enumVal
         ty :: Type
         ty = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
 

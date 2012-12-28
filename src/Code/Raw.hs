@@ -19,7 +19,6 @@ module Code.Raw (
 
 -----------------------------------------------------------------------------
 
-import Control.Monad.Reader
 import Data.Function(on)
 import Data.List(sortBy)
 
@@ -61,7 +60,7 @@ buildRaw = do
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()
 buildRawImports = do
-    cats <- asks allCategories
+    cats <- getsRawSpec allCategories
     sequence_ $ map defineRawImport cats
 
 -- | Builds a single ffi import module, by executing 'buildModule'.

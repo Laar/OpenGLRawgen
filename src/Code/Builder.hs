@@ -51,7 +51,8 @@ module Code.Builder (
     asksCategories,
     getDefineLoc,
     addDefineLoc,
-
+    getsRawSpec,
+    enumLookup,
 ) where
 
 -----------------------------------------------------------------------------
@@ -72,7 +73,7 @@ import Main.Options
 
 -----------------------------------------------------------------------------
 
-type BuilderBase = StateT DefineMap (ReaderT RawSpec (Reader RawGenOptions))
+type BuilderBase = StateT DefineMap (StateT RawSpec (Reader RawGenOptions))
 
 -- | Builder for building modules from the spec.
 type Builder = SModuleBuilder Module BuilderBase
@@ -91,9 +92,10 @@ execRawPBuilder :: RawGenOptions -> RawSpec
     -> PackageBuild Module -> RawPBuilder a -> (PackageBuild Module)
 execRawPBuilder opts spec mods builder =
     flip runReader opts $
-    flip runReaderT spec $
+    flip evalStateT spec $
     flip evalStateT emptyDefineMap $
     execStateT builder mods
+
 -----------------------------------------------------------------------------
 
 -- | Retrieves an option from the builder.
@@ -125,7 +127,7 @@ askExtensionModule = return extensionModule
 askBaseImport, askTypesInternalImport, askTypesExposedImport, askExtensionImport
     :: GBuilder bm ImportDecl
 askBaseImport           = return . importAll $ baseModule
-askTypesInternalImport          = return . importAll $ typesInternalModule
+askTypesInternalImport  = return . importAll $ typesInternalModule
 askTypesExposedImport   = return . importAll $ typesExposedModule
 askExtensionImport      = return . importAll $ extensionModule
 
@@ -142,7 +144,7 @@ askCategoryPImport c i = return $ partialImport (categoryModule c) i
 
 -- | Asks the categories defined by the Spec files.
 asksCategories :: ([Category] -> a) -> GBuilder bm a
-asksCategories f = asks (f . allCategories)
+asksCategories f = getsRawSpec (f . allCategories)
 
 -----------------------------------------------------------------------------
 
@@ -162,6 +164,23 @@ getDefineLoc = lift . gets . getDefLocation
 -- | Adds the location of a value.
 addDefineLoc :: SpecValue sv => ValueName sv -> Category -> Builder ()
 addDefineLoc vn cat = lift $ modify (addDefLocation vn cat)
+
+-- | Gets the `RawSpec`.
+getsRawSpec :: (RawSpec -> a) -> GBuilder m (a)
+getsRawSpec = lift . lift . gets
+
+enumLookup :: EnumName -> GBuilder m (Maybe EnumValue)
+enumLookup en = do
+    val <- getsRawSpec $ lookupValue en
+    case val of
+        Just (ReUse en1 _) -> do
+            loc <- getDefineLoc en1
+            case loc of
+                Just _ -> return val
+                Nothing -> do
+                    lift . lift . modify $ swapEnumValue en
+                    enumLookup en
+        _ -> return val
 
 -----------------------------------------------------------------------------
 
