@@ -58,46 +58,29 @@ addEnum c n = do
     addExport $ (EVar . UnQual) name
     loc <- getDefineLoc n
     case loc of
-        Just c' -> askCategoryPImport c' [IVar name] >>= addImport >> return False
+        Just c' -> do
+            askCategoryPImport c' [IVar name] >>= addImport 
+            return False
         Nothing -> do
-            Just x <- enumLookup n --getsRawSpec $ lookupValue n
+            Just x <- enumLookup n
             case x of
                 Value val ty -> do
                     addEnumValue (Lit $ Int val) ty name
-                    addDefineLoc n c
-                    return True
                 ReUse reuseName ty -> do
                     reuseName' <- unwrapNameBuilder reuseName
-                    addEnumValue (var $ reuseName') ty name
                     addImport' reuseName reuseName'
-                    addDefineLoc n c
-                    return True
-{-    case t of
-        Redirect _ _ -> addImport' c n
-        Value val ty -> addValue (Lit $ Int val) ty name
-        ReUse reuseval ty -> do
-                    reuseName <- unwrapNameBuilder reuseval
-                    addValue (var $ reuseName) ty name
-                    addImport' c reuseval
--}
+                    addEnumValue (var $ reuseName') ty name
     where
         addEnumValue val ty name = do
             addDecls $ enumDecl name val ty
+            addDefineLoc n c
+            return True
+        -- | Adds an import for a specific enum
         addImport' :: EnumName -> Name -> Builder ()
         addImport' ename iname = do
             ic <- getDefineLoc ename >>= return . fromMaybe (error $ "Couldn't find " ++ show iname)
-            when (ic /= c) $ askCategoryPImport ic [IVar iname] >>= addImport
-
--- | Adds an import for a value, the category is needed to check it's not in
--- the same category (and therefor preventing imports from the same module)
-{-addImport' :: Category -> EnumName -> Builder ()
-addImport' c iname = do
-    ic <- askCategory iname >>= return . fromMaybe (error $ "addEnum: Couldn't find: " ++ show iname)
-    when (ic /= c) $ do
-        -- only here translate it as the category lookup should be done on the original name
-        iname' <- unwrapNameBuilder iname
-        askCategoryPImport ic [IVar iname'] >>= addImport
--}
+            when (ic /= c) $ askCategoryPImport ic [IVar iname] 
+                           >>= addImport
 
 -- | The declerations to define the enum, which will look like
 -- > enumName :: enumType
@@ -124,18 +107,15 @@ addFunc c n = do
     addExport . EVar . UnQual $  name
     loc <- getDefineLoc n
     case loc of
-        Nothing -> addFFIDecls gln ty name >> addDefineLoc n c >> return True
-        Just c' -> askCategoryPImport c' [IVar $ name] >>= addImport >> return False
---    case v of
---        RawFunc gln ty _ -> addFFIDecls gln ty name
---        RedirectF guessc -> addReuse guessc name
+        Nothing -> do
+            addFFIDecls gln ty name
+            addDefineLoc n c
+            return True
+        Just c' -> do
+            askCategoryPImport c' [IVar $ name] >>= addImport 
+            return False
     where
         -- Adds an import, if it's nessacery, for the function
-{-        addReuse guessc name = do
-            ic <- askCategory' n guessc
-                >>= return . fromMaybe (error $ "addFunc: Couldn't find : " ++ show n)
-            when (ic /= c) $ askCategoryPImport ic [IVar $ name] >>= addImport
--}
         -- Adds the declaration used to import this function, there are three
         -- declerations for each function. One for the FFI import, one for the
         -- retrieving the 'FuncPtr' to the functions and one for the real
