@@ -45,49 +45,13 @@ import Control.Monad(msum)
 import Data.List(union, stripPrefix, isPrefixOf, isInfixOf, isSuffixOf)
 import Data.Monoid
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Maybe
 
 import Language.Haskell.Exts.Syntax(Type, Name(Ident))
 import Text.OpenGL.Spec (Category)
 
 import Main.Options
-
------------------------------------------------------------------------------
-
-
--- | The full representation of the specification needed to build OpenGLRaw
-data RawSpec
-    = RawSpec
-    { enumVMap :: ValueMap      EnumValue
-    , enumLMap :: LocationMap   EnumValue
-    , funcVMap :: ValueMap      FuncValue
-    , funcLMap :: LocationMap   FuncValue
-    }
-
-instance Monoid RawSpec where
-    mempty = RawSpec mempty mempty mempty mempty
-    RawSpec ev1 el1 fv1 fl1 `mappend` RawSpec ev2 el2 fv2 fl2 =
-        RawSpec (ev1 <> ev2) (M.unionWith union el1 el2)
-                (fv1 <> fv2) (M.unionWith union fl1 fl2)
-
-type ValueMap sv    = M.Map (ValueName sv) sv
-type LocationMap sv = M.Map Category [ValueName sv]
-type ELocationMap 	= LocationMap EnumValue
-type FLocationMap 	= LocationMap FuncValue
-
-
------------------------------------------------------------------------------
-
-type DefMap sv = M.Map (ValueName sv) Category
-
-data DefineMap
-    = DefMap
-    { enumDMap :: DefMap EnumValue
-    , funcDMap :: DefMap FuncValue
-    }
-
-emptyDefineMap :: DefineMap
-emptyDefineMap = DefMap M.empty M.empty
 
 -----------------------------------------------------------------------------
 
@@ -108,12 +72,49 @@ data FuncValue
 
 -----------------------------------------------------------------------------
 
+
+-- | The full representation of the specification needed to build OpenGLRaw
+data RawSpec
+    = RawSpec
+    { enumVMap :: ValueMap      EnumValue
+    , enumLMap :: LocationMap   EnumValue
+    , funcVMap :: ValueMap      FuncValue
+    , funcLMap :: LocationMap   FuncValue
+    }
+
+instance Monoid RawSpec where
+    mempty = RawSpec mempty mempty mempty mempty
+    RawSpec ev1 el1 fv1 fl1 `mappend` RawSpec ev2 el2 fv2 fl2 =
+        RawSpec (ev1 <> ev2) (M.unionWith S.union el1 el2)
+                (fv1 <> fv2) (M.unionWith S.union fl1 fl2)
+
+type ValueMap sv    = M.Map (ValueName sv) sv
+type LocationMap sv = M.Map Category (S.Set (ValueName sv))
+type ELocationMap 	= LocationMap EnumValue
+type FLocationMap 	= LocationMap FuncValue
+
+
+-----------------------------------------------------------------------------
+
+type DefMap sv = M.Map (ValueName sv) Category
+
+data DefineMap
+    = DefMap
+    { enumDMap :: DefMap EnumValue
+    , funcDMap :: DefMap FuncValue
+    }
+
+emptyDefineMap :: DefineMap
+emptyDefineMap = DefMap M.empty M.empty
+
+-----------------------------------------------------------------------------
+
 addValue :: SpecValue sv => ValueName sv -> sv -> RawSpec -> RawSpec
 addValue vn val = modifyValueMap (M.insert vn val)
 
 addLocation :: SpecValue sv
     => Category -> ValueName sv -> RawSpec -> RawSpec
-addLocation cat vn = modifyLocationMap (M.insertWith union cat [vn])
+addLocation cat vn = modifyLocationMap (M.insertWith S.union cat $ S.singleton vn)
 
 deleteCategory :: Category -> RawSpec -> RawSpec
 deleteCategory c
@@ -141,8 +142,9 @@ allCategories rs = union ecats fcats
 lookupValue :: SpecValue sv => ValueName sv -> RawSpec -> Maybe sv
 lookupValue sv rs = M.lookup sv $ getValueMap rs
 
-categoryValues :: SpecValue sv => Category -> RawSpec -> [ValueName sv]
-categoryValues c rs = fromMaybe [] . M.lookup c $ getLocationMap rs
+categoryValues :: SpecValue sv
+    => Category -> RawSpec -> S.Set (ValueName sv)
+categoryValues c rs = fromMaybe S.empty . M.lookup c $ getLocationMap rs
 
 -----------------------------------------------------------------------------
 

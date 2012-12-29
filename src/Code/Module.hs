@@ -24,6 +24,7 @@ module Code.Module (
 
 import Control.Monad
 import Data.Maybe(fromMaybe)
+import qualified Data.Set as S
 
 import Text.OpenGL.Spec(showCategory)
 import Spec
@@ -42,8 +43,8 @@ buildModule c = do
     funcs <- getsRawSpec $ categoryValues c
     enums <- getsRawSpec $ categoryValues c
 
-    enumDefs <- fmap and . sequence . map (addEnum c) $ enums
-    funcDefs <- fmap and . sequence . map (addFunc c) $ funcs
+    enumDefs <- fmap and . sequence . map (addEnum c) $ S.toList enums
+    funcDefs <- fmap and . sequence . map (addFunc c) $ S.toList funcs
     
     when funcDefs addFunctionConditionals
     when enumDefs addCondEImports

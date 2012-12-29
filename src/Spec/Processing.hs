@@ -73,6 +73,7 @@ module Spec.Processing (
 -----------------------------------------------------------------------------
 
 import Data.Monoid
+import qualified Data.Set as S
 
 import Text.OpenGL.Spec(Category(Extension), Extension)
 
@@ -106,11 +107,11 @@ addReuse
     -> RawSpec -> RawSpec
 addReuse dummyValue cat addFrom rawSpec =
     let vals = (mconcat $ map (flip categoryValues rawSpec) addFrom)
-                    `asListTypeOf` dummyValue
-        asListTypeOf :: SpecValue sv 
-            =>  [ValueName sv] -> sv -> [ValueName sv]
-        asListTypeOf = const
-    in foldr (addLocation cat) rawSpec vals
+                    `asSetTypeOf` dummyValue
+        asSetTypeOf :: SpecValue sv
+            => S.Set (ValueName sv) -> sv -> S.Set (ValueName sv)
+        asSetTypeOf = const
+    in S.foldr (addLocation cat) rawSpec vals
 -----------------------------------------------------------------------------
 
 filterExtensions :: (Extension -> Bool) -> RawSpec -> RawSpec
