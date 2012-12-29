@@ -1,0 +1,22 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE CPP #-}
+module Graphics.Rendering.OpenGL.Raw.EXT.TextureCompressionRgtc
+       (gl_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT,
+        gl_COMPRESSED_RED_GREEN_RGTC2_EXT,
+        gl_COMPRESSED_SIGNED_RED_RGTC1_EXT, gl_COMPRESSED_RED_RGTC1_EXT)
+       where
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Foreign.Ptr
+import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+gl_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT :: GLenum
+gl_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT = 36286
+ 
+gl_COMPRESSED_RED_GREEN_RGTC2_EXT :: GLenum
+gl_COMPRESSED_RED_GREEN_RGTC2_EXT = 36285
+ 
+gl_COMPRESSED_SIGNED_RED_RGTC1_EXT :: GLenum
+gl_COMPRESSED_SIGNED_RED_RGTC1_EXT = 36284
+ 
+gl_COMPRESSED_RED_RGTC1_EXT :: GLenum
+gl_COMPRESSED_RED_RGTC1_EXT = 36283
