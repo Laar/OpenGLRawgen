@@ -3,11 +3,12 @@ REFERENCEDIR="referenceoutput"
 TESTDIR="testoutput"
 
 echo "---------------------------"
-echo "-- Generating new output --" 
+echo "-- Generating new output --"
 echo "---------------------------"
-time ./OpenGLRawgen --no-vendorf=novendor -o "$TESTDIR" -c -d . && 
+time ./OpenGLRawgen --no-vendorf=novendor -o "$TESTDIR" -c -d . +RTS -sstderr &&
 echo  "---------------"
 echo  "-- Comparing --"
 echo  "---------------"
-diff "$TESTDIR" "$REFERENCEDIR"
+
+exec diff "$TESTDIR" "$REFERENCEDIR"
 
