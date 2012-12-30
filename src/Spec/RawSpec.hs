@@ -42,7 +42,7 @@ module Spec.RawSpec (
 
 import Control.Monad(msum)
 
-import Data.List(union, stripPrefix, isPrefixOf, isInfixOf, isSuffixOf)
+import Data.List(stripPrefix, isPrefixOf, isInfixOf, isSuffixOf)
 import Data.Monoid
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -134,10 +134,10 @@ swapEnumValue e1 rawSpec = case lookupValue e1 rawSpec of
 -----------------------------------------------------------------------------
 
 allCategories :: RawSpec -> [Category]
-allCategories rs = union ecats fcats
+allCategories rs = S.toList $ S.union ecats fcats
     where
-        ecats = M.keys . enumLMap $ rs
-        fcats = M.keys . funcLMap $ rs
+        ecats = M.keysSet . enumLMap $ rs
+        fcats = M.keysSet . funcLMap $ rs
 
 lookupValue :: SpecValue sv => ValueName sv -> RawSpec -> Maybe sv
 lookupValue sv rs = M.lookup sv $ getValueMap rs
