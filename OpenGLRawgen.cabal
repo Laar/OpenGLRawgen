@@ -1,21 +1,11 @@
 name: OpenGLRawgen
 version: 0.1.1
-cabal-version: -any
+cabal-version: >= 1.8
 build-type: Simple
 license: BSD3
 license-file: LICENSE
 copyright: Lars Corbijn (2011-2012)
 maintainer: Lars Corbijn
-build-depends:
-  CodeGenerating >=0.1.0 && <0.2.0,
-  base >=4,
-  containers -any,
-  directory -any,
-  filepath -any,
-  haskell-src-exts -any,
-  mtl -any,
-  opengl-api -any,
-  parsec -any
 stability:
 homepage:
 package-url:
@@ -23,21 +13,31 @@ bug-reports:
 synopsis:
 description: .
  
-executable: OpenGLRawgen
-main-is: Main.hs
-buildable: True
-hs-source-dirs: src
-other-modules:
-  Spec
-  Spec.Processing
-  Spec.Parsing
-  Spec.RawSpec
-  Main.Options
-  Code.GroupModule
-  Code.Module
-  Code.Compatibility
-  Code.Builder
-  Code.Raw
-ghc-prof-options: -rtsopts -prof -auto-all -caf-all
-ghc-shared-options:
-ghc-options: -Wall -O2 -rtsopts
+executable OpenGLRawgen
+  main-is: Main.hs
+  buildable: True
+  hs-source-dirs: src
+  other-modules:
+    Spec
+    Spec.Processing
+    Spec.Parsing
+    Spec.RawSpec
+    Main.Options
+    Code.GroupModule
+    Code.Module
+    Code.Compatibility
+    Code.Builder
+    Code.Raw
+  build-depends:
+    CodeGenerating >=0.1.0 && <0.2.0,
+    base >=4,
+    containers -any,
+    directory -any,
+    filepath -any,
+    haskell-src-exts -any,
+    mtl -any,
+    opengl-api -any,
+    parsec -any
+  ghc-options: -Wall -O2 -rtsopts
+  ghc-shared-options:
+  ghc-prof-options: -Wall -O2 -rtsopts -prof -auto-all -caf-all
