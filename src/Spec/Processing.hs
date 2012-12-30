@@ -83,17 +83,17 @@ import Spec.RawSpec
 
 -----------------------------------------------------------------------------
 
--- | Clean the 'RawSpec' in order to make it useable for codegeneration.
-cleanupSpec :: RawGenOptions -> RawSpec -> RawSpec
+-- | Clean the 'LocationMap' in order to make it useable for codegeneration.
+cleanupSpec :: RawGenOptions -> LocationMap -> LocationMap
 cleanupSpec opts =
    filterExtensions (flip dropExtension opts)
 
 -----------------------------------------------------------------------------
 -- | Adds reuses for several `Category`s to the spec
-addReuses 
+addReuses
     :: [(Category, [Category])] -- ^ Function reuses
     -> [(Category, [Category])] -- ^ Enum reuses
-    -> RawSpec -> RawSpec
+    -> LocationMap -> LocationMap
 addReuses reuseF reuseE spec = foldr ($) spec $ enumAdds ++ funcAdds
    where
         enumAdds = map (uncurry
@@ -101,10 +101,12 @@ addReuses reuseF reuseE spec = foldr ($) spec $ enumAdds ++ funcAdds
         funcAdds = map (uncurry
             $ addReuse (undefined :: FuncValue)) reuseF
 
+-- | Adds the Reuses for a specific `SpecValue` (only as a hint)
+-- to a Category from a list of Categorys
 addReuse
     :: SpecValue sv
-    => sv -> Category -> [Category] 
-    -> RawSpec -> RawSpec
+    => sv -> Category -> [Category]
+    -> LocationMap -> LocationMap
 addReuse dummyValue cat addFrom rawSpec =
     let vals = (mconcat $ map (flip categoryValues rawSpec) addFrom)
                     `asSetTypeOf` dummyValue
@@ -114,7 +116,9 @@ addReuse dummyValue cat addFrom rawSpec =
     in S.foldr (addLocation cat) rawSpec vals
 -----------------------------------------------------------------------------
 
-filterExtensions :: (Extension -> Bool) -> RawSpec -> RawSpec
+-- | Removes `Category`s based on their `Extension` or keeps them if they
+-- aren't an extension category.
+filterExtensions :: (Extension -> Bool) -> LocationMap -> LocationMap
 filterExtensions predicate rawspec
 	= foldr deleteCategory rawspec filterCats
     where

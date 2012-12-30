@@ -16,7 +16,6 @@
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
---    extensions,
 ) where
 
 -----------------------------------------------------------------------------
@@ -52,7 +51,7 @@ parseSpecs
     :: FilePath         -- ^ The path to \"enumext.spec\"
     -> FilePath         -- ^ The path to \"gl.spec\"
     -> FilePath         -- ^ The path to \"gl.tm\"
-    -> IO (Either ParseError RawSpec)
+    -> IO (Either ParseError (LocationMap, ValueMap))
 parseSpecs esf gsf tmf = do
     especf <- readFile esf
     fspecf <- readFile gsf
@@ -68,14 +67,20 @@ parseSpecs esf gsf tmf = do
 
 
 -- | Parse the enumeration spec.
-parseEnumSpec :: [EnumLine] -> RawSpec
+parseEnumSpec :: [EnumLine] -> (LocationMap, ValueMap)
 parseEnumSpec eLines =
     let specWriter = evalStateT (parseEnumLines eLines)
             (error $ "No category")
-        endoSpec = execWriter specWriter
-    in appEndo endoSpec mempty
+        (endoLMap, endoVMap) = execWriter specWriter
+    in (appEndo endoLMap mempty, appEndo endoVMap mempty)
 
-type EP = StateT Category (Writer (Endo RawSpec))
+type EP = StateT Category (Writer (Endo LocationMap, Endo ValueMap))
+
+tellLoc :: (LocationMap -> LocationMap) -> EP ()
+tellLoc f = tell $ (Endo f, mempty)
+
+tellVal :: (ValueMap -> ValueMap) -> EP ()
+tellVal f = tell $ (mempty, Endo f)
 
 parseEnumLines :: [EnumLine] -> EP ()
 parseEnumLines = sequence_ . map parseEnumLine
@@ -89,7 +94,7 @@ parseEnumLine _             = return ()
 addEnumLocation :: String -> EP ()
 addEnumLocation name = do
     cat <- get
-    tell . Endo $ addLocation cat (wrapName name :: EnumName)
+    tellLoc $ addLocation cat (wrapName name :: EnumName)
 
 addEnumValue :: String -> S.Value -> EP ()
 addEnumValue name v = addValue' $ case v of
@@ -100,7 +105,7 @@ addEnumValue name v = addValue' $ case v of
         in ReUse i' ty
     where
         addValue' :: EnumValue -> EP ()
-        addValue' enumVal = tell . Endo $ addValue (wrapName name) enumVal
+        addValue' enumVal = tellVal $ addValue (wrapName name) enumVal
         ty :: Type
         ty = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
 
@@ -108,10 +113,11 @@ addEnumValue name v = addValue' $ case v of
 
 -- | Parse (or process) the function as the are supplied by the openGL-api
 -- package.
-parseFSpec :: [Function] -> TypeMap -> RawSpec
+parseFSpec :: [Function] -> TypeMap -> (LocationMap, ValueMap)
 parseFSpec funcs tm = foldr add mempty $ map (convertFunc tm) funcs
     where
-        add (c, (fn, fv)) rs = addValue fn fv . addLocation c fn $ rs
+        add (c, (fn, fv)) (lMap, vMap)
+            = (addLocation c fn lMap, addValue fn fv vMap)
 
 convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
 convertFunc tm rf = (funCategory rf, (wrapName name, RawFunc name ty alias))

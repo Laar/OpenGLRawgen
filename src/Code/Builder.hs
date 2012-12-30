@@ -9,7 +9,7 @@
 -- Portability :
 --
 -- | This module defines the Builders used to generate the OpenGLRaw. This
--- includes all sorts of functions to ask the location of things.
+-- includes all sorts of functions to ask the locations, imports, etc. .
 --
 -----------------------------------------------------------------------------
 
@@ -51,7 +51,8 @@ module Code.Builder (
     asksCategories,
     getDefineLoc,
     addDefineLoc,
-    getsRawSpec,
+    asksLocationMap,
+    getsValueMap,modifyValueMap,
     enumLookup,
 ) where
 
@@ -73,7 +74,7 @@ import Main.Options
 
 -----------------------------------------------------------------------------
 
-type BuilderBase = StateT DefineMap (StateT RawSpec (Reader RawGenOptions))
+type BuilderBase = StateT DefineMap (StateT ValueMap (ReaderT LocationMap (Reader RawGenOptions)))
 
 -- | Builder for building modules from the spec.
 type Builder = SModuleBuilder Module BuilderBase
@@ -88,11 +89,12 @@ type GBuilder bm a = StateT bm BuilderBase a
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
 
-execRawPBuilder :: RawGenOptions -> RawSpec
+execRawPBuilder :: RawGenOptions -> (LocationMap, ValueMap)
     -> PackageBuild Module -> RawPBuilder a -> (PackageBuild Module)
-execRawPBuilder opts spec mods builder =
+execRawPBuilder opts (lMap, vMap) mods builder =
     flip runReader opts $
-    flip evalStateT spec $
+    flip runReaderT lMap $
+    flip evalStateT vMap $
     flip evalStateT emptyDefineMap $
     execStateT builder mods
 
@@ -100,7 +102,7 @@ execRawPBuilder opts spec mods builder =
 
 -- | Retrieves an option from the builder.
 asksOption :: (RawGenOptions -> a) -> GBuilder bm a
-asksOption = lift . lift . lift . asks
+asksOption = lift . lift . lift . lift . asks
 
 -- | Lifted version of `when`, to conditionally execute a builder
 whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
@@ -111,7 +113,7 @@ unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
 unlessOption f b = asksOption f >>= \p -> unless p b
 
 unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
-unwrapNameBuilder = lift . lift . lift . asks . unwrapName
+unwrapNameBuilder = asksOption . unwrapName
 
 -----------------------------------------------------------------------------
 
@@ -144,7 +146,7 @@ askCategoryPImport c i = return $ partialImport (categoryModule c) i
 
 -- | Asks the categories defined by the Spec files.
 asksCategories :: ([Category] -> a) -> GBuilder bm a
-asksCategories f = getsRawSpec (f . allCategories)
+asksCategories f = asksLocationMap (f . allCategories)
 
 -----------------------------------------------------------------------------
 
@@ -165,20 +167,26 @@ getDefineLoc = lift . gets . getDefLocation
 addDefineLoc :: SpecValue sv => ValueName sv -> Category -> Builder ()
 addDefineLoc vn cat = lift $ modify (addDefLocation vn cat)
 
--- | Gets the `RawSpec`.
-getsRawSpec :: (RawSpec -> a) -> GBuilder m (a)
-getsRawSpec = lift . lift . gets
+-- | Gets the `ValueMap`.
+getsValueMap :: (ValueMap -> a) -> GBuilder m a
+getsValueMap = lift . lift . gets
+
+modifyValueMap :: (ValueMap -> ValueMap) -> GBuilder m ()
+modifyValueMap = lift . lift . modify
+
+asksLocationMap :: (LocationMap -> a) -> GBuilder m a
+asksLocationMap = lift . lift . lift . asks
 
 enumLookup :: EnumName -> GBuilder m (Maybe EnumValue)
 enumLookup en = do
-    val <- getsRawSpec $ lookupValue en
+    val <- getsValueMap $ lookupValue en
     case val of
         Just (ReUse en1 _) -> do
             loc <- getDefineLoc en1
             case loc of
                 Just _ -> return val
                 Nothing -> do
-                    lift . lift . modify $ swapEnumValue en
+                    modifyValueMap $ swapEnumValue en
                     enumLookup en
         _ -> return val
 

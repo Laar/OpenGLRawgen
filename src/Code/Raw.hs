@@ -38,8 +38,8 @@ import Code.Module
 
 -----------------------------------------------------------------------------
 
--- | Build the OpenGLRaw Package from the 'RawSpec'.
-makeRaw :: RawGenOptions -> RawSpec -> Package Module
+-- | Build the OpenGLRaw Package from the specification.
+makeRaw :: RawGenOptions -> (LocationMap, ValueMap) -> Package Module
 makeRaw opts spec =
     let packbuild = execRawPBuilder opts spec emptyBuilder buildRaw
     in packages packbuild
@@ -60,7 +60,7 @@ buildRaw = do
 -- | Builder for the ffi import modules.
 buildRawImports :: RawPBuilder ()
 buildRawImports = do
-    cats <- getsRawSpec allCategories
+    cats <- asksLocationMap allCategories
     sequence_ $ map defineRawImport cats
 
 -- | Builds a single ffi import module, by executing 'buildModule'.

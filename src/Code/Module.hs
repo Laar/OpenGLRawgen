@@ -40,8 +40,8 @@ import Code.Generating.Builder
 -- enumeration values for the category
 buildModule :: Category -> Builder ()
 buildModule c = do
-    funcs <- getsRawSpec $ categoryValues c
-    enums <- getsRawSpec $ categoryValues c
+    funcs <- asksLocationMap $ categoryValues c
+    enums <- asksLocationMap $ categoryValues c
 
     enumDefs <- fmap and . sequence . map (addEnum c) $ S.toList enums
     funcDefs <- fmap and . sequence . map (addFunc c) $ S.toList funcs
@@ -103,7 +103,7 @@ addCondEImports = askTypesInternalModule >>= ensureImport
 -- import of the local category.
 addFunc :: Category -> FuncName -> Builder Bool
 addFunc c n = do
-    Just (RawFunc gln ty _) <- getsRawSpec $ lookupValue n
+    Just (RawFunc gln ty _) <- getsValueMap $ lookupValue n
     name <- unwrapNameBuilder n
     addExport . EVar . UnQual $  name
     loc <- getDefineLoc n
