@@ -23,9 +23,8 @@ module Code.Module (
 -----------------------------------------------------------------------------
 
 import Control.Monad
-import Control.Monad.Reader
-import qualified Data.Map as M
 import Data.Maybe(fromMaybe)
+import qualified Data.Set as S
 
 import Text.OpenGL.Spec(showCategory)
 import Spec
@@ -41,43 +40,48 @@ import Code.Generating.Builder
 -- enumeration values for the category
 buildModule :: Category -> Builder ()
 buildModule c = do
-    funcs <- asks (M.toList . categoryFuncs c)
-    enums <- asks (M.toList . categoryEnums c)
+    funcs <- asksLocationMap $ categoryValues c
+    enums <- asksLocationMap $ categoryValues c
 
-    sequence_ . map (addEnum c) $ enums
-    sequence_ . map (addFunc c) $ funcs
-    let funcvals = map snd funcs
-    addFunctionConditionals $ funcvals
-    addCondEImports $ map snd enums
+    enumDefs <- fmap and . sequence . map (addEnum c) $ S.toList enums
+    funcDefs <- fmap and . sequence . map (addFunc c) $ S.toList funcs
+    
+    when funcDefs addFunctionConditionals
+    when enumDefs addCondEImports
 
 -----------------------------------------------------------------------------
 
 -- | Adds the enum value pair to the current module, the category is the
 -- current category. This information is needed to prevent import loops.
-addEnum :: Category -> (EnumName, EnumValue) -> Builder ()
-addEnum c (n, t) = do
+addEnum :: Category -> EnumName -> Builder Bool
+addEnum c n = do
     name <- unwrapNameBuilder n
     addExport $ (EVar . UnQual) name
-    case t of
-        Redirect _ _ -> addImport' c n
-        Value val ty -> addValue (Lit $ Int val) ty name
-        ReUse reuseval ty -> do
-                    reuseName <- unwrapNameBuilder reuseval
-                    addValue (var $ reuseName) ty name
-                    addImport' c reuseval
+    loc <- getDefineLoc n
+    case loc of
+        Just c' -> do
+            askCategoryPImport c' [IVar name] >>= addImport 
+            return False
+        Nothing -> do
+            Just x <- enumLookup n
+            case x of
+                Value val ty -> do
+                    addEnumValue (Lit $ Int val) ty name
+                ReUse reuseName ty -> do
+                    reuseName' <- unwrapNameBuilder reuseName
+                    addImport' reuseName reuseName'
+                    addEnumValue (var $ reuseName') ty name
     where
-        addValue val ty name = do
+        addEnumValue val ty name = do
             addDecls $ enumDecl name val ty
-
--- | Adds an import for a value, the category is needed to check it's not in
--- the same category (and therefor preventing imports from the same module)
-addImport' :: Category -> EnumName -> Builder ()
-addImport' c iname = do
-    ic <- askCategory iname >>= return . fromMaybe (error $ "addEnum: Couldn't find: " ++ show iname)
-    when (ic /= c) $ do
-        -- only here translate it as the category lookup should be done on the original name
-        iname' <- unwrapNameBuilder iname
-        askCategoryPImport ic [IVar iname'] >>= addImport
+            addDefineLoc n c
+            return True
+        -- | Adds an import for a specific enum
+        addImport' :: EnumName -> Name -> Builder ()
+        addImport' ename iname = do
+            ic <- getDefineLoc ename >>= return . fromMaybe (error $ "Couldn't find " ++ show iname)
+            when (ic /= c) $ askCategoryPImport ic [IVar iname] 
+                           >>= addImport
 
 -- | The declerations to define the enum, which will look like
 -- > enumName :: enumType
@@ -90,27 +94,29 @@ enumDecl name valExp vtype =
 -- | Adds the imports needed when there is at least a single enumvalue
 -- defined in this module, the 'EnumValue's are needed to check if this
 -- is nessacery
-addCondEImports :: [EnumValue] -> Builder ()
-addCondEImports evs = when (any isDefine evs) $ do
-    askTypesInternalModule >>= ensureImport
+addCondEImports :: Builder ()
+addCondEImports = askTypesInternalModule >>= ensureImport
 
 -----------------------------------------------------------------------------
 
 -- Adds the function to the module. The category is needed to prevent an
 -- import of the local category.
-addFunc :: Category -> (FuncName, FuncValue) -> Builder ()
-addFunc c (n, v) = do
+addFunc :: Category -> FuncName -> Builder Bool
+addFunc c n = do
+    Just (RawFunc gln ty _) <- getsValueMap $ lookupValue n
     name <- unwrapNameBuilder n
     addExport . EVar . UnQual $  name
-    case v of
-        RawFunc gln ty _ -> addFFIDecls gln ty name
-        RedirectF guessc -> addReuse guessc name
+    loc <- getDefineLoc n
+    case loc of
+        Nothing -> do
+            addFFIDecls gln ty name
+            addDefineLoc n c
+            return True
+        Just c' -> do
+            askCategoryPImport c' [IVar $ name] >>= addImport 
+            return False
     where
         -- Adds an import, if it's nessacery, for the function
-        addReuse guessc name = do
-            ic <- askCategory' n guessc
-                >>= return . fromMaybe (error $ "addFunc: Couldn't find : " ++ show n)
-            when (ic /= c) $ askCategoryPImport ic [IVar $ name] >>= addImport
         -- Adds the declaration used to import this function, there are three
         -- declerations for each function. One for the FFI import, one for the
         -- retrieving the 'FuncPtr' to the functions and one for the real
@@ -167,8 +173,8 @@ replaceCallConv r = go
 
 -- | Adds the imports, etc. needed when there is a FFI function import. The
 -- 'FuncValue's are needed to check if there is any such function.
-addFunctionConditionals :: [FuncValue] -> Builder ()
-addFunctionConditionals fvs = when (any isDefine fvs) $  do
+addFunctionConditionals :: Builder ()
+addFunctionConditionals = do
     askTypesInternalModule >>= ensureImport
     let forPtr = ModuleName "Foreign.Ptr"
     ensureImport forPtr

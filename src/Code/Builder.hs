@@ -9,7 +9,7 @@
 -- Portability :
 --
 -- | This module defines the Builders used to generate the OpenGLRaw. This
--- includes all sorts of functions to ask the location of things.
+-- includes all sorts of functions to ask the locations, imports, etc. .
 --
 -----------------------------------------------------------------------------
 
@@ -49,8 +49,11 @@ module Code.Builder (
     isExposedCategory,
     askCorePath,
     asksCategories,
-    askCategory, askCategory',
-
+    getDefineLoc,
+    addDefineLoc,
+    asksLocationMap,
+    getsValueMap,modifyValueMap,
+    enumLookup,
 ) where
 
 -----------------------------------------------------------------------------
@@ -71,30 +74,35 @@ import Main.Options
 
 -----------------------------------------------------------------------------
 
+type BuilderBase = StateT DefineMap (StateT ValueMap (ReaderT LocationMap (Reader RawGenOptions)))
+
 -- | Builder for building modules from the spec.
-type Builder = SModuleBuilder Module (ReaderT RawSpec (Reader RawGenOptions))
+type Builder = SModuleBuilder Module BuilderBase
 -- | Builder to build the package from the spec.
-type RawPBuilder a = PackageBuilder Module (ReaderT RawSpec (Reader RawGenOptions)) a
+type RawPBuilder a = PackageBuilder Module BuilderBase a
 
 -- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
 -- a function can be used in both `Builder` and `RawPBuilder`.
-type GBuilder bm a = StateT bm (ReaderT RawSpec (Reader RawGenOptions)) a
+type GBuilder bm a = StateT bm BuilderBase a
 
 -- | The empty Package builder, with only the baseModule.
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
 
-execRawPBuilder :: RawGenOptions -> RawSpec
+execRawPBuilder :: RawGenOptions -> (LocationMap, ValueMap)
     -> PackageBuild Module -> RawPBuilder a -> (PackageBuild Module)
-execRawPBuilder opts spec mods builder =
+execRawPBuilder opts (lMap, vMap) mods builder =
     flip runReader opts $
-    flip runReaderT spec $
+    flip runReaderT lMap $
+    flip evalStateT vMap $
+    flip evalStateT emptyDefineMap $
     execStateT builder mods
+
 -----------------------------------------------------------------------------
 
 -- | Retrieves an option from the builder.
 asksOption :: (RawGenOptions -> a) -> GBuilder bm a
-asksOption = lift . lift . asks
+asksOption = lift . lift . lift . lift . asks
 
 -- | Lifted version of `when`, to conditionally execute a builder
 whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
@@ -105,7 +113,7 @@ unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
 unlessOption f b = asksOption f >>= \p -> unless p b
 
 unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
-unwrapNameBuilder = lift . lift . asks . unwrapName
+unwrapNameBuilder = asksOption . unwrapName
 
 -----------------------------------------------------------------------------
 
@@ -121,7 +129,7 @@ askExtensionModule = return extensionModule
 askBaseImport, askTypesInternalImport, askTypesExposedImport, askExtensionImport
     :: GBuilder bm ImportDecl
 askBaseImport           = return . importAll $ baseModule
-askTypesInternalImport          = return . importAll $ typesInternalModule
+askTypesInternalImport  = return . importAll $ typesInternalModule
 askTypesExposedImport   = return . importAll $ typesExposedModule
 askExtensionImport      = return . importAll $ extensionModule
 
@@ -138,7 +146,7 @@ askCategoryPImport c i = return $ partialImport (categoryModule c) i
 
 -- | Asks the categories defined by the Spec files.
 asksCategories :: ([Category] -> a) -> GBuilder bm a
-asksCategories f = asks (f . allCategories)
+asksCategories f = asksLocationMap (f . allCategories)
 
 -----------------------------------------------------------------------------
 
@@ -150,19 +158,37 @@ ensureImport m = do
 
 -----------------------------------------------------------------------------
 
--- | Asks the category where a certain `ValueName` is defined, if it's not
+-- | Gets the category where a certain `ValueName` is defined, if it's not
 -- defined the result will be Nothing
-askCategory :: SpecValue sv => ValueName sv -> Builder (Maybe Category)
-askCategory n = asks (whereIsDefined' n)
+getDefineLoc :: SpecValue sv => ValueName sv -> GBuilder a  (Maybe Category)
+getDefineLoc = lift . gets . getDefLocation
 
--- | Same as 'askCategory' but  with a guess that the given category also
--- exports the value. If this guess is correct then that category will be
--- returned.
-askCategory' :: SpecValue sv
-    => ValueName sv -> Category -> Builder (Maybe Category)
-askCategory' n guess = do
-    inCat <- asks (isInCat n guess)
-    if inCat then return $ Just guess else askCategory n
+-- | Adds the location of a value.
+addDefineLoc :: SpecValue sv => ValueName sv -> Category -> Builder ()
+addDefineLoc vn cat = lift $ modify (addDefLocation vn cat)
+
+-- | Gets the `ValueMap`.
+getsValueMap :: (ValueMap -> a) -> GBuilder m a
+getsValueMap = lift . lift . gets
+
+modifyValueMap :: (ValueMap -> ValueMap) -> GBuilder m ()
+modifyValueMap = lift . lift . modify
+
+asksLocationMap :: (LocationMap -> a) -> GBuilder m a
+asksLocationMap = lift . lift . lift . asks
+
+enumLookup :: EnumName -> GBuilder m (Maybe EnumValue)
+enumLookup en = do
+    val <- getsValueMap $ lookupValue en
+    case val of
+        Just (ReUse en1 _) -> do
+            loc <- getDefineLoc en1
+            case loc of
+                Just _ -> return val
+                Nothing -> do
+                    modifyValueMap $ swapEnumValue en
+                    enumLookup en
+        _ -> return val
 
 -----------------------------------------------------------------------------
 

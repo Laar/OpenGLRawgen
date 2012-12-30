@@ -16,29 +16,32 @@
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
---    extensions,
 ) where
 
 -----------------------------------------------------------------------------
 
-import Control.Arrow((***))
 
-import Data.List
+import Control.Monad.State
+import Control.Monad.Writer
+
+import Data.List(stripPrefix)
 import qualified Data.Map as M
-import Data.Maybe
-import Data.Monoid
-import Spec.RawSpec
+import Data.Maybe(fromMaybe)
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 
 import Control.Applicative
-import Text.ParserCombinators.Parsec hiding
+
+import Text.Parsec.String(GenParser)
+import Text.Parsec hiding
   (many, optional, (<|>), token)
 
 import Text.OpenGL.Api as A
 import Text.OpenGL.Spec as S hiding (Value)
 import qualified Text.OpenGL.Spec as S
+
+import Spec.RawSpec
 
 -----------------------------------------------------------------------------
 
@@ -48,13 +51,13 @@ parseSpecs
     :: FilePath         -- ^ The path to \"enumext.spec\"
     -> FilePath         -- ^ The path to \"gl.spec\"
     -> FilePath         -- ^ The path to \"gl.tm\"
-    -> IO (Either ParseError RawSpec)
+    -> IO (Either ParseError (LocationMap, ValueMap))
 parseSpecs esf gsf tmf = do
     especf <- readFile esf
     fspecf <- readFile gsf
     tymapf <- readFile tmf
     return $ do -- (Either ParseError) monad
-        espec  <- enumLines especf >>= parseEnumSpec
+        espec  <- enumLines especf >>= return . parseEnumSpec
         tymap  <- tmLines tymapf >>= return . mkTypeMap
         fspec  <- funLines fspecf >>= return . extractFunctions
         let fspec' = parseFSpec fspec tymap
@@ -62,63 +65,59 @@ parseSpecs esf gsf tmf = do
 
 -----------------------------------------------------------------------------
 
+
 -- | Parse the enumeration spec.
-parseEnumSpec :: [EnumLine] -> Either ParseError RawSpec -- [(Category, [(String, EnumValue)])]
-parseEnumSpec ls =
-    let ls' = filter inputFilter ls
-    in parse pEnumSpec "EnumLines" ls' -- >>= return . nubSpec
+parseEnumSpec :: [EnumLine] -> (LocationMap, ValueMap)
+parseEnumSpec eLines =
+    let specWriter = evalStateT (parseEnumLines eLines)
+            (error $ "No category")
+        (endoLMap, endoVMap) = execWriter specWriter
+    in (appEndo endoLMap mempty, appEndo endoVMap mempty)
 
-type EP = GenParser EnumLine ()
+type EP = StateT Category (Writer (Endo LocationMap, Endo ValueMap))
 
-inputFilter :: EnumLine -> Bool
-inputFilter (Start _ _)  = True
-inputFilter (Enum _ _ _) = True
-inputFilter (Use _ _)    = True
-inputFilter _            = False
+tellLoc :: (LocationMap -> LocationMap) -> EP ()
+tellLoc f = tell $ (Endo f, mempty)
 
-pEnumSpec :: EP RawSpec -- [(Category, [(String, EnumValue)])]
-pEnumSpec = mconcat <$> many pCategory'
+tellVal :: (ValueMap -> ValueMap) -> EP ()
+tellVal f = tell $ (mempty, Endo f)
 
--- | Parse a category header and the enums that come with it.
-pCategory' :: EP RawSpec
-pCategory' = do
-    cat <- pCategoryHeader
-    vals <- many pGLValue
-    return $ categoryRawSpec cat vals
+parseEnumLines :: [EnumLine] -> EP ()
+parseEnumLines = sequence_ . map parseEnumLine
 
-pCategoryHeader :: EP Category
-pCategoryHeader =  tokenPrim showValue nextPos testValue
-    where showValue = show
-          testValue (Start cat _) = Just cat
-          testValue _             = Nothing
-          nextPos sp  _        _ = incSourceColumn sp 1
+parseEnumLine :: EnumLine -> EP ()
+parseEnumLine (Start cat _) = put cat
+parseEnumLine (Enum n v _)  = addEnumValue n v >> addEnumLocation n
+parseEnumLine (Use _ n)     = addEnumLocation n
+parseEnumLine _             = return ()
 
-pGLValue :: EP (EnumName, EnumValue)
-pGLValue = tokenPrim showValue nextPos testValue
+addEnumLocation :: String -> EP ()
+addEnumLocation name = do
+    cat <- get
+    tellLoc $ addLocation cat (wrapName name :: EnumName)
+
+addEnumValue :: String -> S.Value -> EP ()
+addEnumValue name v = addValue' $ case v of
+    Hex  i _ _   -> Value i ty
+    Deci i       -> Value (fromIntegral i) ty
+    Identifier i ->
+        let i' = wrapName . fromMaybe i . stripPrefix "GL_" $ i
+        in ReUse i' ty
     where
-        showValue = show
--- TODO : try to find a better way of determining the valuetype of the enum
-        -- name in the second doesn't need to be extension scrapped
-        testValue (Enum name value _) = Just (wrapName name, partialValue value . valueType $ name)
-        testValue (Use ucat name)     = Just (wrapName name, Redirect ucat . valueType $ name)
-        testValue _                   = Nothing
-        nextPos sp  _ _ = incSourceColumn sp 1
-        partialValue (Hex v _ _)    = Value  v
-        partialValue (Deci i)       = Value $ fromIntegral i
-        partialValue (Identifier i) = ReUse (wrapName . fromMaybe i . stripPrefix "GL_" $ i)
-        valueType name = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
+        addValue' :: EnumValue -> EP ()
+        addValue' enumVal = tellVal $ addValue (wrapName name) enumVal
+        ty :: Type
+        ty = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
 
 -----------------------------------------------------------------------------
 
 -- | Parse (or process) the function as the are supplied by the openGL-api
 -- package.
-parseFSpec :: [Function] -> TypeMap -> RawSpec
-parseFSpec funcs tm =
---    map (\x -> (fst $ head x, map snd x)) -- pull out the categories
---    . groupBy ((==) `on` fst) -- group them by category
---    $ map (convertFunc tm) funcs
-    mconcat . map (uncurry categoryRawSpec . (id *** pure))
-    $ map (convertFunc tm) funcs
+parseFSpec :: [Function] -> TypeMap -> (LocationMap, ValueMap)
+parseFSpec funcs tm = foldr add mempty $ map (convertFunc tm) funcs
+    where
+        add (c, (fn, fv)) (lMap, vMap)
+            = (addLocation c fn lMap, addValue fn fv vMap)
 
 convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
 convertFunc tm rf = (funCategory rf, (wrapName name, RawFunc name ty alias))

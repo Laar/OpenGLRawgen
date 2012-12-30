@@ -13,14 +13,12 @@
 -----------------------------------------------------------------------------
 
 module Spec (
-    module Spec.Lookup,
     module Spec.Processing,
     module Spec.RawSpec,
 ) where
 
 -----------------------------------------------------------------------------
 
-import Spec.Lookup
 import Spec.Processing
 import Spec.RawSpec
 

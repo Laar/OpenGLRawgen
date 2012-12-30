@@ -54,10 +54,11 @@ procNew = do
     erawSpec <- parseSpecs especP fspecP tmspecP
     case erawSpec of
         Left e -> print e
-        Right rawSpec -> do
-            rawSpec' <- processReuses opts rawSpec
+        Right (lMap, vMap) -> do
+            lMap' <- processReuses opts lMap
             let oDir = outputDir opts
-                modules = makeRaw opts . cleanupSpec opts $ rawSpec'
+                lMap'' = cleanupSpec opts lMap'
+                modules = makeRaw opts (lMap'', vMap)
                 -- | Post processes a module and writes it to file
                 pmodule mn m =
                     let msc = replaceCallConv "CALLCONV" $ prettyPrint m
@@ -72,13 +73,13 @@ procNew = do
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse
-processReuses :: RawGenOptions -> RawSpec -> IO RawSpec
-processReuses o spec = do
+processReuses :: RawGenOptions -> LocationMap -> IO LocationMap
+processReuses o lMap = do
     let freuseP = freuseFile o
         ereuseP = ereuseFile o
     freuses <- getReuses freuseP
     ereuses <- getReuses ereuseP
-    return $ addReuses freuses ereuses spec
+    return $ addReuses freuses ereuses lMap
     where
         getReuses :: FilePath -> IO [(Category, [Category])]
         getReuses fp = doesFileExist fp >>= \exists ->
