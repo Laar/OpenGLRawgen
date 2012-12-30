@@ -98,6 +98,7 @@ type FLocationMap 	= LocationMap FuncValue
 
 type DefMap sv = M.Map (ValueName sv) Category
 
+-- | Definition map, which records where each value is used first.
 data DefineMap
     = DefMap
     { enumDMap :: DefMap EnumValue
@@ -109,18 +110,33 @@ emptyDefineMap = DefMap M.empty M.empty
 
 -----------------------------------------------------------------------------
 
+-- | Adds a value to the `RawSpec`.
 addValue :: SpecValue sv => ValueName sv -> sv -> RawSpec -> RawSpec
 addValue vn val = modifyValueMap (M.insert vn val)
 
+-- | Adds the location where a value is used.
 addLocation :: SpecValue sv
     => Category -> ValueName sv -> RawSpec -> RawSpec
 addLocation cat vn = modifyLocationMap (M.insertWith S.union cat $ S.singleton vn)
 
+-- | Deletes a `Category` from the `RawSpec`.
 deleteCategory :: Category -> RawSpec -> RawSpec
 deleteCategory c
 	= modifyLocationMap (M.delete c :: ELocationMap -> ELocationMap)
 	. modifyLocationMap (M.delete c :: FLocationMap -> FLocationMap)
 
+-- | Swaps an `EnumValue` if it's an ReUse directive with the reused
+-- definition. Thus if it was originally
+-- @
+-- Enum1 = 5
+-- Enum2 = Enum1
+-- @
+-- invoking it on Enum2 it will change the spec to resemble if it were
+-- @
+-- Enum1 = Enum2
+-- Enum2 = 5
+-- @
+-- Useful for reordering dependencies.
 swapEnumValue :: EnumName -> RawSpec -> RawSpec
 swapEnumValue e1 rawSpec = case lookupValue e1 rawSpec of
     Just (ReUse e2 ty) ->
