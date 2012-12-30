@@ -8,7 +8,9 @@
 -- Stability   :
 -- Portability :
 --
--- | This Modul contains the functions needed to process the 'RawSpec' from
+-- OLD documentation, needs rewriting an migrating.
+--
+-- This Module contains the functions needed to process the 'RawSpec' from
 -- the way it is after reading it from the spec filter to the one needed,
 -- thus clean enough, to generate the code.
 --
