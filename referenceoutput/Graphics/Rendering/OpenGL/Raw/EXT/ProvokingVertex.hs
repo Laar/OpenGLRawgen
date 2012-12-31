@@ -1,9 +1,10 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.ProvokingVertex
-       (glProvokingVertexEXT, gl_PROVOKING_VERTEX_EXT,
-        gl_LAST_VERTEX_CONVENTION_EXT, gl_FIRST_VERTEX_CONVENTION_EXT,
-        gl_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION_EXT)
+       (glProvokingVertexEXT,
+        gl_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION_EXT,
+        gl_PROVOKING_VERTEX_EXT, gl_LAST_VERTEX_CONVENTION_EXT,
+        gl_FIRST_VERTEX_CONVENTION_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -26,6 +27,9 @@ foreign import CALLCONV unsafe "dynamic" dyn_glProvokingVertexEXT ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
+gl_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION_EXT :: GLenum
+gl_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION_EXT = 36428
+ 
 gl_PROVOKING_VERTEX_EXT :: GLenum
 gl_PROVOKING_VERTEX_EXT = 36431
  
@@ -34,6 +38,3 @@ gl_LAST_VERTEX_CONVENTION_EXT = 36430
  
 gl_FIRST_VERTEX_CONVENTION_EXT :: GLenum
 gl_FIRST_VERTEX_CONVENTION_EXT = 36429
- 
-gl_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION_EXT :: GLenum
-gl_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION_EXT = 36428

@@ -13,53 +13,53 @@ module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core20
         glVertexAttrib2fv, glVertexAttrib2f, glVertexAttrib2dv,
         glVertexAttrib2d, glVertexAttrib1sv, glVertexAttrib1s,
         glVertexAttrib1fv, glVertexAttrib1f, glVertexAttrib1dv,
-        glVertexAttrib1d, glValidateProgram, glUniformMatrix4fv,
-        glUniformMatrix3fv, glUniformMatrix2fv, glUniform4iv, glUniform3iv,
-        glUniform2iv, glUniform1iv, glUniform4fv, glUniform3fv,
-        glUniform2fv, glUniform1fv, glUniform4i, glUniform3i, glUniform2i,
-        glUniform1i, glUniform4f, glUniform3f, glUniform2f, glUniform1f,
-        glUseProgram, glShaderSource, glLinkProgram, glIsShader,
-        glIsProgram, glGetVertexAttribPointerv, glGetVertexAttribiv,
-        glGetVertexAttribfv, glGetVertexAttribdv, glGetUniformiv,
-        glGetUniformfv, glGetUniformLocation, glGetShaderSource,
-        glGetShaderInfoLog, glGetShaderiv, glGetProgramInfoLog,
-        glGetProgramiv, glGetAttribLocation, glGetAttachedShaders,
+        glVertexAttrib1d, glValidateProgram, glUseProgram,
+        glUniformMatrix4fv, glUniformMatrix3fv, glUniformMatrix2fv,
+        glUniform4iv, glUniform4i, glUniform4fv, glUniform4f, glUniform3iv,
+        glUniform3i, glUniform3fv, glUniform3f, glUniform2iv, glUniform2i,
+        glUniform2fv, glUniform2f, glUniform1iv, glUniform1i, glUniform1fv,
+        glUniform1f, glStencilOpSeparate, glStencilMaskSeparate,
+        glStencilFuncSeparate, glShaderSource, glLinkProgram, glIsShader,
+        glIsProgram, glGetVertexAttribiv, glGetVertexAttribfv,
+        glGetVertexAttribdv, glGetVertexAttribPointerv, glGetUniformiv,
+        glGetUniformfv, glGetUniformLocation, glGetShaderiv,
+        glGetShaderSource, glGetShaderInfoLog, glGetProgramiv,
+        glGetProgramInfoLog, glGetAttribLocation, glGetAttachedShaders,
         glGetActiveUniform, glGetActiveAttrib, glEnableVertexAttribArray,
-        glDisableVertexAttribArray, glDetachShader, glDeleteShader,
-        glDeleteProgram, glCreateShader, glCreateProgram, glCompileShader,
-        glBindAttribLocation, glAttachShader, glStencilMaskSeparate,
-        glStencilFuncSeparate, glStencilOpSeparate, glDrawBuffers,
-        glBlendEquationSeparate, gl_STENCIL_BACK_WRITEMASK,
-        gl_STENCIL_BACK_VALUE_MASK, gl_STENCIL_BACK_REF, gl_UPPER_LEFT,
-        gl_LOWER_LEFT, gl_POINT_SPRITE_COORD_ORIGIN, gl_CURRENT_PROGRAM,
-        gl_SHADING_LANGUAGE_VERSION, gl_FRAGMENT_SHADER_DERIVATIVE_HINT,
-        gl_ACTIVE_ATTRIBUTE_MAX_LENGTH, gl_ACTIVE_ATTRIBUTES,
-        gl_SHADER_SOURCE_LENGTH, gl_ACTIVE_UNIFORM_MAX_LENGTH,
-        gl_ACTIVE_UNIFORMS, gl_ATTACHED_SHADERS, gl_INFO_LOG_LENGTH,
-        gl_VALIDATE_STATUS, gl_LINK_STATUS, gl_COMPILE_STATUS,
-        gl_DELETE_STATUS, gl_SAMPLER_2D_SHADOW, gl_SAMPLER_1D_SHADOW,
-        gl_SAMPLER_CUBE, gl_SAMPLER_3D, gl_SAMPLER_2D, gl_SAMPLER_1D,
-        gl_FLOAT_MAT4, gl_FLOAT_MAT3, gl_FLOAT_MAT2, gl_BOOL_VEC4,
-        gl_BOOL_VEC3, gl_BOOL_VEC2, gl_BOOL, gl_INT_VEC4, gl_INT_VEC3,
-        gl_INT_VEC2, gl_FLOAT_VEC4, gl_FLOAT_VEC3, gl_FLOAT_VEC2,
-        gl_SHADER_TYPE, gl_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
-        gl_MAX_VERTEX_TEXTURE_IMAGE_UNITS, gl_MAX_VARYING_FLOATS,
-        gl_MAX_VERTEX_UNIFORM_COMPONENTS,
-        gl_MAX_FRAGMENT_UNIFORM_COMPONENTS, gl_VERTEX_SHADER,
-        gl_FRAGMENT_SHADER, gl_MAX_TEXTURE_IMAGE_UNITS,
-        gl_VERTEX_ATTRIB_ARRAY_NORMALIZED, gl_MAX_VERTEX_ATTRIBS,
-        gl_BLEND_EQUATION_ALPHA, gl_DRAW_BUFFER15, gl_DRAW_BUFFER14,
-        gl_DRAW_BUFFER13, gl_DRAW_BUFFER12, gl_DRAW_BUFFER11,
-        gl_DRAW_BUFFER10, gl_DRAW_BUFFER9, gl_DRAW_BUFFER8,
-        gl_DRAW_BUFFER7, gl_DRAW_BUFFER6, gl_DRAW_BUFFER5, gl_DRAW_BUFFER4,
-        gl_DRAW_BUFFER3, gl_DRAW_BUFFER2, gl_DRAW_BUFFER1, gl_DRAW_BUFFER0,
-        gl_MAX_DRAW_BUFFERS, gl_STENCIL_BACK_PASS_DEPTH_PASS,
-        gl_STENCIL_BACK_PASS_DEPTH_FAIL, gl_STENCIL_BACK_FAIL,
-        gl_STENCIL_BACK_FUNC, gl_VERTEX_ATTRIB_ARRAY_POINTER,
-        gl_VERTEX_PROGRAM_POINT_SIZE, gl_CURRENT_VERTEX_ATTRIB,
+        glDrawBuffers, glDisableVertexAttribArray, glDetachShader,
+        glDeleteShader, glDeleteProgram, glCreateShader, glCreateProgram,
+        glCompileShader, glBlendEquationSeparate, glBindAttribLocation,
+        glAttachShader, gl_VERTEX_SHADER, gl_VERTEX_PROGRAM_POINT_SIZE,
         gl_VERTEX_ATTRIB_ARRAY_TYPE, gl_VERTEX_ATTRIB_ARRAY_STRIDE,
-        gl_VERTEX_ATTRIB_ARRAY_SIZE, gl_VERTEX_ATTRIB_ARRAY_ENABLED,
-        gl_BLEND_EQUATION_RGB)
+        gl_VERTEX_ATTRIB_ARRAY_SIZE, gl_VERTEX_ATTRIB_ARRAY_POINTER,
+        gl_VERTEX_ATTRIB_ARRAY_NORMALIZED, gl_VERTEX_ATTRIB_ARRAY_ENABLED,
+        gl_VALIDATE_STATUS, gl_UPPER_LEFT, gl_STENCIL_BACK_WRITEMASK,
+        gl_STENCIL_BACK_VALUE_MASK, gl_STENCIL_BACK_REF,
+        gl_STENCIL_BACK_PASS_DEPTH_PASS, gl_STENCIL_BACK_PASS_DEPTH_FAIL,
+        gl_STENCIL_BACK_FUNC, gl_STENCIL_BACK_FAIL,
+        gl_SHADING_LANGUAGE_VERSION, gl_SHADER_TYPE,
+        gl_SHADER_SOURCE_LENGTH, gl_SAMPLER_CUBE, gl_SAMPLER_3D,
+        gl_SAMPLER_2D_SHADOW, gl_SAMPLER_2D, gl_SAMPLER_1D_SHADOW,
+        gl_SAMPLER_1D, gl_POINT_SPRITE_COORD_ORIGIN,
+        gl_MAX_VERTEX_UNIFORM_COMPONENTS,
+        gl_MAX_VERTEX_TEXTURE_IMAGE_UNITS, gl_MAX_VERTEX_ATTRIBS,
+        gl_MAX_VARYING_FLOATS, gl_MAX_TEXTURE_IMAGE_UNITS,
+        gl_MAX_FRAGMENT_UNIFORM_COMPONENTS, gl_MAX_DRAW_BUFFERS,
+        gl_MAX_COMBINED_TEXTURE_IMAGE_UNITS, gl_LOWER_LEFT, gl_LINK_STATUS,
+        gl_INT_VEC4, gl_INT_VEC3, gl_INT_VEC2, gl_INFO_LOG_LENGTH,
+        gl_FRAGMENT_SHADER_DERIVATIVE_HINT, gl_FRAGMENT_SHADER,
+        gl_FLOAT_VEC4, gl_FLOAT_VEC3, gl_FLOAT_VEC2, gl_FLOAT_MAT4,
+        gl_FLOAT_MAT3, gl_FLOAT_MAT2, gl_DRAW_BUFFER9, gl_DRAW_BUFFER8,
+        gl_DRAW_BUFFER7, gl_DRAW_BUFFER6, gl_DRAW_BUFFER5, gl_DRAW_BUFFER4,
+        gl_DRAW_BUFFER3, gl_DRAW_BUFFER2, gl_DRAW_BUFFER15,
+        gl_DRAW_BUFFER14, gl_DRAW_BUFFER13, gl_DRAW_BUFFER12,
+        gl_DRAW_BUFFER11, gl_DRAW_BUFFER10, gl_DRAW_BUFFER1,
+        gl_DRAW_BUFFER0, gl_DELETE_STATUS, gl_CURRENT_VERTEX_ATTRIB,
+        gl_CURRENT_PROGRAM, gl_COMPILE_STATUS, gl_BOOL_VEC4, gl_BOOL_VEC3,
+        gl_BOOL_VEC2, gl_BOOL, gl_BLEND_EQUATION_RGB,
+        gl_BLEND_EQUATION_ALPHA, gl_ATTACHED_SHADERS,
+        gl_ACTIVE_UNIFORM_MAX_LENGTH, gl_ACTIVE_UNIFORMS,
+        gl_ACTIVE_ATTRIBUTE_MAX_LENGTH, gl_ACTIVE_ATTRIBUTES)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -687,6 +687,22 @@ foreign import CALLCONV unsafe "dynamic" dyn_glValidateProgram ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO ())
  
+{-# NOINLINE ptr_glUseProgram #-}
+ 
+ptr_glUseProgram :: FunPtr a
+ptr_glUseProgram
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUseProgram"
+ 
+glUseProgram :: GLuint -> IO ()
+glUseProgram = dyn_glUseProgram ptr_glUseProgram
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUseProgram ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO ())
+ 
 {-# NOINLINE ptr_glUniformMatrix4fv #-}
  
 ptr_glUniformMatrix4fv :: FunPtr a
@@ -754,118 +770,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glUniform4iv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLsizei -> Ptr GLint -> IO ())
  
-{-# NOINLINE ptr_glUniform3iv #-}
- 
-ptr_glUniform3iv :: FunPtr a
-ptr_glUniform3iv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform3iv"
- 
-glUniform3iv :: GLint -> GLsizei -> Ptr GLint -> IO ()
-glUniform3iv = dyn_glUniform3iv ptr_glUniform3iv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform3iv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glUniform2iv #-}
- 
-ptr_glUniform2iv :: FunPtr a
-ptr_glUniform2iv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform2iv"
- 
-glUniform2iv :: GLint -> GLsizei -> Ptr GLint -> IO ()
-glUniform2iv = dyn_glUniform2iv ptr_glUniform2iv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform2iv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glUniform1iv #-}
- 
-ptr_glUniform1iv :: FunPtr a
-ptr_glUniform1iv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform1iv"
- 
-glUniform1iv :: GLint -> GLsizei -> Ptr GLint -> IO ()
-glUniform1iv = dyn_glUniform1iv ptr_glUniform1iv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform1iv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glUniform4fv #-}
- 
-ptr_glUniform4fv :: FunPtr a
-ptr_glUniform4fv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform4fv"
- 
-glUniform4fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
-glUniform4fv = dyn_glUniform4fv ptr_glUniform4fv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform4fv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glUniform3fv #-}
- 
-ptr_glUniform3fv :: FunPtr a
-ptr_glUniform3fv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform3fv"
- 
-glUniform3fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
-glUniform3fv = dyn_glUniform3fv ptr_glUniform3fv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform3fv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glUniform2fv #-}
- 
-ptr_glUniform2fv :: FunPtr a
-ptr_glUniform2fv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform2fv"
- 
-glUniform2fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
-glUniform2fv = dyn_glUniform2fv ptr_glUniform2fv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform2fv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glUniform1fv #-}
- 
-ptr_glUniform1fv :: FunPtr a
-ptr_glUniform1fv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform1fv"
- 
-glUniform1fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
-glUniform1fv = dyn_glUniform1fv ptr_glUniform1fv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform1fv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
- 
 {-# NOINLINE ptr_glUniform4i #-}
  
 ptr_glUniform4i :: FunPtr a
@@ -882,53 +786,21 @@ foreign import CALLCONV unsafe "dynamic" dyn_glUniform4i ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLint -> GLint -> GLint -> GLint -> IO ())
  
-{-# NOINLINE ptr_glUniform3i #-}
+{-# NOINLINE ptr_glUniform4fv #-}
  
-ptr_glUniform3i :: FunPtr a
-ptr_glUniform3i
+ptr_glUniform4fv :: FunPtr a
+ptr_glUniform4fv
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_2_0"
-        "glUniform3i"
+        "glUniform4fv"
  
-glUniform3i :: GLint -> GLint -> GLint -> GLint -> IO ()
-glUniform3i = dyn_glUniform3i ptr_glUniform3i
+glUniform4fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
+glUniform4fv = dyn_glUniform4fv ptr_glUniform4fv
  
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform3i ::
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform4fv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLint -> GLint -> GLint -> IO ())
- 
-{-# NOINLINE ptr_glUniform2i #-}
- 
-ptr_glUniform2i :: FunPtr a
-ptr_glUniform2i
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform2i"
- 
-glUniform2i :: GLint -> GLint -> GLint -> IO ()
-glUniform2i = dyn_glUniform2i ptr_glUniform2i
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform2i ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLint -> GLint -> IO ())
- 
-{-# NOINLINE ptr_glUniform1i #-}
- 
-ptr_glUniform1i :: FunPtr a
-ptr_glUniform1i
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glUniform1i"
- 
-glUniform1i :: GLint -> GLint -> IO ()
-glUniform1i = dyn_glUniform1i ptr_glUniform1i
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniform1i ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLint -> IO ())
+                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
  
 {-# NOINLINE ptr_glUniform4f #-}
  
@@ -947,6 +819,54 @@ foreign import CALLCONV unsafe "dynamic" dyn_glUniform4f ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ())
  
+{-# NOINLINE ptr_glUniform3iv #-}
+ 
+ptr_glUniform3iv :: FunPtr a
+ptr_glUniform3iv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform3iv"
+ 
+glUniform3iv :: GLint -> GLsizei -> Ptr GLint -> IO ()
+glUniform3iv = dyn_glUniform3iv ptr_glUniform3iv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform3iv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLsizei -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glUniform3i #-}
+ 
+ptr_glUniform3i :: FunPtr a
+ptr_glUniform3i
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform3i"
+ 
+glUniform3i :: GLint -> GLint -> GLint -> GLint -> IO ()
+glUniform3i = dyn_glUniform3i ptr_glUniform3i
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform3i ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLint -> GLint -> GLint -> IO ())
+ 
+{-# NOINLINE ptr_glUniform3fv #-}
+ 
+ptr_glUniform3fv :: FunPtr a
+ptr_glUniform3fv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform3fv"
+ 
+glUniform3fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
+glUniform3fv = dyn_glUniform3fv ptr_glUniform3fv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform3fv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
+ 
 {-# NOINLINE ptr_glUniform3f #-}
  
 ptr_glUniform3f :: FunPtr a
@@ -962,6 +882,54 @@ glUniform3f = dyn_glUniform3f ptr_glUniform3f
 foreign import CALLCONV unsafe "dynamic" dyn_glUniform3f ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLfloat -> GLfloat -> GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glUniform2iv #-}
+ 
+ptr_glUniform2iv :: FunPtr a
+ptr_glUniform2iv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform2iv"
+ 
+glUniform2iv :: GLint -> GLsizei -> Ptr GLint -> IO ()
+glUniform2iv = dyn_glUniform2iv ptr_glUniform2iv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform2iv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLsizei -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glUniform2i #-}
+ 
+ptr_glUniform2i :: FunPtr a
+ptr_glUniform2i
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform2i"
+ 
+glUniform2i :: GLint -> GLint -> GLint -> IO ()
+glUniform2i = dyn_glUniform2i ptr_glUniform2i
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform2i ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLint -> GLint -> IO ())
+ 
+{-# NOINLINE ptr_glUniform2fv #-}
+ 
+ptr_glUniform2fv :: FunPtr a
+ptr_glUniform2fv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform2fv"
+ 
+glUniform2fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
+glUniform2fv = dyn_glUniform2fv ptr_glUniform2fv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform2fv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
  
 {-# NOINLINE ptr_glUniform2f #-}
  
@@ -979,6 +947,54 @@ foreign import CALLCONV unsafe "dynamic" dyn_glUniform2f ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLfloat -> GLfloat -> IO ())
  
+{-# NOINLINE ptr_glUniform1iv #-}
+ 
+ptr_glUniform1iv :: FunPtr a
+ptr_glUniform1iv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform1iv"
+ 
+glUniform1iv :: GLint -> GLsizei -> Ptr GLint -> IO ()
+glUniform1iv = dyn_glUniform1iv ptr_glUniform1iv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform1iv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLsizei -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glUniform1i #-}
+ 
+ptr_glUniform1i :: FunPtr a
+ptr_glUniform1i
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform1i"
+ 
+glUniform1i :: GLint -> GLint -> IO ()
+glUniform1i = dyn_glUniform1i ptr_glUniform1i
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform1i ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLint -> IO ())
+ 
+{-# NOINLINE ptr_glUniform1fv #-}
+ 
+ptr_glUniform1fv :: FunPtr a
+ptr_glUniform1fv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glUniform1fv"
+ 
+glUniform1fv :: GLint -> GLsizei -> Ptr GLfloat -> IO ()
+glUniform1fv = dyn_glUniform1fv ptr_glUniform1fv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniform1fv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLsizei -> Ptr GLfloat -> IO ())
+ 
 {-# NOINLINE ptr_glUniform1f #-}
  
 ptr_glUniform1f :: FunPtr a
@@ -995,21 +1011,60 @@ foreign import CALLCONV unsafe "dynamic" dyn_glUniform1f ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLfloat -> IO ())
  
-{-# NOINLINE ptr_glUseProgram #-}
+{-# NOINLINE ptr_glStencilOpSeparate #-}
  
-ptr_glUseProgram :: FunPtr a
-ptr_glUseProgram
+ptr_glStencilOpSeparate :: FunPtr a
+ptr_glStencilOpSeparate
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_2_0"
-        "glUseProgram"
+        "glStencilOpSeparate"
  
-glUseProgram :: GLuint -> IO ()
-glUseProgram = dyn_glUseProgram ptr_glUseProgram
+glStencilOpSeparate ::
+                    GLenum -> GLenum -> GLenum -> GLenum -> IO ()
+glStencilOpSeparate
+  = dyn_glStencilOpSeparate ptr_glStencilOpSeparate
  
-foreign import CALLCONV unsafe "dynamic" dyn_glUseProgram ::
+foreign import CALLCONV unsafe "dynamic" dyn_glStencilOpSeparate ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO ())
+                 (GLenum -> GLenum -> GLenum -> GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glStencilMaskSeparate #-}
+ 
+ptr_glStencilMaskSeparate :: FunPtr a
+ptr_glStencilMaskSeparate
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glStencilMaskSeparate"
+ 
+glStencilMaskSeparate :: GLenum -> GLuint -> IO ()
+glStencilMaskSeparate
+  = dyn_glStencilMaskSeparate ptr_glStencilMaskSeparate
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glStencilMaskSeparate
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glStencilFuncSeparate #-}
+ 
+ptr_glStencilFuncSeparate :: FunPtr a
+ptr_glStencilFuncSeparate
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glStencilFuncSeparate"
+ 
+glStencilFuncSeparate ::
+                      GLenum -> GLenum -> GLint -> GLuint -> IO ()
+glStencilFuncSeparate
+  = dyn_glStencilFuncSeparate ptr_glStencilFuncSeparate
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glStencilFuncSeparate
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> GLint -> GLuint -> IO ())
  
 {-# NOINLINE ptr_glShaderSource #-}
  
@@ -1021,12 +1076,12 @@ ptr_glShaderSource
         "glShaderSource"
  
 glShaderSource ::
-               GLuint -> GLsizei -> Ptr (Ptr GLchar) -> Ptr GLint -> IO ()
+               GLuint -> GLsizei -> Ptr GLchar -> Ptr GLint -> IO ()
 glShaderSource = dyn_glShaderSource ptr_glShaderSource
  
 foreign import CALLCONV unsafe "dynamic" dyn_glShaderSource ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLsizei -> Ptr (Ptr GLchar) -> Ptr GLint -> IO ())
+                 (GLuint -> GLsizei -> Ptr GLchar -> Ptr GLint -> IO ())
  
 {-# NOINLINE ptr_glLinkProgram #-}
  
@@ -1075,25 +1130,6 @@ glIsProgram = dyn_glIsProgram ptr_glIsProgram
 foreign import CALLCONV unsafe "dynamic" dyn_glIsProgram ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO GLboolean)
- 
-{-# NOINLINE ptr_glGetVertexAttribPointerv #-}
- 
-ptr_glGetVertexAttribPointerv :: FunPtr a
-ptr_glGetVertexAttribPointerv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glGetVertexAttribPointerv"
- 
-glGetVertexAttribPointerv ::
-                          GLuint -> GLenum -> Ptr (Ptr a) -> IO ()
-glGetVertexAttribPointerv
-  = dyn_glGetVertexAttribPointerv ptr_glGetVertexAttribPointerv
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetVertexAttribPointerv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr (Ptr a) -> IO ())
  
 {-# NOINLINE ptr_glGetVertexAttribiv #-}
  
@@ -1146,6 +1182,25 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribdv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> Ptr GLdouble -> IO ())
  
+{-# NOINLINE ptr_glGetVertexAttribPointerv #-}
+ 
+ptr_glGetVertexAttribPointerv :: FunPtr a
+ptr_glGetVertexAttribPointerv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glGetVertexAttribPointerv"
+ 
+glGetVertexAttribPointerv ::
+                          GLuint -> GLenum -> Ptr (Ptr a) -> IO ()
+glGetVertexAttribPointerv
+  = dyn_glGetVertexAttribPointerv ptr_glGetVertexAttribPointerv
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetVertexAttribPointerv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr (Ptr a) -> IO ())
+ 
 {-# NOINLINE ptr_glGetUniformiv #-}
  
 ptr_glGetUniformiv :: FunPtr a
@@ -1195,6 +1250,22 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetUniformLocation ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> Ptr GLchar -> IO GLint)
  
+{-# NOINLINE ptr_glGetShaderiv #-}
+ 
+ptr_glGetShaderiv :: FunPtr a
+ptr_glGetShaderiv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glGetShaderiv"
+ 
+glGetShaderiv :: GLuint -> GLenum -> Ptr GLint -> IO ()
+glGetShaderiv = dyn_glGetShaderiv ptr_glGetShaderiv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetShaderiv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr GLint -> IO ())
+ 
 {-# NOINLINE ptr_glGetShaderSource #-}
  
 ptr_glGetShaderSource :: FunPtr a
@@ -1229,19 +1300,19 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetShaderInfoLog ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLsizei -> Ptr GLsizei -> Ptr GLchar -> IO ())
  
-{-# NOINLINE ptr_glGetShaderiv #-}
+{-# NOINLINE ptr_glGetProgramiv #-}
  
-ptr_glGetShaderiv :: FunPtr a
-ptr_glGetShaderiv
+ptr_glGetProgramiv :: FunPtr a
+ptr_glGetProgramiv
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_2_0"
-        "glGetShaderiv"
+        "glGetProgramiv"
  
-glGetShaderiv :: GLuint -> GLenum -> Ptr GLint -> IO ()
-glGetShaderiv = dyn_glGetShaderiv ptr_glGetShaderiv
+glGetProgramiv :: GLuint -> GLenum -> Ptr GLint -> IO ()
+glGetProgramiv = dyn_glGetProgramiv ptr_glGetProgramiv
  
-foreign import CALLCONV unsafe "dynamic" dyn_glGetShaderiv ::
+foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramiv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> Ptr GLint -> IO ())
  
@@ -1262,22 +1333,6 @@ glGetProgramInfoLog
 foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramInfoLog ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLsizei -> Ptr GLsizei -> Ptr GLchar -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramiv #-}
- 
-ptr_glGetProgramiv :: FunPtr a
-ptr_glGetProgramiv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glGetProgramiv"
- 
-glGetProgramiv :: GLuint -> GLenum -> Ptr GLint -> IO ()
-glGetProgramiv = dyn_glGetProgramiv ptr_glGetProgramiv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramiv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr GLint -> IO ())
  
 {-# NOINLINE ptr_glGetAttribLocation #-}
  
@@ -1377,6 +1432,22 @@ foreign import CALLCONV unsafe "dynamic"
                dyn_glEnableVertexAttribArray ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glDrawBuffers #-}
+ 
+ptr_glDrawBuffers :: FunPtr a
+ptr_glDrawBuffers
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glDrawBuffers"
+ 
+glDrawBuffers :: GLsizei -> Ptr GLenum -> IO ()
+glDrawBuffers = dyn_glDrawBuffers ptr_glDrawBuffers
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glDrawBuffers ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLsizei -> Ptr GLenum -> IO ())
  
 {-# NOINLINE ptr_glDisableVertexAttribArray #-}
  
@@ -1492,6 +1563,24 @@ foreign import CALLCONV unsafe "dynamic" dyn_glCompileShader ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO ())
  
+{-# NOINLINE ptr_glBlendEquationSeparate #-}
+ 
+ptr_glBlendEquationSeparate :: FunPtr a
+ptr_glBlendEquationSeparate
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_2_0"
+        "glBlendEquationSeparate"
+ 
+glBlendEquationSeparate :: GLenum -> GLenum -> IO ()
+glBlendEquationSeparate
+  = dyn_glBlendEquationSeparate ptr_glBlendEquationSeparate
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glBlendEquationSeparate
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> IO ())
+ 
 {-# NOINLINE ptr_glBindAttribLocation #-}
  
 ptr_glBindAttribLocation :: FunPtr a
@@ -1525,94 +1614,35 @@ foreign import CALLCONV unsafe "dynamic" dyn_glAttachShader ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLuint -> IO ())
  
-{-# NOINLINE ptr_glStencilMaskSeparate #-}
+gl_VERTEX_SHADER :: GLenum
+gl_VERTEX_SHADER = 35633
  
-ptr_glStencilMaskSeparate :: FunPtr a
-ptr_glStencilMaskSeparate
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glStencilMaskSeparate"
+gl_VERTEX_PROGRAM_POINT_SIZE :: GLenum
+gl_VERTEX_PROGRAM_POINT_SIZE = 34370
  
-glStencilMaskSeparate :: GLenum -> GLuint -> IO ()
-glStencilMaskSeparate
-  = dyn_glStencilMaskSeparate ptr_glStencilMaskSeparate
+gl_VERTEX_ATTRIB_ARRAY_TYPE :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_TYPE = 34341
  
-foreign import CALLCONV unsafe "dynamic" dyn_glStencilMaskSeparate
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> IO ())
+gl_VERTEX_ATTRIB_ARRAY_STRIDE :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_STRIDE = 34340
  
-{-# NOINLINE ptr_glStencilFuncSeparate #-}
+gl_VERTEX_ATTRIB_ARRAY_SIZE :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_SIZE = 34339
  
-ptr_glStencilFuncSeparate :: FunPtr a
-ptr_glStencilFuncSeparate
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glStencilFuncSeparate"
+gl_VERTEX_ATTRIB_ARRAY_POINTER :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_POINTER = 34373
  
-glStencilFuncSeparate ::
-                      GLenum -> GLenum -> GLint -> GLuint -> IO ()
-glStencilFuncSeparate
-  = dyn_glStencilFuncSeparate ptr_glStencilFuncSeparate
+gl_VERTEX_ATTRIB_ARRAY_NORMALIZED :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_NORMALIZED = 34922
  
-foreign import CALLCONV unsafe "dynamic" dyn_glStencilFuncSeparate
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> GLint -> GLuint -> IO ())
+gl_VERTEX_ATTRIB_ARRAY_ENABLED :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_ENABLED = 34338
  
-{-# NOINLINE ptr_glStencilOpSeparate #-}
+gl_VALIDATE_STATUS :: GLenum
+gl_VALIDATE_STATUS = 35715
  
-ptr_glStencilOpSeparate :: FunPtr a
-ptr_glStencilOpSeparate
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glStencilOpSeparate"
- 
-glStencilOpSeparate ::
-                    GLenum -> GLenum -> GLenum -> GLenum -> IO ()
-glStencilOpSeparate
-  = dyn_glStencilOpSeparate ptr_glStencilOpSeparate
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glStencilOpSeparate ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> GLenum -> GLenum -> IO ())
- 
-{-# NOINLINE ptr_glDrawBuffers #-}
- 
-ptr_glDrawBuffers :: FunPtr a
-ptr_glDrawBuffers
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glDrawBuffers"
- 
-glDrawBuffers :: GLsizei -> Ptr GLenum -> IO ()
-glDrawBuffers = dyn_glDrawBuffers ptr_glDrawBuffers
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDrawBuffers ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLsizei -> Ptr GLenum -> IO ())
- 
-{-# NOINLINE ptr_glBlendEquationSeparate #-}
- 
-ptr_glBlendEquationSeparate :: FunPtr a
-ptr_glBlendEquationSeparate
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_2_0"
-        "glBlendEquationSeparate"
- 
-glBlendEquationSeparate :: GLenum -> GLenum -> IO ()
-glBlendEquationSeparate
-  = dyn_glBlendEquationSeparate ptr_glBlendEquationSeparate
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glBlendEquationSeparate
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> IO ())
+gl_UPPER_LEFT :: GLenum
+gl_UPPER_LEFT = 36002
  
 gl_STENCIL_BACK_WRITEMASK :: GLenum
 gl_STENCIL_BACK_WRITEMASK = 36005
@@ -1623,62 +1653,26 @@ gl_STENCIL_BACK_VALUE_MASK = 36004
 gl_STENCIL_BACK_REF :: GLenum
 gl_STENCIL_BACK_REF = 36003
  
-gl_UPPER_LEFT :: GLenum
-gl_UPPER_LEFT = 36002
+gl_STENCIL_BACK_PASS_DEPTH_PASS :: GLenum
+gl_STENCIL_BACK_PASS_DEPTH_PASS = 34819
  
-gl_LOWER_LEFT :: GLenum
-gl_LOWER_LEFT = 36001
+gl_STENCIL_BACK_PASS_DEPTH_FAIL :: GLenum
+gl_STENCIL_BACK_PASS_DEPTH_FAIL = 34818
  
-gl_POINT_SPRITE_COORD_ORIGIN :: GLenum
-gl_POINT_SPRITE_COORD_ORIGIN = 36000
+gl_STENCIL_BACK_FUNC :: GLenum
+gl_STENCIL_BACK_FUNC = 34816
  
-gl_CURRENT_PROGRAM :: GLenum
-gl_CURRENT_PROGRAM = 35725
+gl_STENCIL_BACK_FAIL :: GLenum
+gl_STENCIL_BACK_FAIL = 34817
  
 gl_SHADING_LANGUAGE_VERSION :: GLenum
 gl_SHADING_LANGUAGE_VERSION = 35724
  
-gl_FRAGMENT_SHADER_DERIVATIVE_HINT :: GLenum
-gl_FRAGMENT_SHADER_DERIVATIVE_HINT = 35723
- 
-gl_ACTIVE_ATTRIBUTE_MAX_LENGTH :: GLenum
-gl_ACTIVE_ATTRIBUTE_MAX_LENGTH = 35722
- 
-gl_ACTIVE_ATTRIBUTES :: GLenum
-gl_ACTIVE_ATTRIBUTES = 35721
+gl_SHADER_TYPE :: GLenum
+gl_SHADER_TYPE = 35663
  
 gl_SHADER_SOURCE_LENGTH :: GLenum
 gl_SHADER_SOURCE_LENGTH = 35720
- 
-gl_ACTIVE_UNIFORM_MAX_LENGTH :: GLenum
-gl_ACTIVE_UNIFORM_MAX_LENGTH = 35719
- 
-gl_ACTIVE_UNIFORMS :: GLenum
-gl_ACTIVE_UNIFORMS = 35718
- 
-gl_ATTACHED_SHADERS :: GLenum
-gl_ATTACHED_SHADERS = 35717
- 
-gl_INFO_LOG_LENGTH :: GLenum
-gl_INFO_LOG_LENGTH = 35716
- 
-gl_VALIDATE_STATUS :: GLenum
-gl_VALIDATE_STATUS = 35715
- 
-gl_LINK_STATUS :: GLenum
-gl_LINK_STATUS = 35714
- 
-gl_COMPILE_STATUS :: GLenum
-gl_COMPILE_STATUS = 35713
- 
-gl_DELETE_STATUS :: GLenum
-gl_DELETE_STATUS = 35712
- 
-gl_SAMPLER_2D_SHADOW :: GLenum
-gl_SAMPLER_2D_SHADOW = 35682
- 
-gl_SAMPLER_1D_SHADOW :: GLenum
-gl_SAMPLER_1D_SHADOW = 35681
  
 gl_SAMPLER_CUBE :: GLenum
 gl_SAMPLER_CUBE = 35680
@@ -1686,32 +1680,50 @@ gl_SAMPLER_CUBE = 35680
 gl_SAMPLER_3D :: GLenum
 gl_SAMPLER_3D = 35679
  
+gl_SAMPLER_2D_SHADOW :: GLenum
+gl_SAMPLER_2D_SHADOW = 35682
+ 
 gl_SAMPLER_2D :: GLenum
 gl_SAMPLER_2D = 35678
+ 
+gl_SAMPLER_1D_SHADOW :: GLenum
+gl_SAMPLER_1D_SHADOW = 35681
  
 gl_SAMPLER_1D :: GLenum
 gl_SAMPLER_1D = 35677
  
-gl_FLOAT_MAT4 :: GLenum
-gl_FLOAT_MAT4 = 35676
+gl_POINT_SPRITE_COORD_ORIGIN :: GLenum
+gl_POINT_SPRITE_COORD_ORIGIN = 36000
  
-gl_FLOAT_MAT3 :: GLenum
-gl_FLOAT_MAT3 = 35675
+gl_MAX_VERTEX_UNIFORM_COMPONENTS :: GLenum
+gl_MAX_VERTEX_UNIFORM_COMPONENTS = 35658
  
-gl_FLOAT_MAT2 :: GLenum
-gl_FLOAT_MAT2 = 35674
+gl_MAX_VERTEX_TEXTURE_IMAGE_UNITS :: GLenum
+gl_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 35660
  
-gl_BOOL_VEC4 :: GLenum
-gl_BOOL_VEC4 = 35673
+gl_MAX_VERTEX_ATTRIBS :: GLenum
+gl_MAX_VERTEX_ATTRIBS = 34921
  
-gl_BOOL_VEC3 :: GLenum
-gl_BOOL_VEC3 = 35672
+gl_MAX_VARYING_FLOATS :: GLenum
+gl_MAX_VARYING_FLOATS = 35659
  
-gl_BOOL_VEC2 :: GLenum
-gl_BOOL_VEC2 = 35671
+gl_MAX_TEXTURE_IMAGE_UNITS :: GLenum
+gl_MAX_TEXTURE_IMAGE_UNITS = 34930
  
-gl_BOOL :: GLenum
-gl_BOOL = 35670
+gl_MAX_FRAGMENT_UNIFORM_COMPONENTS :: GLenum
+gl_MAX_FRAGMENT_UNIFORM_COMPONENTS = 35657
+ 
+gl_MAX_DRAW_BUFFERS :: GLenum
+gl_MAX_DRAW_BUFFERS = 34852
+ 
+gl_MAX_COMBINED_TEXTURE_IMAGE_UNITS :: GLenum
+gl_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 35661
+ 
+gl_LOWER_LEFT :: GLenum
+gl_LOWER_LEFT = 36001
+ 
+gl_LINK_STATUS :: GLenum
+gl_LINK_STATUS = 35714
  
 gl_INT_VEC4 :: GLenum
 gl_INT_VEC4 = 35669
@@ -1722,6 +1734,15 @@ gl_INT_VEC3 = 35668
 gl_INT_VEC2 :: GLenum
 gl_INT_VEC2 = 35667
  
+gl_INFO_LOG_LENGTH :: GLenum
+gl_INFO_LOG_LENGTH = 35716
+ 
+gl_FRAGMENT_SHADER_DERIVATIVE_HINT :: GLenum
+gl_FRAGMENT_SHADER_DERIVATIVE_HINT = 35723
+ 
+gl_FRAGMENT_SHADER :: GLenum
+gl_FRAGMENT_SHADER = 35632
+ 
 gl_FLOAT_VEC4 :: GLenum
 gl_FLOAT_VEC4 = 35666
  
@@ -1731,59 +1752,14 @@ gl_FLOAT_VEC3 = 35665
 gl_FLOAT_VEC2 :: GLenum
 gl_FLOAT_VEC2 = 35664
  
-gl_SHADER_TYPE :: GLenum
-gl_SHADER_TYPE = 35663
+gl_FLOAT_MAT4 :: GLenum
+gl_FLOAT_MAT4 = 35676
  
-gl_MAX_COMBINED_TEXTURE_IMAGE_UNITS :: GLenum
-gl_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 35661
+gl_FLOAT_MAT3 :: GLenum
+gl_FLOAT_MAT3 = 35675
  
-gl_MAX_VERTEX_TEXTURE_IMAGE_UNITS :: GLenum
-gl_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 35660
- 
-gl_MAX_VARYING_FLOATS :: GLenum
-gl_MAX_VARYING_FLOATS = 35659
- 
-gl_MAX_VERTEX_UNIFORM_COMPONENTS :: GLenum
-gl_MAX_VERTEX_UNIFORM_COMPONENTS = 35658
- 
-gl_MAX_FRAGMENT_UNIFORM_COMPONENTS :: GLenum
-gl_MAX_FRAGMENT_UNIFORM_COMPONENTS = 35657
- 
-gl_VERTEX_SHADER :: GLenum
-gl_VERTEX_SHADER = 35633
- 
-gl_FRAGMENT_SHADER :: GLenum
-gl_FRAGMENT_SHADER = 35632
- 
-gl_MAX_TEXTURE_IMAGE_UNITS :: GLenum
-gl_MAX_TEXTURE_IMAGE_UNITS = 34930
- 
-gl_VERTEX_ATTRIB_ARRAY_NORMALIZED :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_NORMALIZED = 34922
- 
-gl_MAX_VERTEX_ATTRIBS :: GLenum
-gl_MAX_VERTEX_ATTRIBS = 34921
- 
-gl_BLEND_EQUATION_ALPHA :: GLenum
-gl_BLEND_EQUATION_ALPHA = 34877
- 
-gl_DRAW_BUFFER15 :: GLenum
-gl_DRAW_BUFFER15 = 34868
- 
-gl_DRAW_BUFFER14 :: GLenum
-gl_DRAW_BUFFER14 = 34867
- 
-gl_DRAW_BUFFER13 :: GLenum
-gl_DRAW_BUFFER13 = 34866
- 
-gl_DRAW_BUFFER12 :: GLenum
-gl_DRAW_BUFFER12 = 34865
- 
-gl_DRAW_BUFFER11 :: GLenum
-gl_DRAW_BUFFER11 = 34864
- 
-gl_DRAW_BUFFER10 :: GLenum
-gl_DRAW_BUFFER10 = 34863
+gl_FLOAT_MAT2 :: GLenum
+gl_FLOAT_MAT2 = 35674
  
 gl_DRAW_BUFFER9 :: GLenum
 gl_DRAW_BUFFER9 = 34862
@@ -1809,47 +1785,71 @@ gl_DRAW_BUFFER3 = 34856
 gl_DRAW_BUFFER2 :: GLenum
 gl_DRAW_BUFFER2 = 34855
  
+gl_DRAW_BUFFER15 :: GLenum
+gl_DRAW_BUFFER15 = 34868
+ 
+gl_DRAW_BUFFER14 :: GLenum
+gl_DRAW_BUFFER14 = 34867
+ 
+gl_DRAW_BUFFER13 :: GLenum
+gl_DRAW_BUFFER13 = 34866
+ 
+gl_DRAW_BUFFER12 :: GLenum
+gl_DRAW_BUFFER12 = 34865
+ 
+gl_DRAW_BUFFER11 :: GLenum
+gl_DRAW_BUFFER11 = 34864
+ 
+gl_DRAW_BUFFER10 :: GLenum
+gl_DRAW_BUFFER10 = 34863
+ 
 gl_DRAW_BUFFER1 :: GLenum
 gl_DRAW_BUFFER1 = 34854
  
 gl_DRAW_BUFFER0 :: GLenum
 gl_DRAW_BUFFER0 = 34853
  
-gl_MAX_DRAW_BUFFERS :: GLenum
-gl_MAX_DRAW_BUFFERS = 34852
- 
-gl_STENCIL_BACK_PASS_DEPTH_PASS :: GLenum
-gl_STENCIL_BACK_PASS_DEPTH_PASS = 34819
- 
-gl_STENCIL_BACK_PASS_DEPTH_FAIL :: GLenum
-gl_STENCIL_BACK_PASS_DEPTH_FAIL = 34818
- 
-gl_STENCIL_BACK_FAIL :: GLenum
-gl_STENCIL_BACK_FAIL = 34817
- 
-gl_STENCIL_BACK_FUNC :: GLenum
-gl_STENCIL_BACK_FUNC = 34816
- 
-gl_VERTEX_ATTRIB_ARRAY_POINTER :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_POINTER = 34373
- 
-gl_VERTEX_PROGRAM_POINT_SIZE :: GLenum
-gl_VERTEX_PROGRAM_POINT_SIZE = 34370
+gl_DELETE_STATUS :: GLenum
+gl_DELETE_STATUS = 35712
  
 gl_CURRENT_VERTEX_ATTRIB :: GLenum
 gl_CURRENT_VERTEX_ATTRIB = 34342
  
-gl_VERTEX_ATTRIB_ARRAY_TYPE :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_TYPE = 34341
+gl_CURRENT_PROGRAM :: GLenum
+gl_CURRENT_PROGRAM = 35725
  
-gl_VERTEX_ATTRIB_ARRAY_STRIDE :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_STRIDE = 34340
+gl_COMPILE_STATUS :: GLenum
+gl_COMPILE_STATUS = 35713
  
-gl_VERTEX_ATTRIB_ARRAY_SIZE :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_SIZE = 34339
+gl_BOOL_VEC4 :: GLenum
+gl_BOOL_VEC4 = 35673
  
-gl_VERTEX_ATTRIB_ARRAY_ENABLED :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_ENABLED = 34338
+gl_BOOL_VEC3 :: GLenum
+gl_BOOL_VEC3 = 35672
+ 
+gl_BOOL_VEC2 :: GLenum
+gl_BOOL_VEC2 = 35671
+ 
+gl_BOOL :: GLenum
+gl_BOOL = 35670
  
 gl_BLEND_EQUATION_RGB :: GLenum
 gl_BLEND_EQUATION_RGB = 32777
+ 
+gl_BLEND_EQUATION_ALPHA :: GLenum
+gl_BLEND_EQUATION_ALPHA = 34877
+ 
+gl_ATTACHED_SHADERS :: GLenum
+gl_ATTACHED_SHADERS = 35717
+ 
+gl_ACTIVE_UNIFORM_MAX_LENGTH :: GLenum
+gl_ACTIVE_UNIFORM_MAX_LENGTH = 35719
+ 
+gl_ACTIVE_UNIFORMS :: GLenum
+gl_ACTIVE_UNIFORMS = 35718
+ 
+gl_ACTIVE_ATTRIBUTE_MAX_LENGTH :: GLenum
+gl_ACTIVE_ATTRIBUTE_MAX_LENGTH = 35722
+ 
+gl_ACTIVE_ATTRIBUTES :: GLenum
+gl_ACTIVE_ATTRIBUTES = 35721

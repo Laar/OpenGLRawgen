@@ -2,8 +2,8 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.PointParameters
        (glPointParameterfvEXT, glPointParameterfEXT,
-        gl_DISTANCE_ATTENUATION_EXT, gl_POINT_FADE_THRESHOLD_SIZE_EXT,
-        gl_POINT_SIZE_MAX_EXT, gl_POINT_SIZE_MIN_EXT)
+        gl_POINT_SIZE_MIN_EXT, gl_POINT_SIZE_MAX_EXT,
+        gl_POINT_FADE_THRESHOLD_SIZE_EXT, gl_DISTANCE_ATTENUATION_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -44,14 +44,14 @@ foreign import CALLCONV unsafe "dynamic" dyn_glPointParameterfEXT ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLfloat -> IO ())
  
-gl_DISTANCE_ATTENUATION_EXT :: GLenum
-gl_DISTANCE_ATTENUATION_EXT = 33065
- 
-gl_POINT_FADE_THRESHOLD_SIZE_EXT :: GLenum
-gl_POINT_FADE_THRESHOLD_SIZE_EXT = 33064
+gl_POINT_SIZE_MIN_EXT :: GLenum
+gl_POINT_SIZE_MIN_EXT = 33062
  
 gl_POINT_SIZE_MAX_EXT :: GLenum
 gl_POINT_SIZE_MAX_EXT = 33063
  
-gl_POINT_SIZE_MIN_EXT :: GLenum
-gl_POINT_SIZE_MIN_EXT = 33062
+gl_POINT_FADE_THRESHOLD_SIZE_EXT :: GLenum
+gl_POINT_FADE_THRESHOLD_SIZE_EXT = 33064
+ 
+gl_DISTANCE_ATTENUATION_EXT :: GLenum
+gl_DISTANCE_ATTENUATION_EXT = 33065

@@ -1,33 +1,15 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ARB.TransposeMatrix
-       (glMultTransposeMatrixdARB, glMultTransposeMatrixfARB,
-        glLoadTransposeMatrixdARB, glLoadTransposeMatrixfARB,
-        gl_TRANSPOSE_COLOR_MATRIX_ARB, gl_TRANSPOSE_TEXTURE_MATRIX_ARB,
+       (glMultTransposeMatrixfARB, glMultTransposeMatrixdARB,
+        glLoadTransposeMatrixfARB, glLoadTransposeMatrixdARB,
+        gl_TRANSPOSE_TEXTURE_MATRIX_ARB,
         gl_TRANSPOSE_PROJECTION_MATRIX_ARB,
-        gl_TRANSPOSE_MODELVIEW_MATRIX_ARB)
+        gl_TRANSPOSE_MODELVIEW_MATRIX_ARB, gl_TRANSPOSE_COLOR_MATRIX_ARB)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
- 
-{-# NOINLINE ptr_glMultTransposeMatrixdARB #-}
- 
-ptr_glMultTransposeMatrixdARB :: FunPtr a
-ptr_glMultTransposeMatrixdARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_transpose_matrix"
-        "glMultTransposeMatrixdARB"
- 
-glMultTransposeMatrixdARB :: Ptr GLdouble -> IO ()
-glMultTransposeMatrixdARB
-  = dyn_glMultTransposeMatrixdARB ptr_glMultTransposeMatrixdARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glMultTransposeMatrixdARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLdouble -> IO ())
  
 {-# NOINLINE ptr_glMultTransposeMatrixfARB #-}
  
@@ -47,21 +29,21 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr GLfloat -> IO ())
  
-{-# NOINLINE ptr_glLoadTransposeMatrixdARB #-}
+{-# NOINLINE ptr_glMultTransposeMatrixdARB #-}
  
-ptr_glLoadTransposeMatrixdARB :: FunPtr a
-ptr_glLoadTransposeMatrixdARB
+ptr_glMultTransposeMatrixdARB :: FunPtr a
+ptr_glMultTransposeMatrixdARB
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_ARB_transpose_matrix"
-        "glLoadTransposeMatrixdARB"
+        "glMultTransposeMatrixdARB"
  
-glLoadTransposeMatrixdARB :: Ptr GLdouble -> IO ()
-glLoadTransposeMatrixdARB
-  = dyn_glLoadTransposeMatrixdARB ptr_glLoadTransposeMatrixdARB
+glMultTransposeMatrixdARB :: Ptr GLdouble -> IO ()
+glMultTransposeMatrixdARB
+  = dyn_glMultTransposeMatrixdARB ptr_glMultTransposeMatrixdARB
  
 foreign import CALLCONV unsafe "dynamic"
-               dyn_glLoadTransposeMatrixdARB ::
+               dyn_glMultTransposeMatrixdARB ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr GLdouble -> IO ())
  
@@ -83,8 +65,23 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr GLfloat -> IO ())
  
-gl_TRANSPOSE_COLOR_MATRIX_ARB :: GLenum
-gl_TRANSPOSE_COLOR_MATRIX_ARB = 34022
+{-# NOINLINE ptr_glLoadTransposeMatrixdARB #-}
+ 
+ptr_glLoadTransposeMatrixdARB :: FunPtr a
+ptr_glLoadTransposeMatrixdARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_transpose_matrix"
+        "glLoadTransposeMatrixdARB"
+ 
+glLoadTransposeMatrixdARB :: Ptr GLdouble -> IO ()
+glLoadTransposeMatrixdARB
+  = dyn_glLoadTransposeMatrixdARB ptr_glLoadTransposeMatrixdARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glLoadTransposeMatrixdARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLdouble -> IO ())
  
 gl_TRANSPOSE_TEXTURE_MATRIX_ARB :: GLenum
 gl_TRANSPOSE_TEXTURE_MATRIX_ARB = 34021
@@ -94,3 +91,6 @@ gl_TRANSPOSE_PROJECTION_MATRIX_ARB = 34020
  
 gl_TRANSPOSE_MODELVIEW_MATRIX_ARB :: GLenum
 gl_TRANSPOSE_MODELVIEW_MATRIX_ARB = 34019
+ 
+gl_TRANSPOSE_COLOR_MATRIX_ARB :: GLenum
+gl_TRANSPOSE_COLOR_MATRIX_ARB = 34022

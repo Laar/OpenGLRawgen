@@ -3,16 +3,15 @@
 module Graphics.Rendering.OpenGL.Raw.APPLE.VertexProgramEvaluators
        (glMapVertexAttrib2fAPPLE, glMapVertexAttrib2dAPPLE,
         glMapVertexAttrib1fAPPLE, glMapVertexAttrib1dAPPLE,
-        glIsVertexAttribEnabledAPPLE, glDisableVertexAttribAPPLE,
-        glEnableVertexAttribAPPLE, gl_VERTEX_ATTRIB_MAP2_DOMAIN_APPLE,
+        glIsVertexAttribEnabledAPPLE, glEnableVertexAttribAPPLE,
+        glDisableVertexAttribAPPLE, gl_VERTEX_ATTRIB_MAP2_SIZE_APPLE,
         gl_VERTEX_ATTRIB_MAP2_ORDER_APPLE,
-        gl_VERTEX_ATTRIB_MAP2_COEFF_APPLE,
-        gl_VERTEX_ATTRIB_MAP2_SIZE_APPLE,
-        gl_VERTEX_ATTRIB_MAP1_DOMAIN_APPLE,
+        gl_VERTEX_ATTRIB_MAP2_DOMAIN_APPLE,
+        gl_VERTEX_ATTRIB_MAP2_COEFF_APPLE, gl_VERTEX_ATTRIB_MAP2_APPLE,
+        gl_VERTEX_ATTRIB_MAP1_SIZE_APPLE,
         gl_VERTEX_ATTRIB_MAP1_ORDER_APPLE,
-        gl_VERTEX_ATTRIB_MAP1_COEFF_APPLE,
-        gl_VERTEX_ATTRIB_MAP1_SIZE_APPLE, gl_VERTEX_ATTRIB_MAP2_APPLE,
-        gl_VERTEX_ATTRIB_MAP1_APPLE)
+        gl_VERTEX_ATTRIB_MAP1_DOMAIN_APPLE,
+        gl_VERTEX_ATTRIB_MAP1_COEFF_APPLE, gl_VERTEX_ATTRIB_MAP1_APPLE)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -144,24 +143,6 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> IO GLboolean)
  
-{-# NOINLINE ptr_glDisableVertexAttribAPPLE #-}
- 
-ptr_glDisableVertexAttribAPPLE :: FunPtr a
-ptr_glDisableVertexAttribAPPLE
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_APPLE_vertex_program_evaluators"
-        "glDisableVertexAttribAPPLE"
- 
-glDisableVertexAttribAPPLE :: GLuint -> GLenum -> IO ()
-glDisableVertexAttribAPPLE
-  = dyn_glDisableVertexAttribAPPLE ptr_glDisableVertexAttribAPPLE
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glDisableVertexAttribAPPLE ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> IO ())
- 
 {-# NOINLINE ptr_glEnableVertexAttribAPPLE #-}
  
 ptr_glEnableVertexAttribAPPLE :: FunPtr a
@@ -180,32 +161,50 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> IO ())
  
-gl_VERTEX_ATTRIB_MAP2_DOMAIN_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP2_DOMAIN_APPLE = 35337
+{-# NOINLINE ptr_glDisableVertexAttribAPPLE #-}
  
-gl_VERTEX_ATTRIB_MAP2_ORDER_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP2_ORDER_APPLE = 35336
+ptr_glDisableVertexAttribAPPLE :: FunPtr a
+ptr_glDisableVertexAttribAPPLE
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_APPLE_vertex_program_evaluators"
+        "glDisableVertexAttribAPPLE"
  
-gl_VERTEX_ATTRIB_MAP2_COEFF_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP2_COEFF_APPLE = 35335
+glDisableVertexAttribAPPLE :: GLuint -> GLenum -> IO ()
+glDisableVertexAttribAPPLE
+  = dyn_glDisableVertexAttribAPPLE ptr_glDisableVertexAttribAPPLE
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glDisableVertexAttribAPPLE ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> IO ())
  
 gl_VERTEX_ATTRIB_MAP2_SIZE_APPLE :: GLenum
 gl_VERTEX_ATTRIB_MAP2_SIZE_APPLE = 35334
  
-gl_VERTEX_ATTRIB_MAP1_DOMAIN_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP1_DOMAIN_APPLE = 35333
+gl_VERTEX_ATTRIB_MAP2_ORDER_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP2_ORDER_APPLE = 35336
  
-gl_VERTEX_ATTRIB_MAP1_ORDER_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP1_ORDER_APPLE = 35332
+gl_VERTEX_ATTRIB_MAP2_DOMAIN_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP2_DOMAIN_APPLE = 35337
  
-gl_VERTEX_ATTRIB_MAP1_COEFF_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP1_COEFF_APPLE = 35331
+gl_VERTEX_ATTRIB_MAP2_COEFF_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP2_COEFF_APPLE = 35335
+ 
+gl_VERTEX_ATTRIB_MAP2_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP2_APPLE = 35329
  
 gl_VERTEX_ATTRIB_MAP1_SIZE_APPLE :: GLenum
 gl_VERTEX_ATTRIB_MAP1_SIZE_APPLE = 35330
  
-gl_VERTEX_ATTRIB_MAP2_APPLE :: GLenum
-gl_VERTEX_ATTRIB_MAP2_APPLE = 35329
+gl_VERTEX_ATTRIB_MAP1_ORDER_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP1_ORDER_APPLE = 35332
+ 
+gl_VERTEX_ATTRIB_MAP1_DOMAIN_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP1_DOMAIN_APPLE = 35333
+ 
+gl_VERTEX_ATTRIB_MAP1_COEFF_APPLE :: GLenum
+gl_VERTEX_ATTRIB_MAP1_COEFF_APPLE = 35331
  
 gl_VERTEX_ATTRIB_MAP1_APPLE :: GLenum
 gl_VERTEX_ATTRIB_MAP1_APPLE = 35328

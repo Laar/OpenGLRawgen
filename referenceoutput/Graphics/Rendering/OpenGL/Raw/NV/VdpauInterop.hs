@@ -1,17 +1,34 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.VdpauInterop
-       (glVDPAUUnmapSurfacesNV, glVDPAUMapSurfacesNV,
-        glVDPAUSurfaceAccessNV, glVDPAUGetSurfaceivNV,
-        glVDPAUUnregisterSurfaceNV, glVDPAUIsSurfaceNV,
-        glVDPAURegisterOutputSurfaceNV, glVDPAURegisterVideoSurfaceNV,
-        glVDPAUFiniNV, glVDPAUInitNV, gl_WRITE_DISCARD_NV,
-        gl_SURFACE_MAPPED_NV, gl_SURFACE_REGISTERED_NV,
-        gl_SURFACE_STATE_NV)
+       (glVDPAUUnregisterSurfaceNV, glVDPAUUnmapSurfacesNV,
+        glVDPAUSurfaceAccessNV, glVDPAURegisterVideoSurfaceNV,
+        glVDPAURegisterOutputSurfaceNV, glVDPAUMapSurfacesNV,
+        glVDPAUIsSurfaceNV, glVDPAUInitNV, glVDPAUGetSurfaceivNV,
+        glVDPAUFiniNV, gl_WRITE_DISCARD_NV, gl_SURFACE_STATE_NV,
+        gl_SURFACE_REGISTERED_NV, gl_SURFACE_MAPPED_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glVDPAUUnregisterSurfaceNV #-}
+ 
+ptr_glVDPAUUnregisterSurfaceNV :: FunPtr a
+ptr_glVDPAUUnregisterSurfaceNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_vdpau_interop"
+        "glVDPAUUnregisterSurfaceNV"
+ 
+glVDPAUUnregisterSurfaceNV :: GLintptr -> IO ()
+glVDPAUUnregisterSurfaceNV
+  = dyn_glVDPAUUnregisterSurfaceNV ptr_glVDPAUUnregisterSurfaceNV
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glVDPAUUnregisterSurfaceNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLintptr -> IO ())
  
 {-# NOINLINE ptr_glVDPAUUnmapSurfacesNV #-}
  
@@ -28,23 +45,6 @@ glVDPAUUnmapSurfacesNV
  
 foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUUnmapSurfacesNV
                ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLsizei -> Ptr GLintptr -> IO ())
- 
-{-# NOINLINE ptr_glVDPAUMapSurfacesNV #-}
- 
-ptr_glVDPAUMapSurfacesNV :: FunPtr a
-ptr_glVDPAUMapSurfacesNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_vdpau_interop"
-        "glVDPAUMapSurfacesNV"
- 
-glVDPAUMapSurfacesNV :: GLsizei -> Ptr GLintptr -> IO ()
-glVDPAUMapSurfacesNV
-  = dyn_glVDPAUMapSurfacesNV ptr_glVDPAUMapSurfacesNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUMapSurfacesNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr GLintptr -> IO ())
  
@@ -66,59 +66,25 @@ foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUSurfaceAccessNV
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLintptr -> GLenum -> IO ())
  
-{-# NOINLINE ptr_glVDPAUGetSurfaceivNV #-}
+{-# NOINLINE ptr_glVDPAURegisterVideoSurfaceNV #-}
  
-ptr_glVDPAUGetSurfaceivNV :: FunPtr a
-ptr_glVDPAUGetSurfaceivNV
+ptr_glVDPAURegisterVideoSurfaceNV :: FunPtr a
+ptr_glVDPAURegisterVideoSurfaceNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_vdpau_interop"
-        "glVDPAUGetSurfaceivNV"
+        "glVDPAURegisterVideoSurfaceNV"
  
-glVDPAUGetSurfaceivNV ::
-                      GLintptr -> GLenum -> GLsizei -> Ptr GLsizei -> Ptr GLint -> IO ()
-glVDPAUGetSurfaceivNV
-  = dyn_glVDPAUGetSurfaceivNV ptr_glVDPAUGetSurfaceivNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUGetSurfaceivNV
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLintptr ->
-                    GLenum -> GLsizei -> Ptr GLsizei -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glVDPAUUnregisterSurfaceNV #-}
- 
-ptr_glVDPAUUnregisterSurfaceNV :: FunPtr a
-ptr_glVDPAUUnregisterSurfaceNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_vdpau_interop"
-        "glVDPAUUnregisterSurfaceNV"
- 
-glVDPAUUnregisterSurfaceNV :: GLintptr -> IO ()
-glVDPAUUnregisterSurfaceNV
-  = dyn_glVDPAUUnregisterSurfaceNV ptr_glVDPAUUnregisterSurfaceNV
+glVDPAURegisterVideoSurfaceNV ::
+                              Ptr a -> GLenum -> GLsizei -> Ptr GLuint -> IO GLintptr
+glVDPAURegisterVideoSurfaceNV
+  = dyn_glVDPAURegisterVideoSurfaceNV
+      ptr_glVDPAURegisterVideoSurfaceNV
  
 foreign import CALLCONV unsafe "dynamic"
-               dyn_glVDPAUUnregisterSurfaceNV ::
+               dyn_glVDPAURegisterVideoSurfaceNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLintptr -> IO ())
- 
-{-# NOINLINE ptr_glVDPAUIsSurfaceNV #-}
- 
-ptr_glVDPAUIsSurfaceNV :: FunPtr a
-ptr_glVDPAUIsSurfaceNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_vdpau_interop"
-        "glVDPAUIsSurfaceNV"
- 
-glVDPAUIsSurfaceNV :: GLintptr -> IO ()
-glVDPAUIsSurfaceNV = dyn_glVDPAUIsSurfaceNV ptr_glVDPAUIsSurfaceNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUIsSurfaceNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLintptr -> IO ())
+                 (Ptr a -> GLenum -> GLsizei -> Ptr GLuint -> IO GLintptr)
  
 {-# NOINLINE ptr_glVDPAURegisterOutputSurfaceNV #-}
  
@@ -140,40 +106,38 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr a -> GLenum -> GLsizei -> Ptr GLuint -> IO GLintptr)
  
-{-# NOINLINE ptr_glVDPAURegisterVideoSurfaceNV #-}
+{-# NOINLINE ptr_glVDPAUMapSurfacesNV #-}
  
-ptr_glVDPAURegisterVideoSurfaceNV :: FunPtr a
-ptr_glVDPAURegisterVideoSurfaceNV
+ptr_glVDPAUMapSurfacesNV :: FunPtr a
+ptr_glVDPAUMapSurfacesNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_vdpau_interop"
-        "glVDPAURegisterVideoSurfaceNV"
+        "glVDPAUMapSurfacesNV"
  
-glVDPAURegisterVideoSurfaceNV ::
-                              Ptr a -> GLenum -> GLsizei -> Ptr GLuint -> IO GLintptr
-glVDPAURegisterVideoSurfaceNV
-  = dyn_glVDPAURegisterVideoSurfaceNV
-      ptr_glVDPAURegisterVideoSurfaceNV
+glVDPAUMapSurfacesNV :: GLsizei -> Ptr GLintptr -> IO ()
+glVDPAUMapSurfacesNV
+  = dyn_glVDPAUMapSurfacesNV ptr_glVDPAUMapSurfacesNV
  
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glVDPAURegisterVideoSurfaceNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUMapSurfacesNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr a -> GLenum -> GLsizei -> Ptr GLuint -> IO GLintptr)
+                 (GLsizei -> Ptr GLintptr -> IO ())
  
-{-# NOINLINE ptr_glVDPAUFiniNV #-}
+{-# NOINLINE ptr_glVDPAUIsSurfaceNV #-}
  
-ptr_glVDPAUFiniNV :: FunPtr a
-ptr_glVDPAUFiniNV
+ptr_glVDPAUIsSurfaceNV :: FunPtr a
+ptr_glVDPAUIsSurfaceNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_vdpau_interop"
-        "glVDPAUFiniNV"
+        "glVDPAUIsSurfaceNV"
  
-glVDPAUFiniNV :: IO ()
-glVDPAUFiniNV = dyn_glVDPAUFiniNV ptr_glVDPAUFiniNV
+glVDPAUIsSurfaceNV :: GLintptr -> IO ()
+glVDPAUIsSurfaceNV = dyn_glVDPAUIsSurfaceNV ptr_glVDPAUIsSurfaceNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUFiniNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker (IO ())
+foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUIsSurfaceNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLintptr -> IO ())
  
 {-# NOINLINE ptr_glVDPAUInitNV #-}
  
@@ -191,14 +155,49 @@ foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUInitNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr a -> Ptr a -> IO ())
  
+{-# NOINLINE ptr_glVDPAUGetSurfaceivNV #-}
+ 
+ptr_glVDPAUGetSurfaceivNV :: FunPtr a
+ptr_glVDPAUGetSurfaceivNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_vdpau_interop"
+        "glVDPAUGetSurfaceivNV"
+ 
+glVDPAUGetSurfaceivNV ::
+                      GLintptr -> GLenum -> GLsizei -> Ptr GLsizei -> Ptr GLint -> IO ()
+glVDPAUGetSurfaceivNV
+  = dyn_glVDPAUGetSurfaceivNV ptr_glVDPAUGetSurfaceivNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUGetSurfaceivNV
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLintptr ->
+                    GLenum -> GLsizei -> Ptr GLsizei -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glVDPAUFiniNV #-}
+ 
+ptr_glVDPAUFiniNV :: FunPtr a
+ptr_glVDPAUFiniNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_vdpau_interop"
+        "glVDPAUFiniNV"
+ 
+glVDPAUFiniNV :: IO ()
+glVDPAUFiniNV = dyn_glVDPAUFiniNV ptr_glVDPAUFiniNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVDPAUFiniNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker (IO ())
+ 
 gl_WRITE_DISCARD_NV :: GLenum
 gl_WRITE_DISCARD_NV = 35006
  
-gl_SURFACE_MAPPED_NV :: GLenum
-gl_SURFACE_MAPPED_NV = 34560
+gl_SURFACE_STATE_NV :: GLenum
+gl_SURFACE_STATE_NV = 34539
  
 gl_SURFACE_REGISTERED_NV :: GLenum
 gl_SURFACE_REGISTERED_NV = 34557
  
-gl_SURFACE_STATE_NV :: GLenum
-gl_SURFACE_STATE_NV = 34539
+gl_SURFACE_MAPPED_NV :: GLenum
+gl_SURFACE_MAPPED_NV = 34560

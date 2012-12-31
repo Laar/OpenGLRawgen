@@ -1,8 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.AMD.NameGenDelete
-       (glIsNameAMD, glDeleteNamesAMD, glGenNamesAMD,
-        gl_SAMPLER_OBJECT_AMD, gl_VERTEX_ARRAY_OBJECT_AMD,
+       (glIsNameAMD, glGenNamesAMD, glDeleteNamesAMD,
+        gl_VERTEX_ARRAY_OBJECT_AMD, gl_SAMPLER_OBJECT_AMD,
         gl_QUERY_OBJECT_AMD, gl_PERFORMANCE_MONITOR_AMD,
         gl_DATA_BUFFER_AMD)
        where
@@ -26,22 +26,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glIsNameAMD ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLuint -> IO GLboolean)
  
-{-# NOINLINE ptr_glDeleteNamesAMD #-}
- 
-ptr_glDeleteNamesAMD :: FunPtr a
-ptr_glDeleteNamesAMD
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_AMD_name_gen_delete"
-        "glDeleteNamesAMD"
- 
-glDeleteNamesAMD :: GLenum -> GLuint -> Ptr GLuint -> IO ()
-glDeleteNamesAMD = dyn_glDeleteNamesAMD ptr_glDeleteNamesAMD
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDeleteNamesAMD ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLuint -> IO ())
- 
 {-# NOINLINE ptr_glGenNamesAMD #-}
  
 ptr_glGenNamesAMD :: FunPtr a
@@ -58,11 +42,27 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGenNamesAMD ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLuint -> Ptr GLuint -> IO ())
  
-gl_SAMPLER_OBJECT_AMD :: GLenum
-gl_SAMPLER_OBJECT_AMD = 37205
+{-# NOINLINE ptr_glDeleteNamesAMD #-}
+ 
+ptr_glDeleteNamesAMD :: FunPtr a
+ptr_glDeleteNamesAMD
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_AMD_name_gen_delete"
+        "glDeleteNamesAMD"
+ 
+glDeleteNamesAMD :: GLenum -> GLuint -> Ptr GLuint -> IO ()
+glDeleteNamesAMD = dyn_glDeleteNamesAMD ptr_glDeleteNamesAMD
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glDeleteNamesAMD ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLuint -> IO ())
  
 gl_VERTEX_ARRAY_OBJECT_AMD :: GLenum
 gl_VERTEX_ARRAY_OBJECT_AMD = 37204
+ 
+gl_SAMPLER_OBJECT_AMD :: GLenum
+gl_SAMPLER_OBJECT_AMD = 37205
  
 gl_QUERY_OBJECT_AMD :: GLenum
 gl_QUERY_OBJECT_AMD = 37203

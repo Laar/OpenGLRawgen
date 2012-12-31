@@ -1,13 +1,30 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ATI.ElementArray
-       (glDrawRangeElementArrayATI, glDrawElementArrayATI,
-        glElementPointerATI, gl_ELEMENT_ARRAY_POINTER_ATI,
-        gl_ELEMENT_ARRAY_TYPE_ATI, gl_ELEMENT_ARRAY_ATI)
+       (glElementPointerATI, glDrawRangeElementArrayATI,
+        glDrawElementArrayATI, gl_ELEMENT_ARRAY_TYPE_ATI,
+        gl_ELEMENT_ARRAY_POINTER_ATI, gl_ELEMENT_ARRAY_ATI)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glElementPointerATI #-}
+ 
+ptr_glElementPointerATI :: FunPtr a
+ptr_glElementPointerATI
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ATI_element_array"
+        "glElementPointerATI"
+ 
+glElementPointerATI :: GLenum -> Ptr a -> IO ()
+glElementPointerATI
+  = dyn_glElementPointerATI ptr_glElementPointerATI
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glElementPointerATI ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> Ptr a -> IO ())
  
 {-# NOINLINE ptr_glDrawRangeElementArrayATI #-}
  
@@ -46,28 +63,11 @@ foreign import CALLCONV unsafe "dynamic" dyn_glDrawElementArrayATI
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLsizei -> IO ())
  
-{-# NOINLINE ptr_glElementPointerATI #-}
- 
-ptr_glElementPointerATI :: FunPtr a
-ptr_glElementPointerATI
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ATI_element_array"
-        "glElementPointerATI"
- 
-glElementPointerATI :: GLenum -> Ptr a -> IO ()
-glElementPointerATI
-  = dyn_glElementPointerATI ptr_glElementPointerATI
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glElementPointerATI ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> Ptr a -> IO ())
+gl_ELEMENT_ARRAY_TYPE_ATI :: GLenum
+gl_ELEMENT_ARRAY_TYPE_ATI = 34665
  
 gl_ELEMENT_ARRAY_POINTER_ATI :: GLenum
 gl_ELEMENT_ARRAY_POINTER_ATI = 34666
- 
-gl_ELEMENT_ARRAY_TYPE_ATI :: GLenum
-gl_ELEMENT_ARRAY_TYPE_ATI = 34665
  
 gl_ELEMENT_ARRAY_ATI :: GLenum
 gl_ELEMENT_ARRAY_ATI = 34664

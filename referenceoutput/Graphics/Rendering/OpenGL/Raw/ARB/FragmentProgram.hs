@@ -1,552 +1,86 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ARB.FragmentProgram
-       (glIsProgramARB, glGetVertexAttribPointervARB,
-        glGetVertexAttribivARB, glGetVertexAttribfvARB,
-        glGetVertexAttribdvARB, glGetProgramStringARB, glGetProgramivARB,
-        glGetProgramLocalParameterfvARB, glGetProgramLocalParameterdvARB,
-        glGetProgramEnvParameterfvARB, glGetProgramEnvParameterdvARB,
+       (glVertexAttribPointerARB, glVertexAttrib4usvARB,
+        glVertexAttrib4uivARB, glVertexAttrib4ubvARB, glVertexAttrib4svARB,
+        glVertexAttrib4sARB, glVertexAttrib4ivARB, glVertexAttrib4fvARB,
+        glVertexAttrib4fARB, glVertexAttrib4dvARB, glVertexAttrib4dARB,
+        glVertexAttrib4bvARB, glVertexAttrib4NusvARB,
+        glVertexAttrib4NuivARB, glVertexAttrib4NubvARB,
+        glVertexAttrib4NubARB, glVertexAttrib4NsvARB,
+        glVertexAttrib4NivARB, glVertexAttrib4NbvARB, glVertexAttrib3svARB,
+        glVertexAttrib3sARB, glVertexAttrib3fvARB, glVertexAttrib3fARB,
+        glVertexAttrib3dvARB, glVertexAttrib3dARB, glVertexAttrib2svARB,
+        glVertexAttrib2sARB, glVertexAttrib2fvARB, glVertexAttrib2fARB,
+        glVertexAttrib2dvARB, glVertexAttrib2dARB, glVertexAttrib1svARB,
+        glVertexAttrib1sARB, glVertexAttrib1fvARB, glVertexAttrib1fARB,
+        glVertexAttrib1dvARB, glVertexAttrib1dARB, glProgramStringARB,
         glProgramLocalParameter4fvARB, glProgramLocalParameter4fARB,
         glProgramLocalParameter4dvARB, glProgramLocalParameter4dARB,
         glProgramEnvParameter4fvARB, glProgramEnvParameter4fARB,
         glProgramEnvParameter4dvARB, glProgramEnvParameter4dARB,
-        glGenProgramsARB, glDeleteProgramsARB, glBindProgramARB,
-        glProgramStringARB, glDisableVertexAttribArrayARB,
-        glEnableVertexAttribArrayARB, glVertexAttribPointerARB,
-        glVertexAttrib4usvARB, glVertexAttrib4uivARB,
-        glVertexAttrib4ubvARB, glVertexAttrib4svARB, glVertexAttrib4sARB,
-        glVertexAttrib4ivARB, glVertexAttrib4fvARB, glVertexAttrib4fARB,
-        glVertexAttrib4dvARB, glVertexAttrib4dARB, glVertexAttrib4bvARB,
-        glVertexAttrib4NusvARB, glVertexAttrib4NuivARB,
-        glVertexAttrib4NubvARB, glVertexAttrib4NubARB,
-        glVertexAttrib4NsvARB, glVertexAttrib4NivARB,
-        glVertexAttrib4NbvARB, glVertexAttrib3svARB, glVertexAttrib3sARB,
-        glVertexAttrib3fvARB, glVertexAttrib3fARB, glVertexAttrib3dvARB,
-        glVertexAttrib3dARB, glVertexAttrib2svARB, glVertexAttrib2sARB,
-        glVertexAttrib2fvARB, glVertexAttrib2fARB, glVertexAttrib2dvARB,
-        glVertexAttrib2dARB, glVertexAttrib1svARB, glVertexAttrib1sARB,
-        glVertexAttrib1fvARB, glVertexAttrib1fARB, glVertexAttrib1dvARB,
-        glVertexAttrib1dARB, gl_MAX_TEXTURE_IMAGE_UNITS_ARB,
-        gl_MAX_TEXTURE_COORDS_ARB,
-        gl_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB,
-        gl_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB,
-        gl_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB,
-        gl_MAX_PROGRAM_TEX_INDIRECTIONS_ARB,
-        gl_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB,
-        gl_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB,
-        gl_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB,
-        gl_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB,
-        gl_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB,
-        gl_PROGRAM_TEX_INDIRECTIONS_ARB, gl_PROGRAM_TEX_INSTRUCTIONS_ARB,
-        gl_PROGRAM_ALU_INSTRUCTIONS_ARB, gl_FRAGMENT_PROGRAM_ARB,
-        gl_MATRIX31_ARB, gl_MATRIX30_ARB, gl_MATRIX29_ARB, gl_MATRIX28_ARB,
-        gl_MATRIX27_ARB, gl_MATRIX26_ARB, gl_MATRIX25_ARB, gl_MATRIX24_ARB,
-        gl_MATRIX23_ARB, gl_MATRIX22_ARB, gl_MATRIX21_ARB, gl_MATRIX20_ARB,
-        gl_MATRIX19_ARB, gl_MATRIX18_ARB, gl_MATRIX17_ARB, gl_MATRIX16_ARB,
-        gl_MATRIX15_ARB, gl_MATRIX14_ARB, gl_MATRIX13_ARB, gl_MATRIX12_ARB,
-        gl_MATRIX11_ARB, gl_MATRIX10_ARB, gl_MATRIX9_ARB, gl_MATRIX8_ARB,
-        gl_MATRIX7_ARB, gl_MATRIX6_ARB, gl_MATRIX5_ARB, gl_MATRIX4_ARB,
-        gl_MATRIX3_ARB, gl_MATRIX2_ARB, gl_MATRIX1_ARB, gl_MATRIX0_ARB,
+        glIsProgramARB, glGetVertexAttribivARB, glGetVertexAttribfvARB,
+        glGetVertexAttribdvARB, glGetVertexAttribPointervARB,
+        glGetProgramivARB, glGetProgramStringARB,
+        glGetProgramLocalParameterfvARB, glGetProgramLocalParameterdvARB,
+        glGetProgramEnvParameterfvARB, glGetProgramEnvParameterdvARB,
+        glGenProgramsARB, glEnableVertexAttribArrayARB,
+        glDisableVertexAttribArrayARB, glDeleteProgramsARB,
+        glBindProgramARB, gl_VERTEX_PROGRAM_TWO_SIDE_ARB,
+        gl_VERTEX_PROGRAM_POINT_SIZE_ARB, gl_VERTEX_PROGRAM_ARB,
+        gl_VERTEX_ATTRIB_ARRAY_TYPE_ARB, gl_VERTEX_ATTRIB_ARRAY_STRIDE_ARB,
+        gl_VERTEX_ATTRIB_ARRAY_SIZE_ARB,
+        gl_VERTEX_ATTRIB_ARRAY_POINTER_ARB,
+        gl_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB,
+        gl_VERTEX_ATTRIB_ARRAY_ENABLED_ARB,
         gl_TRANSPOSE_CURRENT_MATRIX_ARB,
         gl_PROGRAM_UNDER_NATIVE_LIMITS_ARB,
-        gl_MAX_PROGRAM_ENV_PARAMETERS_ARB,
-        gl_MAX_PROGRAM_LOCAL_PARAMETERS_ARB,
-        gl_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB,
-        gl_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB,
-        gl_MAX_PROGRAM_ADDRESS_REGISTERS_ARB,
-        gl_PROGRAM_ADDRESS_REGISTERS_ARB,
-        gl_MAX_PROGRAM_NATIVE_ATTRIBS_ARB, gl_PROGRAM_NATIVE_ATTRIBS_ARB,
-        gl_MAX_PROGRAM_ATTRIBS_ARB, gl_PROGRAM_ATTRIBS_ARB,
+        gl_PROGRAM_TEX_INSTRUCTIONS_ARB, gl_PROGRAM_TEX_INDIRECTIONS_ARB,
+        gl_PROGRAM_TEMPORARIES_ARB, gl_PROGRAM_STRING_ARB,
+        gl_PROGRAM_PARAMETERS_ARB, gl_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB,
+        gl_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB,
+        gl_PROGRAM_NATIVE_TEMPORARIES_ARB,
+        gl_PROGRAM_NATIVE_PARAMETERS_ARB,
+        gl_PROGRAM_NATIVE_INSTRUCTIONS_ARB, gl_PROGRAM_NATIVE_ATTRIBS_ARB,
+        gl_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB,
+        gl_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB, gl_PROGRAM_LENGTH_ARB,
+        gl_PROGRAM_INSTRUCTIONS_ARB, gl_PROGRAM_FORMAT_ASCII_ARB,
+        gl_PROGRAM_FORMAT_ARB, gl_PROGRAM_ERROR_STRING_ARB,
+        gl_PROGRAM_ERROR_POSITION_ARB, gl_PROGRAM_BINDING_ARB,
+        gl_PROGRAM_ATTRIBS_ARB, gl_PROGRAM_ALU_INSTRUCTIONS_ARB,
+        gl_PROGRAM_ADDRESS_REGISTERS_ARB, gl_MAX_VERTEX_ATTRIBS_ARB,
+        gl_MAX_TEXTURE_IMAGE_UNITS_ARB, gl_MAX_TEXTURE_COORDS_ARB,
+        gl_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB,
+        gl_MAX_PROGRAM_TEX_INDIRECTIONS_ARB,
+        gl_MAX_PROGRAM_TEMPORARIES_ARB, gl_MAX_PROGRAM_PARAMETERS_ARB,
+        gl_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB,
+        gl_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB,
+        gl_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB,
         gl_MAX_PROGRAM_NATIVE_PARAMETERS_ARB,
-        gl_PROGRAM_NATIVE_PARAMETERS_ARB, gl_MAX_PROGRAM_PARAMETERS_ARB,
-        gl_PROGRAM_PARAMETERS_ARB, gl_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB,
-        gl_PROGRAM_NATIVE_TEMPORARIES_ARB, gl_MAX_PROGRAM_TEMPORARIES_ARB,
-        gl_PROGRAM_TEMPORARIES_ARB, gl_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB,
-        gl_PROGRAM_NATIVE_INSTRUCTIONS_ARB,
-        gl_MAX_PROGRAM_INSTRUCTIONS_ARB, gl_PROGRAM_INSTRUCTIONS_ARB,
-        gl_PROGRAM_FORMAT_ARB, gl_PROGRAM_FORMAT_ASCII_ARB,
-        gl_PROGRAM_ERROR_STRING_ARB, gl_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB,
-        gl_MAX_VERTEX_ATTRIBS_ARB, gl_PROGRAM_BINDING_ARB,
-        gl_PROGRAM_ERROR_POSITION_ARB, gl_VERTEX_ATTRIB_ARRAY_POINTER_ARB,
-        gl_VERTEX_PROGRAM_TWO_SIDE_ARB, gl_VERTEX_PROGRAM_POINT_SIZE_ARB,
-        gl_CURRENT_MATRIX_ARB, gl_CURRENT_MATRIX_STACK_DEPTH_ARB,
-        gl_MAX_PROGRAM_MATRICES_ARB, gl_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB,
-        gl_PROGRAM_STRING_ARB, gl_PROGRAM_LENGTH_ARB,
-        gl_CURRENT_VERTEX_ATTRIB_ARB, gl_VERTEX_ATTRIB_ARRAY_TYPE_ARB,
-        gl_VERTEX_ATTRIB_ARRAY_STRIDE_ARB, gl_VERTEX_ATTRIB_ARRAY_SIZE_ARB,
-        gl_VERTEX_ATTRIB_ARRAY_ENABLED_ARB, gl_VERTEX_PROGRAM_ARB,
+        gl_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB,
+        gl_MAX_PROGRAM_NATIVE_ATTRIBS_ARB,
+        gl_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB,
+        gl_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB,
+        gl_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB, gl_MAX_PROGRAM_MATRICES_ARB,
+        gl_MAX_PROGRAM_LOCAL_PARAMETERS_ARB,
+        gl_MAX_PROGRAM_INSTRUCTIONS_ARB, gl_MAX_PROGRAM_ENV_PARAMETERS_ARB,
+        gl_MAX_PROGRAM_ATTRIBS_ARB, gl_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB,
+        gl_MAX_PROGRAM_ADDRESS_REGISTERS_ARB, gl_MATRIX9_ARB,
+        gl_MATRIX8_ARB, gl_MATRIX7_ARB, gl_MATRIX6_ARB, gl_MATRIX5_ARB,
+        gl_MATRIX4_ARB, gl_MATRIX3_ARB, gl_MATRIX31_ARB, gl_MATRIX30_ARB,
+        gl_MATRIX2_ARB, gl_MATRIX29_ARB, gl_MATRIX28_ARB, gl_MATRIX27_ARB,
+        gl_MATRIX26_ARB, gl_MATRIX25_ARB, gl_MATRIX24_ARB, gl_MATRIX23_ARB,
+        gl_MATRIX22_ARB, gl_MATRIX21_ARB, gl_MATRIX20_ARB, gl_MATRIX1_ARB,
+        gl_MATRIX19_ARB, gl_MATRIX18_ARB, gl_MATRIX17_ARB, gl_MATRIX16_ARB,
+        gl_MATRIX15_ARB, gl_MATRIX14_ARB, gl_MATRIX13_ARB, gl_MATRIX12_ARB,
+        gl_MATRIX11_ARB, gl_MATRIX10_ARB, gl_MATRIX0_ARB,
+        gl_FRAGMENT_PROGRAM_ARB, gl_CURRENT_VERTEX_ATTRIB_ARB,
+        gl_CURRENT_MATRIX_STACK_DEPTH_ARB, gl_CURRENT_MATRIX_ARB,
         gl_COLOR_SUM_ARB)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
- 
-{-# NOINLINE ptr_glIsProgramARB #-}
- 
-ptr_glIsProgramARB :: FunPtr a
-ptr_glIsProgramARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glIsProgramARB"
- 
-glIsProgramARB :: GLuint -> IO GLboolean
-glIsProgramARB = dyn_glIsProgramARB ptr_glIsProgramARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glIsProgramARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO GLboolean)
- 
-{-# NOINLINE ptr_glGetVertexAttribPointervARB #-}
- 
-ptr_glGetVertexAttribPointervARB :: FunPtr a
-ptr_glGetVertexAttribPointervARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetVertexAttribPointervARB"
- 
-glGetVertexAttribPointervARB ::
-                             GLuint -> GLenum -> Ptr (Ptr a) -> IO ()
-glGetVertexAttribPointervARB
-  = dyn_glGetVertexAttribPointervARB ptr_glGetVertexAttribPointervARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetVertexAttribPointervARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr (Ptr a) -> IO ())
- 
-{-# NOINLINE ptr_glGetVertexAttribivARB #-}
- 
-ptr_glGetVertexAttribivARB :: FunPtr a
-ptr_glGetVertexAttribivARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetVertexAttribivARB"
- 
-glGetVertexAttribivARB :: GLuint -> GLenum -> Ptr GLint -> IO ()
-glGetVertexAttribivARB
-  = dyn_glGetVertexAttribivARB ptr_glGetVertexAttribivARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribivARB
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glGetVertexAttribfvARB #-}
- 
-ptr_glGetVertexAttribfvARB :: FunPtr a
-ptr_glGetVertexAttribfvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetVertexAttribfvARB"
- 
-glGetVertexAttribfvARB :: GLuint -> GLenum -> Ptr GLfloat -> IO ()
-glGetVertexAttribfvARB
-  = dyn_glGetVertexAttribfvARB ptr_glGetVertexAttribfvARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribfvARB
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glGetVertexAttribdvARB #-}
- 
-ptr_glGetVertexAttribdvARB :: FunPtr a
-ptr_glGetVertexAttribdvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetVertexAttribdvARB"
- 
-glGetVertexAttribdvARB :: GLuint -> GLenum -> Ptr GLdouble -> IO ()
-glGetVertexAttribdvARB
-  = dyn_glGetVertexAttribdvARB ptr_glGetVertexAttribdvARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribdvARB
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramStringARB #-}
- 
-ptr_glGetProgramStringARB :: FunPtr a
-ptr_glGetProgramStringARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetProgramStringARB"
- 
-glGetProgramStringARB :: GLenum -> GLenum -> Ptr a -> IO ()
-glGetProgramStringARB
-  = dyn_glGetProgramStringARB ptr_glGetProgramStringARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramStringARB
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> Ptr a -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramivARB #-}
- 
-ptr_glGetProgramivARB :: FunPtr a
-ptr_glGetProgramivARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetProgramivARB"
- 
-glGetProgramivARB :: GLenum -> GLenum -> Ptr GLint -> IO ()
-glGetProgramivARB = dyn_glGetProgramivARB ptr_glGetProgramivARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramivARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramLocalParameterfvARB #-}
- 
-ptr_glGetProgramLocalParameterfvARB :: FunPtr a
-ptr_glGetProgramLocalParameterfvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetProgramLocalParameterfvARB"
- 
-glGetProgramLocalParameterfvARB ::
-                                GLenum -> GLuint -> Ptr GLfloat -> IO ()
-glGetProgramLocalParameterfvARB
-  = dyn_glGetProgramLocalParameterfvARB
-      ptr_glGetProgramLocalParameterfvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetProgramLocalParameterfvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramLocalParameterdvARB #-}
- 
-ptr_glGetProgramLocalParameterdvARB :: FunPtr a
-ptr_glGetProgramLocalParameterdvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetProgramLocalParameterdvARB"
- 
-glGetProgramLocalParameterdvARB ::
-                                GLenum -> GLuint -> Ptr GLdouble -> IO ()
-glGetProgramLocalParameterdvARB
-  = dyn_glGetProgramLocalParameterdvARB
-      ptr_glGetProgramLocalParameterdvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetProgramLocalParameterdvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramEnvParameterfvARB #-}
- 
-ptr_glGetProgramEnvParameterfvARB :: FunPtr a
-ptr_glGetProgramEnvParameterfvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetProgramEnvParameterfvARB"
- 
-glGetProgramEnvParameterfvARB ::
-                              GLenum -> GLuint -> Ptr GLfloat -> IO ()
-glGetProgramEnvParameterfvARB
-  = dyn_glGetProgramEnvParameterfvARB
-      ptr_glGetProgramEnvParameterfvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetProgramEnvParameterfvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramEnvParameterdvARB #-}
- 
-ptr_glGetProgramEnvParameterdvARB :: FunPtr a
-ptr_glGetProgramEnvParameterdvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGetProgramEnvParameterdvARB"
- 
-glGetProgramEnvParameterdvARB ::
-                              GLenum -> GLuint -> Ptr GLdouble -> IO ()
-glGetProgramEnvParameterdvARB
-  = dyn_glGetProgramEnvParameterdvARB
-      ptr_glGetProgramEnvParameterdvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetProgramEnvParameterdvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glProgramLocalParameter4fvARB #-}
- 
-ptr_glProgramLocalParameter4fvARB :: FunPtr a
-ptr_glProgramLocalParameter4fvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramLocalParameter4fvARB"
- 
-glProgramLocalParameter4fvARB ::
-                              GLenum -> GLuint -> Ptr GLfloat -> IO ()
-glProgramLocalParameter4fvARB
-  = dyn_glProgramLocalParameter4fvARB
-      ptr_glProgramLocalParameter4fvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramLocalParameter4fvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glProgramLocalParameter4fARB #-}
- 
-ptr_glProgramLocalParameter4fARB :: FunPtr a
-ptr_glProgramLocalParameter4fARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramLocalParameter4fARB"
- 
-glProgramLocalParameter4fARB ::
-                             GLenum ->
-                               GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
-glProgramLocalParameter4fARB
-  = dyn_glProgramLocalParameter4fARB ptr_glProgramLocalParameter4fARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramLocalParameter4fARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum ->
-                    GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glProgramLocalParameter4dvARB #-}
- 
-ptr_glProgramLocalParameter4dvARB :: FunPtr a
-ptr_glProgramLocalParameter4dvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramLocalParameter4dvARB"
- 
-glProgramLocalParameter4dvARB ::
-                              GLenum -> GLuint -> Ptr GLdouble -> IO ()
-glProgramLocalParameter4dvARB
-  = dyn_glProgramLocalParameter4dvARB
-      ptr_glProgramLocalParameter4dvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramLocalParameter4dvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glProgramLocalParameter4dARB #-}
- 
-ptr_glProgramLocalParameter4dARB :: FunPtr a
-ptr_glProgramLocalParameter4dARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramLocalParameter4dARB"
- 
-glProgramLocalParameter4dARB ::
-                             GLenum ->
-                               GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ()
-glProgramLocalParameter4dARB
-  = dyn_glProgramLocalParameter4dARB ptr_glProgramLocalParameter4dARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramLocalParameter4dARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum ->
-                    GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glProgramEnvParameter4fvARB #-}
- 
-ptr_glProgramEnvParameter4fvARB :: FunPtr a
-ptr_glProgramEnvParameter4fvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramEnvParameter4fvARB"
- 
-glProgramEnvParameter4fvARB ::
-                            GLenum -> GLuint -> Ptr GLfloat -> IO ()
-glProgramEnvParameter4fvARB
-  = dyn_glProgramEnvParameter4fvARB ptr_glProgramEnvParameter4fvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramEnvParameter4fvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glProgramEnvParameter4fARB #-}
- 
-ptr_glProgramEnvParameter4fARB :: FunPtr a
-ptr_glProgramEnvParameter4fARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramEnvParameter4fARB"
- 
-glProgramEnvParameter4fARB ::
-                           GLenum ->
-                             GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
-glProgramEnvParameter4fARB
-  = dyn_glProgramEnvParameter4fARB ptr_glProgramEnvParameter4fARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramEnvParameter4fARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum ->
-                    GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glProgramEnvParameter4dvARB #-}
- 
-ptr_glProgramEnvParameter4dvARB :: FunPtr a
-ptr_glProgramEnvParameter4dvARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramEnvParameter4dvARB"
- 
-glProgramEnvParameter4dvARB ::
-                            GLenum -> GLuint -> Ptr GLdouble -> IO ()
-glProgramEnvParameter4dvARB
-  = dyn_glProgramEnvParameter4dvARB ptr_glProgramEnvParameter4dvARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramEnvParameter4dvARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glProgramEnvParameter4dARB #-}
- 
-ptr_glProgramEnvParameter4dARB :: FunPtr a
-ptr_glProgramEnvParameter4dARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramEnvParameter4dARB"
- 
-glProgramEnvParameter4dARB ::
-                           GLenum ->
-                             GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ()
-glProgramEnvParameter4dARB
-  = dyn_glProgramEnvParameter4dARB ptr_glProgramEnvParameter4dARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glProgramEnvParameter4dARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum ->
-                    GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glGenProgramsARB #-}
- 
-ptr_glGenProgramsARB :: FunPtr a
-ptr_glGenProgramsARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glGenProgramsARB"
- 
-glGenProgramsARB :: GLsizei -> Ptr GLuint -> IO ()
-glGenProgramsARB = dyn_glGenProgramsARB ptr_glGenProgramsARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGenProgramsARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLsizei -> Ptr GLuint -> IO ())
- 
-{-# NOINLINE ptr_glDeleteProgramsARB #-}
- 
-ptr_glDeleteProgramsARB :: FunPtr a
-ptr_glDeleteProgramsARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glDeleteProgramsARB"
- 
-glDeleteProgramsARB :: GLsizei -> Ptr GLuint -> IO ()
-glDeleteProgramsARB
-  = dyn_glDeleteProgramsARB ptr_glDeleteProgramsARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDeleteProgramsARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLsizei -> Ptr GLuint -> IO ())
- 
-{-# NOINLINE ptr_glBindProgramARB #-}
- 
-ptr_glBindProgramARB :: FunPtr a
-ptr_glBindProgramARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glBindProgramARB"
- 
-glBindProgramARB :: GLenum -> GLuint -> IO ()
-glBindProgramARB = dyn_glBindProgramARB ptr_glBindProgramARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glBindProgramARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> IO ())
- 
-{-# NOINLINE ptr_glProgramStringARB #-}
- 
-ptr_glProgramStringARB :: FunPtr a
-ptr_glProgramStringARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glProgramStringARB"
- 
-glProgramStringARB :: GLenum -> GLenum -> GLsizei -> Ptr a -> IO ()
-glProgramStringARB = dyn_glProgramStringARB ptr_glProgramStringARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glProgramStringARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> GLsizei -> Ptr a -> IO ())
- 
-{-# NOINLINE ptr_glDisableVertexAttribArrayARB #-}
- 
-ptr_glDisableVertexAttribArrayARB :: FunPtr a
-ptr_glDisableVertexAttribArrayARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glDisableVertexAttribArrayARB"
- 
-glDisableVertexAttribArrayARB :: GLuint -> IO ()
-glDisableVertexAttribArrayARB
-  = dyn_glDisableVertexAttribArrayARB
-      ptr_glDisableVertexAttribArrayARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glDisableVertexAttribArrayARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO ())
- 
-{-# NOINLINE ptr_glEnableVertexAttribArrayARB #-}
- 
-ptr_glEnableVertexAttribArrayARB :: FunPtr a
-ptr_glEnableVertexAttribArrayARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_fragment_program"
-        "glEnableVertexAttribArrayARB"
- 
-glEnableVertexAttribArrayARB :: GLuint -> IO ()
-glEnableVertexAttribArrayARB
-  = dyn_glEnableVertexAttribArrayARB ptr_glEnableVertexAttribArrayARB
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glEnableVertexAttribArrayARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO ())
  
 {-# NOINLINE ptr_glVertexAttribPointerARB #-}
  
@@ -1197,56 +731,673 @@ foreign import CALLCONV unsafe "dynamic" dyn_glVertexAttrib1dARB ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLdouble -> IO ())
  
+{-# NOINLINE ptr_glProgramStringARB #-}
+ 
+ptr_glProgramStringARB :: FunPtr a
+ptr_glProgramStringARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramStringARB"
+ 
+glProgramStringARB :: GLenum -> GLenum -> GLsizei -> Ptr a -> IO ()
+glProgramStringARB = dyn_glProgramStringARB ptr_glProgramStringARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glProgramStringARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> GLsizei -> Ptr a -> IO ())
+ 
+{-# NOINLINE ptr_glProgramLocalParameter4fvARB #-}
+ 
+ptr_glProgramLocalParameter4fvARB :: FunPtr a
+ptr_glProgramLocalParameter4fvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramLocalParameter4fvARB"
+ 
+glProgramLocalParameter4fvARB ::
+                              GLenum -> GLuint -> Ptr GLfloat -> IO ()
+glProgramLocalParameter4fvARB
+  = dyn_glProgramLocalParameter4fvARB
+      ptr_glProgramLocalParameter4fvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramLocalParameter4fvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glProgramLocalParameter4fARB #-}
+ 
+ptr_glProgramLocalParameter4fARB :: FunPtr a
+ptr_glProgramLocalParameter4fARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramLocalParameter4fARB"
+ 
+glProgramLocalParameter4fARB ::
+                             GLenum ->
+                               GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
+glProgramLocalParameter4fARB
+  = dyn_glProgramLocalParameter4fARB ptr_glProgramLocalParameter4fARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramLocalParameter4fARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum ->
+                    GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glProgramLocalParameter4dvARB #-}
+ 
+ptr_glProgramLocalParameter4dvARB :: FunPtr a
+ptr_glProgramLocalParameter4dvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramLocalParameter4dvARB"
+ 
+glProgramLocalParameter4dvARB ::
+                              GLenum -> GLuint -> Ptr GLdouble -> IO ()
+glProgramLocalParameter4dvARB
+  = dyn_glProgramLocalParameter4dvARB
+      ptr_glProgramLocalParameter4dvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramLocalParameter4dvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glProgramLocalParameter4dARB #-}
+ 
+ptr_glProgramLocalParameter4dARB :: FunPtr a
+ptr_glProgramLocalParameter4dARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramLocalParameter4dARB"
+ 
+glProgramLocalParameter4dARB ::
+                             GLenum ->
+                               GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ()
+glProgramLocalParameter4dARB
+  = dyn_glProgramLocalParameter4dARB ptr_glProgramLocalParameter4dARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramLocalParameter4dARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum ->
+                    GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glProgramEnvParameter4fvARB #-}
+ 
+ptr_glProgramEnvParameter4fvARB :: FunPtr a
+ptr_glProgramEnvParameter4fvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramEnvParameter4fvARB"
+ 
+glProgramEnvParameter4fvARB ::
+                            GLenum -> GLuint -> Ptr GLfloat -> IO ()
+glProgramEnvParameter4fvARB
+  = dyn_glProgramEnvParameter4fvARB ptr_glProgramEnvParameter4fvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramEnvParameter4fvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glProgramEnvParameter4fARB #-}
+ 
+ptr_glProgramEnvParameter4fARB :: FunPtr a
+ptr_glProgramEnvParameter4fARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramEnvParameter4fARB"
+ 
+glProgramEnvParameter4fARB ::
+                           GLenum ->
+                             GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
+glProgramEnvParameter4fARB
+  = dyn_glProgramEnvParameter4fARB ptr_glProgramEnvParameter4fARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramEnvParameter4fARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum ->
+                    GLuint -> GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glProgramEnvParameter4dvARB #-}
+ 
+ptr_glProgramEnvParameter4dvARB :: FunPtr a
+ptr_glProgramEnvParameter4dvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramEnvParameter4dvARB"
+ 
+glProgramEnvParameter4dvARB ::
+                            GLenum -> GLuint -> Ptr GLdouble -> IO ()
+glProgramEnvParameter4dvARB
+  = dyn_glProgramEnvParameter4dvARB ptr_glProgramEnvParameter4dvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramEnvParameter4dvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glProgramEnvParameter4dARB #-}
+ 
+ptr_glProgramEnvParameter4dARB :: FunPtr a
+ptr_glProgramEnvParameter4dARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glProgramEnvParameter4dARB"
+ 
+glProgramEnvParameter4dARB ::
+                           GLenum ->
+                             GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ()
+glProgramEnvParameter4dARB
+  = dyn_glProgramEnvParameter4dARB ptr_glProgramEnvParameter4dARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glProgramEnvParameter4dARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum ->
+                    GLuint -> GLdouble -> GLdouble -> GLdouble -> GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glIsProgramARB #-}
+ 
+ptr_glIsProgramARB :: FunPtr a
+ptr_glIsProgramARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glIsProgramARB"
+ 
+glIsProgramARB :: GLuint -> IO GLboolean
+glIsProgramARB = dyn_glIsProgramARB ptr_glIsProgramARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glIsProgramARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO GLboolean)
+ 
+{-# NOINLINE ptr_glGetVertexAttribivARB #-}
+ 
+ptr_glGetVertexAttribivARB :: FunPtr a
+ptr_glGetVertexAttribivARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetVertexAttribivARB"
+ 
+glGetVertexAttribivARB :: GLuint -> GLenum -> Ptr GLint -> IO ()
+glGetVertexAttribivARB
+  = dyn_glGetVertexAttribivARB ptr_glGetVertexAttribivARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribivARB
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glGetVertexAttribfvARB #-}
+ 
+ptr_glGetVertexAttribfvARB :: FunPtr a
+ptr_glGetVertexAttribfvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetVertexAttribfvARB"
+ 
+glGetVertexAttribfvARB :: GLuint -> GLenum -> Ptr GLfloat -> IO ()
+glGetVertexAttribfvARB
+  = dyn_glGetVertexAttribfvARB ptr_glGetVertexAttribfvARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribfvARB
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glGetVertexAttribdvARB #-}
+ 
+ptr_glGetVertexAttribdvARB :: FunPtr a
+ptr_glGetVertexAttribdvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetVertexAttribdvARB"
+ 
+glGetVertexAttribdvARB :: GLuint -> GLenum -> Ptr GLdouble -> IO ()
+glGetVertexAttribdvARB
+  = dyn_glGetVertexAttribdvARB ptr_glGetVertexAttribdvARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribdvARB
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glGetVertexAttribPointervARB #-}
+ 
+ptr_glGetVertexAttribPointervARB :: FunPtr a
+ptr_glGetVertexAttribPointervARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetVertexAttribPointervARB"
+ 
+glGetVertexAttribPointervARB ::
+                             GLuint -> GLenum -> Ptr (Ptr a) -> IO ()
+glGetVertexAttribPointervARB
+  = dyn_glGetVertexAttribPointervARB ptr_glGetVertexAttribPointervARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetVertexAttribPointervARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr (Ptr a) -> IO ())
+ 
+{-# NOINLINE ptr_glGetProgramivARB #-}
+ 
+ptr_glGetProgramivARB :: FunPtr a
+ptr_glGetProgramivARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetProgramivARB"
+ 
+glGetProgramivARB :: GLenum -> GLenum -> Ptr GLint -> IO ()
+glGetProgramivARB = dyn_glGetProgramivARB ptr_glGetProgramivARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramivARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glGetProgramStringARB #-}
+ 
+ptr_glGetProgramStringARB :: FunPtr a
+ptr_glGetProgramStringARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetProgramStringARB"
+ 
+glGetProgramStringARB :: GLenum -> GLenum -> Ptr a -> IO ()
+glGetProgramStringARB
+  = dyn_glGetProgramStringARB ptr_glGetProgramStringARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramStringARB
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> Ptr a -> IO ())
+ 
+{-# NOINLINE ptr_glGetProgramLocalParameterfvARB #-}
+ 
+ptr_glGetProgramLocalParameterfvARB :: FunPtr a
+ptr_glGetProgramLocalParameterfvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetProgramLocalParameterfvARB"
+ 
+glGetProgramLocalParameterfvARB ::
+                                GLenum -> GLuint -> Ptr GLfloat -> IO ()
+glGetProgramLocalParameterfvARB
+  = dyn_glGetProgramLocalParameterfvARB
+      ptr_glGetProgramLocalParameterfvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetProgramLocalParameterfvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glGetProgramLocalParameterdvARB #-}
+ 
+ptr_glGetProgramLocalParameterdvARB :: FunPtr a
+ptr_glGetProgramLocalParameterdvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetProgramLocalParameterdvARB"
+ 
+glGetProgramLocalParameterdvARB ::
+                                GLenum -> GLuint -> Ptr GLdouble -> IO ()
+glGetProgramLocalParameterdvARB
+  = dyn_glGetProgramLocalParameterdvARB
+      ptr_glGetProgramLocalParameterdvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetProgramLocalParameterdvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glGetProgramEnvParameterfvARB #-}
+ 
+ptr_glGetProgramEnvParameterfvARB :: FunPtr a
+ptr_glGetProgramEnvParameterfvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetProgramEnvParameterfvARB"
+ 
+glGetProgramEnvParameterfvARB ::
+                              GLenum -> GLuint -> Ptr GLfloat -> IO ()
+glGetProgramEnvParameterfvARB
+  = dyn_glGetProgramEnvParameterfvARB
+      ptr_glGetProgramEnvParameterfvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetProgramEnvParameterfvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glGetProgramEnvParameterdvARB #-}
+ 
+ptr_glGetProgramEnvParameterdvARB :: FunPtr a
+ptr_glGetProgramEnvParameterdvARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGetProgramEnvParameterdvARB"
+ 
+glGetProgramEnvParameterdvARB ::
+                              GLenum -> GLuint -> Ptr GLdouble -> IO ()
+glGetProgramEnvParameterdvARB
+  = dyn_glGetProgramEnvParameterdvARB
+      ptr_glGetProgramEnvParameterdvARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetProgramEnvParameterdvARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glGenProgramsARB #-}
+ 
+ptr_glGenProgramsARB :: FunPtr a
+ptr_glGenProgramsARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glGenProgramsARB"
+ 
+glGenProgramsARB :: GLsizei -> Ptr GLuint -> IO ()
+glGenProgramsARB = dyn_glGenProgramsARB ptr_glGenProgramsARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGenProgramsARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLsizei -> Ptr GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glEnableVertexAttribArrayARB #-}
+ 
+ptr_glEnableVertexAttribArrayARB :: FunPtr a
+ptr_glEnableVertexAttribArrayARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glEnableVertexAttribArrayARB"
+ 
+glEnableVertexAttribArrayARB :: GLuint -> IO ()
+glEnableVertexAttribArrayARB
+  = dyn_glEnableVertexAttribArrayARB ptr_glEnableVertexAttribArrayARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glEnableVertexAttribArrayARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glDisableVertexAttribArrayARB #-}
+ 
+ptr_glDisableVertexAttribArrayARB :: FunPtr a
+ptr_glDisableVertexAttribArrayARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glDisableVertexAttribArrayARB"
+ 
+glDisableVertexAttribArrayARB :: GLuint -> IO ()
+glDisableVertexAttribArrayARB
+  = dyn_glDisableVertexAttribArrayARB
+      ptr_glDisableVertexAttribArrayARB
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glDisableVertexAttribArrayARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glDeleteProgramsARB #-}
+ 
+ptr_glDeleteProgramsARB :: FunPtr a
+ptr_glDeleteProgramsARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glDeleteProgramsARB"
+ 
+glDeleteProgramsARB :: GLsizei -> Ptr GLuint -> IO ()
+glDeleteProgramsARB
+  = dyn_glDeleteProgramsARB ptr_glDeleteProgramsARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glDeleteProgramsARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLsizei -> Ptr GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glBindProgramARB #-}
+ 
+ptr_glBindProgramARB :: FunPtr a
+ptr_glBindProgramARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_fragment_program"
+        "glBindProgramARB"
+ 
+glBindProgramARB :: GLenum -> GLuint -> IO ()
+glBindProgramARB = dyn_glBindProgramARB ptr_glBindProgramARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glBindProgramARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> IO ())
+ 
+gl_VERTEX_PROGRAM_TWO_SIDE_ARB :: GLenum
+gl_VERTEX_PROGRAM_TWO_SIDE_ARB = 34371
+ 
+gl_VERTEX_PROGRAM_POINT_SIZE_ARB :: GLenum
+gl_VERTEX_PROGRAM_POINT_SIZE_ARB = 34370
+ 
+gl_VERTEX_PROGRAM_ARB :: GLenum
+gl_VERTEX_PROGRAM_ARB = 34336
+ 
+gl_VERTEX_ATTRIB_ARRAY_TYPE_ARB :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_TYPE_ARB = 34341
+ 
+gl_VERTEX_ATTRIB_ARRAY_STRIDE_ARB :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_STRIDE_ARB = 34340
+ 
+gl_VERTEX_ATTRIB_ARRAY_SIZE_ARB :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_SIZE_ARB = 34339
+ 
+gl_VERTEX_ATTRIB_ARRAY_POINTER_ARB :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_POINTER_ARB = 34373
+ 
+gl_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB = 34922
+ 
+gl_VERTEX_ATTRIB_ARRAY_ENABLED_ARB :: GLenum
+gl_VERTEX_ATTRIB_ARRAY_ENABLED_ARB = 34338
+ 
+gl_TRANSPOSE_CURRENT_MATRIX_ARB :: GLenum
+gl_TRANSPOSE_CURRENT_MATRIX_ARB = 34999
+ 
+gl_PROGRAM_UNDER_NATIVE_LIMITS_ARB :: GLenum
+gl_PROGRAM_UNDER_NATIVE_LIMITS_ARB = 34998
+ 
+gl_PROGRAM_TEX_INSTRUCTIONS_ARB :: GLenum
+gl_PROGRAM_TEX_INSTRUCTIONS_ARB = 34822
+ 
+gl_PROGRAM_TEX_INDIRECTIONS_ARB :: GLenum
+gl_PROGRAM_TEX_INDIRECTIONS_ARB = 34823
+ 
+gl_PROGRAM_TEMPORARIES_ARB :: GLenum
+gl_PROGRAM_TEMPORARIES_ARB = 34980
+ 
+gl_PROGRAM_STRING_ARB :: GLenum
+gl_PROGRAM_STRING_ARB = 34344
+ 
+gl_PROGRAM_PARAMETERS_ARB :: GLenum
+gl_PROGRAM_PARAMETERS_ARB = 34984
+ 
+gl_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB :: GLenum
+gl_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = 34825
+ 
+gl_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB :: GLenum
+gl_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB = 34826
+ 
+gl_PROGRAM_NATIVE_TEMPORARIES_ARB :: GLenum
+gl_PROGRAM_NATIVE_TEMPORARIES_ARB = 34982
+ 
+gl_PROGRAM_NATIVE_PARAMETERS_ARB :: GLenum
+gl_PROGRAM_NATIVE_PARAMETERS_ARB = 34986
+ 
+gl_PROGRAM_NATIVE_INSTRUCTIONS_ARB :: GLenum
+gl_PROGRAM_NATIVE_INSTRUCTIONS_ARB = 34978
+ 
+gl_PROGRAM_NATIVE_ATTRIBS_ARB :: GLenum
+gl_PROGRAM_NATIVE_ATTRIBS_ARB = 34990
+ 
+gl_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB :: GLenum
+gl_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB = 34824
+ 
+gl_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB :: GLenum
+gl_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB = 34994
+ 
+gl_PROGRAM_LENGTH_ARB :: GLenum
+gl_PROGRAM_LENGTH_ARB = 34343
+ 
+gl_PROGRAM_INSTRUCTIONS_ARB :: GLenum
+gl_PROGRAM_INSTRUCTIONS_ARB = 34976
+ 
+gl_PROGRAM_FORMAT_ASCII_ARB :: GLenum
+gl_PROGRAM_FORMAT_ASCII_ARB = 34933
+ 
+gl_PROGRAM_FORMAT_ARB :: GLenum
+gl_PROGRAM_FORMAT_ARB = 34934
+ 
+gl_PROGRAM_ERROR_STRING_ARB :: GLenum
+gl_PROGRAM_ERROR_STRING_ARB = 34932
+ 
+gl_PROGRAM_ERROR_POSITION_ARB :: GLenum
+gl_PROGRAM_ERROR_POSITION_ARB = 34379
+ 
+gl_PROGRAM_BINDING_ARB :: GLenum
+gl_PROGRAM_BINDING_ARB = 34423
+ 
+gl_PROGRAM_ATTRIBS_ARB :: GLenum
+gl_PROGRAM_ATTRIBS_ARB = 34988
+ 
+gl_PROGRAM_ALU_INSTRUCTIONS_ARB :: GLenum
+gl_PROGRAM_ALU_INSTRUCTIONS_ARB = 34821
+ 
+gl_PROGRAM_ADDRESS_REGISTERS_ARB :: GLenum
+gl_PROGRAM_ADDRESS_REGISTERS_ARB = 34992
+ 
+gl_MAX_VERTEX_ATTRIBS_ARB :: GLenum
+gl_MAX_VERTEX_ATTRIBS_ARB = 34921
+ 
 gl_MAX_TEXTURE_IMAGE_UNITS_ARB :: GLenum
 gl_MAX_TEXTURE_IMAGE_UNITS_ARB = 34930
  
 gl_MAX_TEXTURE_COORDS_ARB :: GLenum
 gl_MAX_TEXTURE_COORDS_ARB = 34929
  
-gl_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB = 34832
- 
-gl_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = 34831
- 
-gl_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB = 34830
+gl_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB :: GLenum
+gl_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB = 34828
  
 gl_MAX_PROGRAM_TEX_INDIRECTIONS_ARB :: GLenum
 gl_MAX_PROGRAM_TEX_INDIRECTIONS_ARB = 34829
  
-gl_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB :: GLenum
-gl_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB = 34828
+gl_MAX_PROGRAM_TEMPORARIES_ARB :: GLenum
+gl_MAX_PROGRAM_TEMPORARIES_ARB = 34981
+ 
+gl_MAX_PROGRAM_PARAMETERS_ARB :: GLenum
+gl_MAX_PROGRAM_PARAMETERS_ARB = 34985
+ 
+gl_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = 34831
+ 
+gl_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB = 34832
+ 
+gl_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB = 34983
+ 
+gl_MAX_PROGRAM_NATIVE_PARAMETERS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_PARAMETERS_ARB = 34987
+ 
+gl_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB = 34979
+ 
+gl_MAX_PROGRAM_NATIVE_ATTRIBS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_ATTRIBS_ARB = 34991
+ 
+gl_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB = 34830
+ 
+gl_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB :: GLenum
+gl_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB = 34995
+ 
+gl_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB :: GLenum
+gl_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB = 34350
+ 
+gl_MAX_PROGRAM_MATRICES_ARB :: GLenum
+gl_MAX_PROGRAM_MATRICES_ARB = 34351
+ 
+gl_MAX_PROGRAM_LOCAL_PARAMETERS_ARB :: GLenum
+gl_MAX_PROGRAM_LOCAL_PARAMETERS_ARB = 34996
+ 
+gl_MAX_PROGRAM_INSTRUCTIONS_ARB :: GLenum
+gl_MAX_PROGRAM_INSTRUCTIONS_ARB = 34977
+ 
+gl_MAX_PROGRAM_ENV_PARAMETERS_ARB :: GLenum
+gl_MAX_PROGRAM_ENV_PARAMETERS_ARB = 34997
+ 
+gl_MAX_PROGRAM_ATTRIBS_ARB :: GLenum
+gl_MAX_PROGRAM_ATTRIBS_ARB = 34989
  
 gl_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB :: GLenum
 gl_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB = 34827
  
-gl_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB :: GLenum
-gl_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB = 34826
+gl_MAX_PROGRAM_ADDRESS_REGISTERS_ARB :: GLenum
+gl_MAX_PROGRAM_ADDRESS_REGISTERS_ARB = 34993
  
-gl_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB :: GLenum
-gl_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = 34825
+gl_MATRIX9_ARB :: GLenum
+gl_MATRIX9_ARB = 35017
  
-gl_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB :: GLenum
-gl_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB = 34824
+gl_MATRIX8_ARB :: GLenum
+gl_MATRIX8_ARB = 35016
  
-gl_PROGRAM_TEX_INDIRECTIONS_ARB :: GLenum
-gl_PROGRAM_TEX_INDIRECTIONS_ARB = 34823
+gl_MATRIX7_ARB :: GLenum
+gl_MATRIX7_ARB = 35015
  
-gl_PROGRAM_TEX_INSTRUCTIONS_ARB :: GLenum
-gl_PROGRAM_TEX_INSTRUCTIONS_ARB = 34822
+gl_MATRIX6_ARB :: GLenum
+gl_MATRIX6_ARB = 35014
  
-gl_PROGRAM_ALU_INSTRUCTIONS_ARB :: GLenum
-gl_PROGRAM_ALU_INSTRUCTIONS_ARB = 34821
+gl_MATRIX5_ARB :: GLenum
+gl_MATRIX5_ARB = 35013
  
-gl_FRAGMENT_PROGRAM_ARB :: GLenum
-gl_FRAGMENT_PROGRAM_ARB = 34820
+gl_MATRIX4_ARB :: GLenum
+gl_MATRIX4_ARB = 35012
+ 
+gl_MATRIX3_ARB :: GLenum
+gl_MATRIX3_ARB = 35011
  
 gl_MATRIX31_ARB :: GLenum
 gl_MATRIX31_ARB = 35039
  
 gl_MATRIX30_ARB :: GLenum
 gl_MATRIX30_ARB = 35038
+ 
+gl_MATRIX2_ARB :: GLenum
+gl_MATRIX2_ARB = 35010
  
 gl_MATRIX29_ARB :: GLenum
 gl_MATRIX29_ARB = 35037
@@ -1278,6 +1429,9 @@ gl_MATRIX21_ARB = 35029
 gl_MATRIX20_ARB :: GLenum
 gl_MATRIX20_ARB = 35028
  
+gl_MATRIX1_ARB :: GLenum
+gl_MATRIX1_ARB = 35009
+ 
 gl_MATRIX19_ARB :: GLenum
 gl_MATRIX19_ARB = 35027
  
@@ -1308,173 +1462,20 @@ gl_MATRIX11_ARB = 35019
 gl_MATRIX10_ARB :: GLenum
 gl_MATRIX10_ARB = 35018
  
-gl_MATRIX9_ARB :: GLenum
-gl_MATRIX9_ARB = 35017
- 
-gl_MATRIX8_ARB :: GLenum
-gl_MATRIX8_ARB = 35016
- 
-gl_MATRIX7_ARB :: GLenum
-gl_MATRIX7_ARB = 35015
- 
-gl_MATRIX6_ARB :: GLenum
-gl_MATRIX6_ARB = 35014
- 
-gl_MATRIX5_ARB :: GLenum
-gl_MATRIX5_ARB = 35013
- 
-gl_MATRIX4_ARB :: GLenum
-gl_MATRIX4_ARB = 35012
- 
-gl_MATRIX3_ARB :: GLenum
-gl_MATRIX3_ARB = 35011
- 
-gl_MATRIX2_ARB :: GLenum
-gl_MATRIX2_ARB = 35010
- 
-gl_MATRIX1_ARB :: GLenum
-gl_MATRIX1_ARB = 35009
- 
 gl_MATRIX0_ARB :: GLenum
 gl_MATRIX0_ARB = 35008
  
-gl_TRANSPOSE_CURRENT_MATRIX_ARB :: GLenum
-gl_TRANSPOSE_CURRENT_MATRIX_ARB = 34999
- 
-gl_PROGRAM_UNDER_NATIVE_LIMITS_ARB :: GLenum
-gl_PROGRAM_UNDER_NATIVE_LIMITS_ARB = 34998
- 
-gl_MAX_PROGRAM_ENV_PARAMETERS_ARB :: GLenum
-gl_MAX_PROGRAM_ENV_PARAMETERS_ARB = 34997
- 
-gl_MAX_PROGRAM_LOCAL_PARAMETERS_ARB :: GLenum
-gl_MAX_PROGRAM_LOCAL_PARAMETERS_ARB = 34996
- 
-gl_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB = 34995
- 
-gl_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB :: GLenum
-gl_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB = 34994
- 
-gl_MAX_PROGRAM_ADDRESS_REGISTERS_ARB :: GLenum
-gl_MAX_PROGRAM_ADDRESS_REGISTERS_ARB = 34993
- 
-gl_PROGRAM_ADDRESS_REGISTERS_ARB :: GLenum
-gl_PROGRAM_ADDRESS_REGISTERS_ARB = 34992
- 
-gl_MAX_PROGRAM_NATIVE_ATTRIBS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_ATTRIBS_ARB = 34991
- 
-gl_PROGRAM_NATIVE_ATTRIBS_ARB :: GLenum
-gl_PROGRAM_NATIVE_ATTRIBS_ARB = 34990
- 
-gl_MAX_PROGRAM_ATTRIBS_ARB :: GLenum
-gl_MAX_PROGRAM_ATTRIBS_ARB = 34989
- 
-gl_PROGRAM_ATTRIBS_ARB :: GLenum
-gl_PROGRAM_ATTRIBS_ARB = 34988
- 
-gl_MAX_PROGRAM_NATIVE_PARAMETERS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_PARAMETERS_ARB = 34987
- 
-gl_PROGRAM_NATIVE_PARAMETERS_ARB :: GLenum
-gl_PROGRAM_NATIVE_PARAMETERS_ARB = 34986
- 
-gl_MAX_PROGRAM_PARAMETERS_ARB :: GLenum
-gl_MAX_PROGRAM_PARAMETERS_ARB = 34985
- 
-gl_PROGRAM_PARAMETERS_ARB :: GLenum
-gl_PROGRAM_PARAMETERS_ARB = 34984
- 
-gl_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB = 34983
- 
-gl_PROGRAM_NATIVE_TEMPORARIES_ARB :: GLenum
-gl_PROGRAM_NATIVE_TEMPORARIES_ARB = 34982
- 
-gl_MAX_PROGRAM_TEMPORARIES_ARB :: GLenum
-gl_MAX_PROGRAM_TEMPORARIES_ARB = 34981
- 
-gl_PROGRAM_TEMPORARIES_ARB :: GLenum
-gl_PROGRAM_TEMPORARIES_ARB = 34980
- 
-gl_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB :: GLenum
-gl_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB = 34979
- 
-gl_PROGRAM_NATIVE_INSTRUCTIONS_ARB :: GLenum
-gl_PROGRAM_NATIVE_INSTRUCTIONS_ARB = 34978
- 
-gl_MAX_PROGRAM_INSTRUCTIONS_ARB :: GLenum
-gl_MAX_PROGRAM_INSTRUCTIONS_ARB = 34977
- 
-gl_PROGRAM_INSTRUCTIONS_ARB :: GLenum
-gl_PROGRAM_INSTRUCTIONS_ARB = 34976
- 
-gl_PROGRAM_FORMAT_ARB :: GLenum
-gl_PROGRAM_FORMAT_ARB = 34934
- 
-gl_PROGRAM_FORMAT_ASCII_ARB :: GLenum
-gl_PROGRAM_FORMAT_ASCII_ARB = 34933
- 
-gl_PROGRAM_ERROR_STRING_ARB :: GLenum
-gl_PROGRAM_ERROR_STRING_ARB = 34932
- 
-gl_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB = 34922
- 
-gl_MAX_VERTEX_ATTRIBS_ARB :: GLenum
-gl_MAX_VERTEX_ATTRIBS_ARB = 34921
- 
-gl_PROGRAM_BINDING_ARB :: GLenum
-gl_PROGRAM_BINDING_ARB = 34423
- 
-gl_PROGRAM_ERROR_POSITION_ARB :: GLenum
-gl_PROGRAM_ERROR_POSITION_ARB = 34379
- 
-gl_VERTEX_ATTRIB_ARRAY_POINTER_ARB :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_POINTER_ARB = 34373
- 
-gl_VERTEX_PROGRAM_TWO_SIDE_ARB :: GLenum
-gl_VERTEX_PROGRAM_TWO_SIDE_ARB = 34371
- 
-gl_VERTEX_PROGRAM_POINT_SIZE_ARB :: GLenum
-gl_VERTEX_PROGRAM_POINT_SIZE_ARB = 34370
- 
-gl_CURRENT_MATRIX_ARB :: GLenum
-gl_CURRENT_MATRIX_ARB = 34369
- 
-gl_CURRENT_MATRIX_STACK_DEPTH_ARB :: GLenum
-gl_CURRENT_MATRIX_STACK_DEPTH_ARB = 34368
- 
-gl_MAX_PROGRAM_MATRICES_ARB :: GLenum
-gl_MAX_PROGRAM_MATRICES_ARB = 34351
- 
-gl_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB :: GLenum
-gl_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB = 34350
- 
-gl_PROGRAM_STRING_ARB :: GLenum
-gl_PROGRAM_STRING_ARB = 34344
- 
-gl_PROGRAM_LENGTH_ARB :: GLenum
-gl_PROGRAM_LENGTH_ARB = 34343
+gl_FRAGMENT_PROGRAM_ARB :: GLenum
+gl_FRAGMENT_PROGRAM_ARB = 34820
  
 gl_CURRENT_VERTEX_ATTRIB_ARB :: GLenum
 gl_CURRENT_VERTEX_ATTRIB_ARB = 34342
  
-gl_VERTEX_ATTRIB_ARRAY_TYPE_ARB :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_TYPE_ARB = 34341
+gl_CURRENT_MATRIX_STACK_DEPTH_ARB :: GLenum
+gl_CURRENT_MATRIX_STACK_DEPTH_ARB = 34368
  
-gl_VERTEX_ATTRIB_ARRAY_STRIDE_ARB :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_STRIDE_ARB = 34340
- 
-gl_VERTEX_ATTRIB_ARRAY_SIZE_ARB :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_SIZE_ARB = 34339
- 
-gl_VERTEX_ATTRIB_ARRAY_ENABLED_ARB :: GLenum
-gl_VERTEX_ATTRIB_ARRAY_ENABLED_ARB = 34338
- 
-gl_VERTEX_PROGRAM_ARB :: GLenum
-gl_VERTEX_PROGRAM_ARB = 34336
+gl_CURRENT_MATRIX_ARB :: GLenum
+gl_CURRENT_MATRIX_ARB = 34369
  
 gl_COLOR_SUM_ARB :: GLenum
 gl_COLOR_SUM_ARB = 33880

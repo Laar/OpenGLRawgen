@@ -10,19 +10,19 @@ module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core14Compatibility
         glSecondaryColor3ub, glSecondaryColor3sv, glSecondaryColor3s,
         glSecondaryColor3iv, glSecondaryColor3i, glSecondaryColor3fv,
         glSecondaryColor3f, glSecondaryColor3dv, glSecondaryColor3d,
-        glSecondaryColor3bv, glSecondaryColor3b, glFogCoordPointer,
-        glFogCoorddv, glFogCoordd, glFogCoordfv, glFogCoordf,
-        gl_COMPARE_R_TO_TEXTURE, gl_DEPTH_TEXTURE_MODE,
-        gl_TEXTURE_FILTER_CONTROL, gl_SECONDARY_COLOR_ARRAY,
-        gl_SECONDARY_COLOR_ARRAY_POINTER, gl_SECONDARY_COLOR_ARRAY_STRIDE,
-        gl_SECONDARY_COLOR_ARRAY_TYPE, gl_SECONDARY_COLOR_ARRAY_SIZE,
-        gl_CURRENT_SECONDARY_COLOR, gl_COLOR_SUM, gl_FOG_COORDINATE_ARRAY,
-        gl_FOG_COORDINATE_ARRAY_POINTER, gl_FOG_COORDINATE_ARRAY_STRIDE,
-        gl_FOG_COORDINATE_ARRAY_TYPE, gl_CURRENT_FOG_COORDINATE,
-        gl_FRAGMENT_DEPTH, gl_FOG_COORDINATE, gl_FOG_COORDINATE_SOURCE,
-        gl_GENERATE_MIPMAP_HINT, gl_GENERATE_MIPMAP,
-        gl_POINT_DISTANCE_ATTENUATION, gl_POINT_SIZE_MAX,
-        gl_POINT_SIZE_MIN)
+        glSecondaryColor3bv, glSecondaryColor3b, glFogCoordfv, glFogCoordf,
+        glFogCoorddv, glFogCoordd, glFogCoordPointer,
+        gl_TEXTURE_FILTER_CONTROL, gl_SECONDARY_COLOR_ARRAY_TYPE,
+        gl_SECONDARY_COLOR_ARRAY_STRIDE, gl_SECONDARY_COLOR_ARRAY_SIZE,
+        gl_SECONDARY_COLOR_ARRAY_POINTER, gl_SECONDARY_COLOR_ARRAY,
+        gl_POINT_SIZE_MIN, gl_POINT_SIZE_MAX,
+        gl_POINT_DISTANCE_ATTENUATION, gl_GENERATE_MIPMAP_HINT,
+        gl_GENERATE_MIPMAP, gl_FRAGMENT_DEPTH, gl_FOG_COORDINATE_SOURCE,
+        gl_FOG_COORDINATE_ARRAY_TYPE, gl_FOG_COORDINATE_ARRAY_STRIDE,
+        gl_FOG_COORDINATE_ARRAY_POINTER, gl_FOG_COORDINATE_ARRAY,
+        gl_FOG_COORDINATE, gl_DEPTH_TEXTURE_MODE,
+        gl_CURRENT_SECONDARY_COLOR, gl_CURRENT_FOG_COORDINATE,
+        gl_COMPARE_R_TO_TEXTURE, gl_COLOR_SUM)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -570,21 +570,37 @@ foreign import CALLCONV unsafe "dynamic" dyn_glSecondaryColor3b ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLbyte -> GLbyte -> GLbyte -> IO ())
  
-{-# NOINLINE ptr_glFogCoordPointer #-}
+{-# NOINLINE ptr_glFogCoordfv #-}
  
-ptr_glFogCoordPointer :: FunPtr a
-ptr_glFogCoordPointer
+ptr_glFogCoordfv :: FunPtr a
+ptr_glFogCoordfv
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_1_4_DEPRECATED"
-        "glFogCoordPointer"
+        "glFogCoordfv"
  
-glFogCoordPointer :: GLenum -> GLsizei -> Ptr a -> IO ()
-glFogCoordPointer = dyn_glFogCoordPointer ptr_glFogCoordPointer
+glFogCoordfv :: Ptr GLfloat -> IO ()
+glFogCoordfv = dyn_glFogCoordfv ptr_glFogCoordfv
  
-foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordPointer ::
+foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordfv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLsizei -> Ptr a -> IO ())
+                 (Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glFogCoordf #-}
+ 
+ptr_glFogCoordf :: FunPtr a
+ptr_glFogCoordf
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_4_DEPRECATED"
+        "glFogCoordf"
+ 
+glFogCoordf :: GLfloat -> IO ()
+glFogCoordf = dyn_glFogCoordf ptr_glFogCoordf
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordf ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLfloat -> IO ())
  
 {-# NOINLINE ptr_glFogCoorddv #-}
  
@@ -618,91 +634,48 @@ foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordd ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLdouble -> IO ())
  
-{-# NOINLINE ptr_glFogCoordfv #-}
+{-# NOINLINE ptr_glFogCoordPointer #-}
  
-ptr_glFogCoordfv :: FunPtr a
-ptr_glFogCoordfv
+ptr_glFogCoordPointer :: FunPtr a
+ptr_glFogCoordPointer
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_1_4_DEPRECATED"
-        "glFogCoordfv"
+        "glFogCoordPointer"
  
-glFogCoordfv :: Ptr GLfloat -> IO ()
-glFogCoordfv = dyn_glFogCoordfv ptr_glFogCoordfv
+glFogCoordPointer :: GLenum -> GLsizei -> Ptr a -> IO ()
+glFogCoordPointer = dyn_glFogCoordPointer ptr_glFogCoordPointer
  
-foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordfv ::
+foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordPointer ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glFogCoordf #-}
- 
-ptr_glFogCoordf :: FunPtr a
-ptr_glFogCoordf
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_4_DEPRECATED"
-        "glFogCoordf"
- 
-glFogCoordf :: GLfloat -> IO ()
-glFogCoordf = dyn_glFogCoordf ptr_glFogCoordf
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordf ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLfloat -> IO ())
- 
-gl_COMPARE_R_TO_TEXTURE :: GLenum
-gl_COMPARE_R_TO_TEXTURE = 34894
- 
-gl_DEPTH_TEXTURE_MODE :: GLenum
-gl_DEPTH_TEXTURE_MODE = 34891
+                 (GLenum -> GLsizei -> Ptr a -> IO ())
  
 gl_TEXTURE_FILTER_CONTROL :: GLenum
 gl_TEXTURE_FILTER_CONTROL = 34048
  
-gl_SECONDARY_COLOR_ARRAY :: GLenum
-gl_SECONDARY_COLOR_ARRAY = 33886
- 
-gl_SECONDARY_COLOR_ARRAY_POINTER :: GLenum
-gl_SECONDARY_COLOR_ARRAY_POINTER = 33885
+gl_SECONDARY_COLOR_ARRAY_TYPE :: GLenum
+gl_SECONDARY_COLOR_ARRAY_TYPE = 33883
  
 gl_SECONDARY_COLOR_ARRAY_STRIDE :: GLenum
 gl_SECONDARY_COLOR_ARRAY_STRIDE = 33884
  
-gl_SECONDARY_COLOR_ARRAY_TYPE :: GLenum
-gl_SECONDARY_COLOR_ARRAY_TYPE = 33883
- 
 gl_SECONDARY_COLOR_ARRAY_SIZE :: GLenum
 gl_SECONDARY_COLOR_ARRAY_SIZE = 33882
  
-gl_CURRENT_SECONDARY_COLOR :: GLenum
-gl_CURRENT_SECONDARY_COLOR = 33881
+gl_SECONDARY_COLOR_ARRAY_POINTER :: GLenum
+gl_SECONDARY_COLOR_ARRAY_POINTER = 33885
  
-gl_COLOR_SUM :: GLenum
-gl_COLOR_SUM = 33880
+gl_SECONDARY_COLOR_ARRAY :: GLenum
+gl_SECONDARY_COLOR_ARRAY = 33886
  
-gl_FOG_COORDINATE_ARRAY :: GLenum
-gl_FOG_COORDINATE_ARRAY = 33879
+gl_POINT_SIZE_MIN :: GLenum
+gl_POINT_SIZE_MIN = 33062
  
-gl_FOG_COORDINATE_ARRAY_POINTER :: GLenum
-gl_FOG_COORDINATE_ARRAY_POINTER = 33878
+gl_POINT_SIZE_MAX :: GLenum
+gl_POINT_SIZE_MAX = 33063
  
-gl_FOG_COORDINATE_ARRAY_STRIDE :: GLenum
-gl_FOG_COORDINATE_ARRAY_STRIDE = 33877
- 
-gl_FOG_COORDINATE_ARRAY_TYPE :: GLenum
-gl_FOG_COORDINATE_ARRAY_TYPE = 33876
- 
-gl_CURRENT_FOG_COORDINATE :: GLenum
-gl_CURRENT_FOG_COORDINATE = 33875
- 
-gl_FRAGMENT_DEPTH :: GLenum
-gl_FRAGMENT_DEPTH = 33874
- 
-gl_FOG_COORDINATE :: GLenum
-gl_FOG_COORDINATE = 33873
- 
-gl_FOG_COORDINATE_SOURCE :: GLenum
-gl_FOG_COORDINATE_SOURCE = 33872
+gl_POINT_DISTANCE_ATTENUATION :: GLenum
+gl_POINT_DISTANCE_ATTENUATION = 33065
  
 gl_GENERATE_MIPMAP_HINT :: GLenum
 gl_GENERATE_MIPMAP_HINT = 33170
@@ -710,11 +683,38 @@ gl_GENERATE_MIPMAP_HINT = 33170
 gl_GENERATE_MIPMAP :: GLenum
 gl_GENERATE_MIPMAP = 33169
  
-gl_POINT_DISTANCE_ATTENUATION :: GLenum
-gl_POINT_DISTANCE_ATTENUATION = 33065
+gl_FRAGMENT_DEPTH :: GLenum
+gl_FRAGMENT_DEPTH = 33874
  
-gl_POINT_SIZE_MAX :: GLenum
-gl_POINT_SIZE_MAX = 33063
+gl_FOG_COORDINATE_SOURCE :: GLenum
+gl_FOG_COORDINATE_SOURCE = 33872
  
-gl_POINT_SIZE_MIN :: GLenum
-gl_POINT_SIZE_MIN = 33062
+gl_FOG_COORDINATE_ARRAY_TYPE :: GLenum
+gl_FOG_COORDINATE_ARRAY_TYPE = 33876
+ 
+gl_FOG_COORDINATE_ARRAY_STRIDE :: GLenum
+gl_FOG_COORDINATE_ARRAY_STRIDE = 33877
+ 
+gl_FOG_COORDINATE_ARRAY_POINTER :: GLenum
+gl_FOG_COORDINATE_ARRAY_POINTER = 33878
+ 
+gl_FOG_COORDINATE_ARRAY :: GLenum
+gl_FOG_COORDINATE_ARRAY = 33879
+ 
+gl_FOG_COORDINATE :: GLenum
+gl_FOG_COORDINATE = 33873
+ 
+gl_DEPTH_TEXTURE_MODE :: GLenum
+gl_DEPTH_TEXTURE_MODE = 34891
+ 
+gl_CURRENT_SECONDARY_COLOR :: GLenum
+gl_CURRENT_SECONDARY_COLOR = 33881
+ 
+gl_CURRENT_FOG_COORDINATE :: GLenum
+gl_CURRENT_FOG_COORDINATE = 33875
+ 
+gl_COMPARE_R_TO_TEXTURE :: GLenum
+gl_COMPARE_R_TO_TEXTURE = 34894
+ 
+gl_COLOR_SUM :: GLenum
+gl_COLOR_SUM = 33880

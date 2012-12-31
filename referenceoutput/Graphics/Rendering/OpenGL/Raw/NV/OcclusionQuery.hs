@@ -1,16 +1,33 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.OcclusionQuery
-       (glGetOcclusionQueryuivNV, glGetOcclusionQueryivNV,
-        glEndOcclusionQueryNV, glBeginOcclusionQueryNV,
-        glIsOcclusionQueryNV, glDeleteOcclusionQueriesNV,
-        glGenOcclusionQueriesNV, gl_PIXEL_COUNT_AVAILABLE_NV,
-        gl_PIXEL_COUNT_NV, gl_CURRENT_OCCLUSION_QUERY_ID_NV,
-        gl_PIXEL_COUNTER_BITS_NV)
+       (glIsOcclusionQueryNV, glGetOcclusionQueryuivNV,
+        glGetOcclusionQueryivNV, glGenOcclusionQueriesNV,
+        glEndOcclusionQueryNV, glDeleteOcclusionQueriesNV,
+        glBeginOcclusionQueryNV, gl_PIXEL_COUNT_NV,
+        gl_PIXEL_COUNT_AVAILABLE_NV, gl_PIXEL_COUNTER_BITS_NV,
+        gl_CURRENT_OCCLUSION_QUERY_ID_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glIsOcclusionQueryNV #-}
+ 
+ptr_glIsOcclusionQueryNV :: FunPtr a
+ptr_glIsOcclusionQueryNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_occlusion_query"
+        "glIsOcclusionQueryNV"
+ 
+glIsOcclusionQueryNV :: GLuint -> IO GLboolean
+glIsOcclusionQueryNV
+  = dyn_glIsOcclusionQueryNV ptr_glIsOcclusionQueryNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glIsOcclusionQueryNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO GLboolean)
  
 {-# NOINLINE ptr_glGetOcclusionQueryuivNV #-}
  
@@ -48,6 +65,24 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetOcclusionQueryivNV
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> Ptr GLint -> IO ())
  
+{-# NOINLINE ptr_glGenOcclusionQueriesNV #-}
+ 
+ptr_glGenOcclusionQueriesNV :: FunPtr a
+ptr_glGenOcclusionQueriesNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_occlusion_query"
+        "glGenOcclusionQueriesNV"
+ 
+glGenOcclusionQueriesNV :: GLsizei -> Ptr GLuint -> IO ()
+glGenOcclusionQueriesNV
+  = dyn_glGenOcclusionQueriesNV ptr_glGenOcclusionQueriesNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGenOcclusionQueriesNV
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLsizei -> Ptr GLuint -> IO ())
+ 
 {-# NOINLINE ptr_glEndOcclusionQueryNV #-}
  
 ptr_glEndOcclusionQueryNV :: FunPtr a
@@ -64,41 +99,6 @@ glEndOcclusionQueryNV
 foreign import CALLCONV unsafe "dynamic" dyn_glEndOcclusionQueryNV
                ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker (IO ())
- 
-{-# NOINLINE ptr_glBeginOcclusionQueryNV #-}
- 
-ptr_glBeginOcclusionQueryNV :: FunPtr a
-ptr_glBeginOcclusionQueryNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_occlusion_query"
-        "glBeginOcclusionQueryNV"
- 
-glBeginOcclusionQueryNV :: GLuint -> IO ()
-glBeginOcclusionQueryNV
-  = dyn_glBeginOcclusionQueryNV ptr_glBeginOcclusionQueryNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glBeginOcclusionQueryNV
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO ())
- 
-{-# NOINLINE ptr_glIsOcclusionQueryNV #-}
- 
-ptr_glIsOcclusionQueryNV :: FunPtr a
-ptr_glIsOcclusionQueryNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_occlusion_query"
-        "glIsOcclusionQueryNV"
- 
-glIsOcclusionQueryNV :: GLuint -> IO GLboolean
-glIsOcclusionQueryNV
-  = dyn_glIsOcclusionQueryNV ptr_glIsOcclusionQueryNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glIsOcclusionQueryNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO GLboolean)
  
 {-# NOINLINE ptr_glDeleteOcclusionQueriesNV #-}
  
@@ -118,32 +118,32 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr GLuint -> IO ())
  
-{-# NOINLINE ptr_glGenOcclusionQueriesNV #-}
+{-# NOINLINE ptr_glBeginOcclusionQueryNV #-}
  
-ptr_glGenOcclusionQueriesNV :: FunPtr a
-ptr_glGenOcclusionQueriesNV
+ptr_glBeginOcclusionQueryNV :: FunPtr a
+ptr_glBeginOcclusionQueryNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_occlusion_query"
-        "glGenOcclusionQueriesNV"
+        "glBeginOcclusionQueryNV"
  
-glGenOcclusionQueriesNV :: GLsizei -> Ptr GLuint -> IO ()
-glGenOcclusionQueriesNV
-  = dyn_glGenOcclusionQueriesNV ptr_glGenOcclusionQueriesNV
+glBeginOcclusionQueryNV :: GLuint -> IO ()
+glBeginOcclusionQueryNV
+  = dyn_glBeginOcclusionQueryNV ptr_glBeginOcclusionQueryNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glGenOcclusionQueriesNV
+foreign import CALLCONV unsafe "dynamic" dyn_glBeginOcclusionQueryNV
                ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLsizei -> Ptr GLuint -> IO ())
- 
-gl_PIXEL_COUNT_AVAILABLE_NV :: GLenum
-gl_PIXEL_COUNT_AVAILABLE_NV = 34919
+                 (GLuint -> IO ())
  
 gl_PIXEL_COUNT_NV :: GLenum
 gl_PIXEL_COUNT_NV = 34918
  
-gl_CURRENT_OCCLUSION_QUERY_ID_NV :: GLenum
-gl_CURRENT_OCCLUSION_QUERY_ID_NV = 34917
+gl_PIXEL_COUNT_AVAILABLE_NV :: GLenum
+gl_PIXEL_COUNT_AVAILABLE_NV = 34919
  
 gl_PIXEL_COUNTER_BITS_NV :: GLenum
 gl_PIXEL_COUNTER_BITS_NV = 34916
+ 
+gl_CURRENT_OCCLUSION_QUERY_ID_NV :: GLenum
+gl_CURRENT_OCCLUSION_QUERY_ID_NV = 34917

@@ -1,24 +1,56 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.HalfFloat
-       (glVertexAttribs4hvNV, glVertexAttribs3hvNV, glVertexAttribs2hvNV,
-        glVertexAttribs1hvNV, glVertexAttrib4hvNV, glVertexAttrib4hNV,
-        glVertexAttrib3hvNV, glVertexAttrib3hNV, glVertexAttrib2hvNV,
-        glVertexAttrib2hNV, glVertexAttrib1hvNV, glVertexAttrib1hNV,
-        glVertexWeighthvNV, glVertexWeighthNV, glSecondaryColor3hvNV,
-        glSecondaryColor3hNV, glFogCoordhvNV, glFogCoordhNV,
-        glMultiTexCoord4hvNV, glMultiTexCoord4hNV, glMultiTexCoord3hvNV,
-        glMultiTexCoord3hNV, glMultiTexCoord2hvNV, glMultiTexCoord2hNV,
-        glMultiTexCoord1hvNV, glMultiTexCoord1hNV, glTexCoord4hvNV,
-        glTexCoord4hNV, glTexCoord3hvNV, glTexCoord3hNV, glTexCoord2hvNV,
-        glTexCoord2hNV, glTexCoord1hvNV, glTexCoord1hNV, glColor4hvNV,
-        glColor4hNV, glColor3hvNV, glColor3hNV, glNormal3hvNV,
-        glNormal3hNV, glVertex4hvNV, glVertex4hNV, glVertex3hvNV,
-        glVertex3hNV, glVertex2hvNV, glVertex2hNV, gl_HALF_FLOAT_NV)
+       (glVertexWeighthvNV, glVertexWeighthNV, glVertexAttribs4hvNV,
+        glVertexAttribs3hvNV, glVertexAttribs2hvNV, glVertexAttribs1hvNV,
+        glVertexAttrib4hvNV, glVertexAttrib4hNV, glVertexAttrib3hvNV,
+        glVertexAttrib3hNV, glVertexAttrib2hvNV, glVertexAttrib2hNV,
+        glVertexAttrib1hvNV, glVertexAttrib1hNV, glVertex4hvNV,
+        glVertex4hNV, glVertex3hvNV, glVertex3hNV, glVertex2hvNV,
+        glVertex2hNV, glTexCoord4hvNV, glTexCoord4hNV, glTexCoord3hvNV,
+        glTexCoord3hNV, glTexCoord2hvNV, glTexCoord2hNV, glTexCoord1hvNV,
+        glTexCoord1hNV, glSecondaryColor3hvNV, glSecondaryColor3hNV,
+        glNormal3hvNV, glNormal3hNV, glMultiTexCoord4hvNV,
+        glMultiTexCoord4hNV, glMultiTexCoord3hvNV, glMultiTexCoord3hNV,
+        glMultiTexCoord2hvNV, glMultiTexCoord2hNV, glMultiTexCoord1hvNV,
+        glMultiTexCoord1hNV, glFogCoordhvNV, glFogCoordhNV, glColor4hvNV,
+        glColor4hNV, glColor3hvNV, glColor3hNV, gl_HALF_FLOAT_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glVertexWeighthvNV #-}
+ 
+ptr_glVertexWeighthvNV :: FunPtr a
+ptr_glVertexWeighthvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glVertexWeighthvNV"
+ 
+glVertexWeighthvNV :: Ptr GLushort -> IO ()
+glVertexWeighthvNV = dyn_glVertexWeighthvNV ptr_glVertexWeighthvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertexWeighthvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glVertexWeighthNV #-}
+ 
+ptr_glVertexWeighthNV :: FunPtr a
+ptr_glVertexWeighthNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glVertexWeighthNV"
+ 
+glVertexWeighthNV :: GLushort -> IO ()
+glVertexWeighthNV = dyn_glVertexWeighthNV ptr_glVertexWeighthNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertexWeighthNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> IO ())
  
 {-# NOINLINE ptr_glVertexAttribs4hvNV #-}
  
@@ -222,35 +254,229 @@ foreign import CALLCONV unsafe "dynamic" dyn_glVertexAttrib1hNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLushort -> IO ())
  
-{-# NOINLINE ptr_glVertexWeighthvNV #-}
+{-# NOINLINE ptr_glVertex4hvNV #-}
  
-ptr_glVertexWeighthvNV :: FunPtr a
-ptr_glVertexWeighthvNV
+ptr_glVertex4hvNV :: FunPtr a
+ptr_glVertex4hvNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_half_float"
-        "glVertexWeighthvNV"
+        "glVertex4hvNV"
  
-glVertexWeighthvNV :: Ptr GLushort -> IO ()
-glVertexWeighthvNV = dyn_glVertexWeighthvNV ptr_glVertexWeighthvNV
+glVertex4hvNV :: Ptr GLushort -> IO ()
+glVertex4hvNV = dyn_glVertex4hvNV ptr_glVertex4hvNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glVertexWeighthvNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glVertex4hvNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr GLushort -> IO ())
  
-{-# NOINLINE ptr_glVertexWeighthNV #-}
+{-# NOINLINE ptr_glVertex4hNV #-}
  
-ptr_glVertexWeighthNV :: FunPtr a
-ptr_glVertexWeighthNV
+ptr_glVertex4hNV :: FunPtr a
+ptr_glVertex4hNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_half_float"
-        "glVertexWeighthNV"
+        "glVertex4hNV"
  
-glVertexWeighthNV :: GLushort -> IO ()
-glVertexWeighthNV = dyn_glVertexWeighthNV ptr_glVertexWeighthNV
+glVertex4hNV ::
+             GLushort -> GLushort -> GLushort -> GLushort -> IO ()
+glVertex4hNV = dyn_glVertex4hNV ptr_glVertex4hNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glVertexWeighthNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glVertex4hNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> GLushort -> GLushort -> GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glVertex3hvNV #-}
+ 
+ptr_glVertex3hvNV :: FunPtr a
+ptr_glVertex3hvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glVertex3hvNV"
+ 
+glVertex3hvNV :: Ptr GLushort -> IO ()
+glVertex3hvNV = dyn_glVertex3hvNV ptr_glVertex3hvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertex3hvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glVertex3hNV #-}
+ 
+ptr_glVertex3hNV :: FunPtr a
+ptr_glVertex3hNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glVertex3hNV"
+ 
+glVertex3hNV :: GLushort -> GLushort -> GLushort -> IO ()
+glVertex3hNV = dyn_glVertex3hNV ptr_glVertex3hNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertex3hNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> GLushort -> GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glVertex2hvNV #-}
+ 
+ptr_glVertex2hvNV :: FunPtr a
+ptr_glVertex2hvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glVertex2hvNV"
+ 
+glVertex2hvNV :: Ptr GLushort -> IO ()
+glVertex2hvNV = dyn_glVertex2hvNV ptr_glVertex2hvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertex2hvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glVertex2hNV #-}
+ 
+ptr_glVertex2hNV :: FunPtr a
+ptr_glVertex2hNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glVertex2hNV"
+ 
+glVertex2hNV :: GLushort -> GLushort -> IO ()
+glVertex2hNV = dyn_glVertex2hNV ptr_glVertex2hNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertex2hNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord4hvNV #-}
+ 
+ptr_glTexCoord4hvNV :: FunPtr a
+ptr_glTexCoord4hvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord4hvNV"
+ 
+glTexCoord4hvNV :: Ptr GLushort -> IO ()
+glTexCoord4hvNV = dyn_glTexCoord4hvNV ptr_glTexCoord4hvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord4hvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord4hNV #-}
+ 
+ptr_glTexCoord4hNV :: FunPtr a
+ptr_glTexCoord4hNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord4hNV"
+ 
+glTexCoord4hNV ::
+               GLushort -> GLushort -> GLushort -> GLushort -> IO ()
+glTexCoord4hNV = dyn_glTexCoord4hNV ptr_glTexCoord4hNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord4hNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> GLushort -> GLushort -> GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord3hvNV #-}
+ 
+ptr_glTexCoord3hvNV :: FunPtr a
+ptr_glTexCoord3hvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord3hvNV"
+ 
+glTexCoord3hvNV :: Ptr GLushort -> IO ()
+glTexCoord3hvNV = dyn_glTexCoord3hvNV ptr_glTexCoord3hvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord3hvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord3hNV #-}
+ 
+ptr_glTexCoord3hNV :: FunPtr a
+ptr_glTexCoord3hNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord3hNV"
+ 
+glTexCoord3hNV :: GLushort -> GLushort -> GLushort -> IO ()
+glTexCoord3hNV = dyn_glTexCoord3hNV ptr_glTexCoord3hNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord3hNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> GLushort -> GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord2hvNV #-}
+ 
+ptr_glTexCoord2hvNV :: FunPtr a
+ptr_glTexCoord2hvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord2hvNV"
+ 
+glTexCoord2hvNV :: Ptr GLushort -> IO ()
+glTexCoord2hvNV = dyn_glTexCoord2hvNV ptr_glTexCoord2hvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord2hvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord2hNV #-}
+ 
+ptr_glTexCoord2hNV :: FunPtr a
+ptr_glTexCoord2hNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord2hNV"
+ 
+glTexCoord2hNV :: GLushort -> GLushort -> IO ()
+glTexCoord2hNV = dyn_glTexCoord2hNV ptr_glTexCoord2hNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord2hNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLushort -> GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord1hvNV #-}
+ 
+ptr_glTexCoord1hvNV :: FunPtr a
+ptr_glTexCoord1hvNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord1hvNV"
+ 
+glTexCoord1hvNV :: Ptr GLushort -> IO ()
+glTexCoord1hvNV = dyn_glTexCoord1hvNV ptr_glTexCoord1hvNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord1hvNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLushort -> IO ())
+ 
+{-# NOINLINE ptr_glTexCoord1hNV #-}
+ 
+ptr_glTexCoord1hNV :: FunPtr a
+ptr_glTexCoord1hNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_half_float"
+        "glTexCoord1hNV"
+ 
+glTexCoord1hNV :: GLushort -> IO ()
+glTexCoord1hNV = dyn_glTexCoord1hNV ptr_glTexCoord1hNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord1hNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLushort -> IO ())
  
@@ -289,37 +515,37 @@ foreign import CALLCONV unsafe "dynamic" dyn_glSecondaryColor3hNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLushort -> GLushort -> GLushort -> IO ())
  
-{-# NOINLINE ptr_glFogCoordhvNV #-}
+{-# NOINLINE ptr_glNormal3hvNV #-}
  
-ptr_glFogCoordhvNV :: FunPtr a
-ptr_glFogCoordhvNV
+ptr_glNormal3hvNV :: FunPtr a
+ptr_glNormal3hvNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_half_float"
-        "glFogCoordhvNV"
+        "glNormal3hvNV"
  
-glFogCoordhvNV :: Ptr GLushort -> IO ()
-glFogCoordhvNV = dyn_glFogCoordhvNV ptr_glFogCoordhvNV
+glNormal3hvNV :: Ptr GLushort -> IO ()
+glNormal3hvNV = dyn_glNormal3hvNV ptr_glNormal3hvNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordhvNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glNormal3hvNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr GLushort -> IO ())
  
-{-# NOINLINE ptr_glFogCoordhNV #-}
+{-# NOINLINE ptr_glNormal3hNV #-}
  
-ptr_glFogCoordhNV :: FunPtr a
-ptr_glFogCoordhNV
+ptr_glNormal3hNV :: FunPtr a
+ptr_glNormal3hNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_half_float"
-        "glFogCoordhNV"
+        "glNormal3hNV"
  
-glFogCoordhNV :: GLushort -> IO ()
-glFogCoordhNV = dyn_glFogCoordhNV ptr_glFogCoordhNV
+glNormal3hNV :: GLushort -> GLushort -> GLushort -> IO ()
+glNormal3hNV = dyn_glNormal3hNV ptr_glNormal3hNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordhNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glNormal3hNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> IO ())
+                 (GLushort -> GLushort -> GLushort -> IO ())
  
 {-# NOINLINE ptr_glMultiTexCoord4hvNV #-}
  
@@ -459,132 +685,35 @@ foreign import CALLCONV unsafe "dynamic" dyn_glMultiTexCoord1hNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLushort -> IO ())
  
-{-# NOINLINE ptr_glTexCoord4hvNV #-}
+{-# NOINLINE ptr_glFogCoordhvNV #-}
  
-ptr_glTexCoord4hvNV :: FunPtr a
-ptr_glTexCoord4hvNV
+ptr_glFogCoordhvNV :: FunPtr a
+ptr_glFogCoordhvNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_half_float"
-        "glTexCoord4hvNV"
+        "glFogCoordhvNV"
  
-glTexCoord4hvNV :: Ptr GLushort -> IO ()
-glTexCoord4hvNV = dyn_glTexCoord4hvNV ptr_glTexCoord4hvNV
+glFogCoordhvNV :: Ptr GLushort -> IO ()
+glFogCoordhvNV = dyn_glFogCoordhvNV ptr_glFogCoordhvNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord4hvNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordhvNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (Ptr GLushort -> IO ())
  
-{-# NOINLINE ptr_glTexCoord4hNV #-}
+{-# NOINLINE ptr_glFogCoordhNV #-}
  
-ptr_glTexCoord4hNV :: FunPtr a
-ptr_glTexCoord4hNV
+ptr_glFogCoordhNV :: FunPtr a
+ptr_glFogCoordhNV
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_NV_half_float"
-        "glTexCoord4hNV"
+        "glFogCoordhNV"
  
-glTexCoord4hNV ::
-               GLushort -> GLushort -> GLushort -> GLushort -> IO ()
-glTexCoord4hNV = dyn_glTexCoord4hNV ptr_glTexCoord4hNV
+glFogCoordhNV :: GLushort -> IO ()
+glFogCoordhNV = dyn_glFogCoordhNV ptr_glFogCoordhNV
  
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord4hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glTexCoord3hvNV #-}
- 
-ptr_glTexCoord3hvNV :: FunPtr a
-ptr_glTexCoord3hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glTexCoord3hvNV"
- 
-glTexCoord3hvNV :: Ptr GLushort -> IO ()
-glTexCoord3hvNV = dyn_glTexCoord3hvNV ptr_glTexCoord3hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord3hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glTexCoord3hNV #-}
- 
-ptr_glTexCoord3hNV :: FunPtr a
-ptr_glTexCoord3hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glTexCoord3hNV"
- 
-glTexCoord3hNV :: GLushort -> GLushort -> GLushort -> IO ()
-glTexCoord3hNV = dyn_glTexCoord3hNV ptr_glTexCoord3hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord3hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glTexCoord2hvNV #-}
- 
-ptr_glTexCoord2hvNV :: FunPtr a
-ptr_glTexCoord2hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glTexCoord2hvNV"
- 
-glTexCoord2hvNV :: Ptr GLushort -> IO ()
-glTexCoord2hvNV = dyn_glTexCoord2hvNV ptr_glTexCoord2hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord2hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glTexCoord2hNV #-}
- 
-ptr_glTexCoord2hNV :: FunPtr a
-ptr_glTexCoord2hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glTexCoord2hNV"
- 
-glTexCoord2hNV :: GLushort -> GLushort -> IO ()
-glTexCoord2hNV = dyn_glTexCoord2hNV ptr_glTexCoord2hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord2hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glTexCoord1hvNV #-}
- 
-ptr_glTexCoord1hvNV :: FunPtr a
-ptr_glTexCoord1hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glTexCoord1hvNV"
- 
-glTexCoord1hvNV :: Ptr GLushort -> IO ()
-glTexCoord1hvNV = dyn_glTexCoord1hvNV ptr_glTexCoord1hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord1hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glTexCoord1hNV #-}
- 
-ptr_glTexCoord1hNV :: FunPtr a
-ptr_glTexCoord1hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glTexCoord1hNV"
- 
-glTexCoord1hNV :: GLushort -> IO ()
-glTexCoord1hNV = dyn_glTexCoord1hNV ptr_glTexCoord1hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexCoord1hNV ::
+foreign import CALLCONV unsafe "dynamic" dyn_glFogCoordhNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLushort -> IO ())
  
@@ -652,135 +781,6 @@ glColor3hNV = dyn_glColor3hNV ptr_glColor3hNV
 foreign import CALLCONV unsafe "dynamic" dyn_glColor3hNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLushort -> GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glNormal3hvNV #-}
- 
-ptr_glNormal3hvNV :: FunPtr a
-ptr_glNormal3hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glNormal3hvNV"
- 
-glNormal3hvNV :: Ptr GLushort -> IO ()
-glNormal3hvNV = dyn_glNormal3hvNV ptr_glNormal3hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glNormal3hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glNormal3hNV #-}
- 
-ptr_glNormal3hNV :: FunPtr a
-ptr_glNormal3hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glNormal3hNV"
- 
-glNormal3hNV :: GLushort -> GLushort -> GLushort -> IO ()
-glNormal3hNV = dyn_glNormal3hNV ptr_glNormal3hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glNormal3hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glVertex4hvNV #-}
- 
-ptr_glVertex4hvNV :: FunPtr a
-ptr_glVertex4hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glVertex4hvNV"
- 
-glVertex4hvNV :: Ptr GLushort -> IO ()
-glVertex4hvNV = dyn_glVertex4hvNV ptr_glVertex4hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertex4hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glVertex4hNV #-}
- 
-ptr_glVertex4hNV :: FunPtr a
-ptr_glVertex4hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glVertex4hNV"
- 
-glVertex4hNV ::
-             GLushort -> GLushort -> GLushort -> GLushort -> IO ()
-glVertex4hNV = dyn_glVertex4hNV ptr_glVertex4hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertex4hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glVertex3hvNV #-}
- 
-ptr_glVertex3hvNV :: FunPtr a
-ptr_glVertex3hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glVertex3hvNV"
- 
-glVertex3hvNV :: Ptr GLushort -> IO ()
-glVertex3hvNV = dyn_glVertex3hvNV ptr_glVertex3hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertex3hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glVertex3hNV #-}
- 
-ptr_glVertex3hNV :: FunPtr a
-ptr_glVertex3hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glVertex3hNV"
- 
-glVertex3hNV :: GLushort -> GLushort -> GLushort -> IO ()
-glVertex3hNV = dyn_glVertex3hNV ptr_glVertex3hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertex3hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> GLushort -> IO ())
- 
-{-# NOINLINE ptr_glVertex2hvNV #-}
- 
-ptr_glVertex2hvNV :: FunPtr a
-ptr_glVertex2hvNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glVertex2hvNV"
- 
-glVertex2hvNV :: Ptr GLushort -> IO ()
-glVertex2hvNV = dyn_glVertex2hvNV ptr_glVertex2hvNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertex2hvNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLushort -> IO ())
- 
-{-# NOINLINE ptr_glVertex2hNV #-}
- 
-ptr_glVertex2hNV :: FunPtr a
-ptr_glVertex2hNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_half_float"
-        "glVertex2hNV"
- 
-glVertex2hNV :: GLushort -> GLushort -> IO ()
-glVertex2hNV = dyn_glVertex2hNV ptr_glVertex2hNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertex2hNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLushort -> GLushort -> IO ())
  
 gl_HALF_FLOAT_NV :: GLenum
 gl_HALF_FLOAT_NV = 5131

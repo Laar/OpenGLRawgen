@@ -1,12 +1,30 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.SeparateShaderObjects
-       (glCreateShaderProgramEXT, glActiveProgramEXT,
-        glUseShaderProgramEXT, gl_ACTIVE_PROGRAM_EXT)
+       (glUseShaderProgramEXT, glCreateShaderProgramEXT,
+        glActiveProgramEXT, gl_ACTIVE_PROGRAM_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glUseShaderProgramEXT #-}
+ 
+ptr_glUseShaderProgramEXT :: FunPtr a
+ptr_glUseShaderProgramEXT
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_EXT_separate_shader_objects"
+        "glUseShaderProgramEXT"
+ 
+glUseShaderProgramEXT :: GLenum -> GLuint -> IO ()
+glUseShaderProgramEXT
+  = dyn_glUseShaderProgramEXT ptr_glUseShaderProgramEXT
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUseShaderProgramEXT
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> IO ())
  
 {-# NOINLINE ptr_glCreateShaderProgramEXT #-}
  
@@ -41,24 +59,6 @@ glActiveProgramEXT = dyn_glActiveProgramEXT ptr_glActiveProgramEXT
 foreign import CALLCONV unsafe "dynamic" dyn_glActiveProgramEXT ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO ())
- 
-{-# NOINLINE ptr_glUseShaderProgramEXT #-}
- 
-ptr_glUseShaderProgramEXT :: FunPtr a
-ptr_glUseShaderProgramEXT
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_EXT_separate_shader_objects"
-        "glUseShaderProgramEXT"
- 
-glUseShaderProgramEXT :: GLenum -> GLuint -> IO ()
-glUseShaderProgramEXT
-  = dyn_glUseShaderProgramEXT ptr_glUseShaderProgramEXT
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUseShaderProgramEXT
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> IO ())
  
 gl_ACTIVE_PROGRAM_EXT :: GLenum
 gl_ACTIVE_PROGRAM_EXT = 35725

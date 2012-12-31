@@ -1,8 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.BlendMinmax
-       (glBlendEquationEXT, gl_BLEND_EQUATION_EXT, gl_MAX_EXT, gl_MIN_EXT,
-        gl_FUNC_ADD_EXT)
+       (glBlendEquationEXT, gl_MIN_EXT, gl_MAX_EXT, gl_FUNC_ADD_EXT,
+        gl_BLEND_EQUATION_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -24,14 +24,14 @@ foreign import CALLCONV unsafe "dynamic" dyn_glBlendEquationEXT ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
-gl_BLEND_EQUATION_EXT :: GLenum
-gl_BLEND_EQUATION_EXT = 32777
+gl_MIN_EXT :: GLenum
+gl_MIN_EXT = 32775
  
 gl_MAX_EXT :: GLenum
 gl_MAX_EXT = 32776
  
-gl_MIN_EXT :: GLenum
-gl_MIN_EXT = 32775
- 
 gl_FUNC_ADD_EXT :: GLenum
 gl_FUNC_ADD_EXT = 32774
+ 
+gl_BLEND_EQUATION_EXT :: GLenum
+gl_BLEND_EQUATION_EXT = 32777

@@ -1,18 +1,36 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.APPLE.VertexArrayRange
-       (glVertexArrayParameteriAPPLE, glFlushVertexArrayRangeAPPLE,
-        glVertexArrayRangeAPPLE, gl_STORAGE_SHARED_APPLE,
-        gl_STORAGE_CACHED_APPLE, gl_STORAGE_CLIENT_APPLE,
+       (glVertexArrayRangeAPPLE, glVertexArrayParameteriAPPLE,
+        glFlushVertexArrayRangeAPPLE, gl_VERTEX_ARRAY_STORAGE_HINT_APPLE,
         gl_VERTEX_ARRAY_RANGE_POINTER_APPLE,
-        gl_VERTEX_ARRAY_STORAGE_HINT_APPLE,
-        gl_VERTEX_ARRAY_RANGE_LENGTH_APPLE, gl_VERTEX_ARRAY_RANGE_APPLE)
+        gl_VERTEX_ARRAY_RANGE_LENGTH_APPLE, gl_VERTEX_ARRAY_RANGE_APPLE,
+        gl_STORAGE_SHARED_APPLE, gl_STORAGE_CLIENT_APPLE,
+        gl_STORAGE_CACHED_APPLE)
        where
 import Graphics.Rendering.OpenGL.Raw.APPLE.TextureRange
        (gl_STORAGE_SHARED_APPLE, gl_STORAGE_CACHED_APPLE)
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glVertexArrayRangeAPPLE #-}
+ 
+ptr_glVertexArrayRangeAPPLE :: FunPtr a
+ptr_glVertexArrayRangeAPPLE
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_APPLE_vertex_array_range"
+        "glVertexArrayRangeAPPLE"
+ 
+glVertexArrayRangeAPPLE :: GLsizei -> Ptr a -> IO ()
+glVertexArrayRangeAPPLE
+  = dyn_glVertexArrayRangeAPPLE ptr_glVertexArrayRangeAPPLE
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertexArrayRangeAPPLE
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLsizei -> Ptr a -> IO ())
  
 {-# NOINLINE ptr_glVertexArrayParameteriAPPLE #-}
  
@@ -50,35 +68,17 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr a -> IO ())
  
-{-# NOINLINE ptr_glVertexArrayRangeAPPLE #-}
- 
-ptr_glVertexArrayRangeAPPLE :: FunPtr a
-ptr_glVertexArrayRangeAPPLE
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_APPLE_vertex_array_range"
-        "glVertexArrayRangeAPPLE"
- 
-glVertexArrayRangeAPPLE :: GLsizei -> Ptr a -> IO ()
-glVertexArrayRangeAPPLE
-  = dyn_glVertexArrayRangeAPPLE ptr_glVertexArrayRangeAPPLE
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertexArrayRangeAPPLE
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLsizei -> Ptr a -> IO ())
- 
-gl_STORAGE_CLIENT_APPLE :: GLenum
-gl_STORAGE_CLIENT_APPLE = 34228
+gl_VERTEX_ARRAY_STORAGE_HINT_APPLE :: GLenum
+gl_VERTEX_ARRAY_STORAGE_HINT_APPLE = 34079
  
 gl_VERTEX_ARRAY_RANGE_POINTER_APPLE :: GLenum
 gl_VERTEX_ARRAY_RANGE_POINTER_APPLE = 34081
- 
-gl_VERTEX_ARRAY_STORAGE_HINT_APPLE :: GLenum
-gl_VERTEX_ARRAY_STORAGE_HINT_APPLE = 34079
  
 gl_VERTEX_ARRAY_RANGE_LENGTH_APPLE :: GLenum
 gl_VERTEX_ARRAY_RANGE_LENGTH_APPLE = 34078
  
 gl_VERTEX_ARRAY_RANGE_APPLE :: GLenum
 gl_VERTEX_ARRAY_RANGE_APPLE = 34077
+ 
+gl_STORAGE_CLIENT_APPLE :: GLenum
+gl_STORAGE_CLIENT_APPLE = 34228

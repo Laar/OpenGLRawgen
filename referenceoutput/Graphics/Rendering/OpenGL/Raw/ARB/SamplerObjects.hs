@@ -1,15 +1,13 @@
 module Graphics.Rendering.OpenGL.Raw.ARB.SamplerObjects
-       (glGetSamplerParameterIuiv, glGetSamplerParameterfv,
-        glGetSamplerParameterIiv, glGetSamplerParameteriv,
-        glSamplerParameterIuiv, glSamplerParameterIiv,
-        glSamplerParameterfv, glSamplerParameterf, glSamplerParameteriv,
-        glSamplerParameteri, glBindSampler, glIsSampler, glDeleteSamplers,
-        glGenSamplers, gl_SAMPLER_BINDING)
+       (glSamplerParameteriv, glSamplerParameteri, glSamplerParameterfv,
+        glSamplerParameterf, glSamplerParameterIuiv, glSamplerParameterIiv,
+        glIsSampler, glGetSamplerParameteriv, glGetSamplerParameterfv,
+        glGetSamplerParameterIuiv, glGetSamplerParameterIiv, glGenSamplers,
+        glDeleteSamplers, glBindSampler, gl_SAMPLER_BINDING)
        where
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core33
-       (glGetSamplerParameterIuiv, glGetSamplerParameterfv,
-        glGetSamplerParameterIiv, glGetSamplerParameteriv,
-        glSamplerParameterIuiv, glSamplerParameterIiv,
-        glSamplerParameterfv, glSamplerParameterf, glSamplerParameteriv,
-        glSamplerParameteri, glBindSampler, glIsSampler, glDeleteSamplers,
-        glGenSamplers, gl_SAMPLER_BINDING)
+       (glSamplerParameteriv, glSamplerParameteri, glSamplerParameterfv,
+        glSamplerParameterf, glSamplerParameterIuiv, glSamplerParameterIiv,
+        glIsSampler, glGetSamplerParameteriv, glGetSamplerParameterfv,
+        glGetSamplerParameterIuiv, glGetSamplerParameterIiv, glGenSamplers,
+        glDeleteSamplers, glBindSampler, gl_SAMPLER_BINDING)

@@ -1,8 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.StencilClearTag
-       (glStencilClearTagEXT, gl_STENCIL_CLEAR_TAG_VALUE_EXT,
-        gl_STENCIL_TAG_BITS_EXT)
+       (glStencilClearTagEXT, gl_STENCIL_TAG_BITS_EXT,
+        gl_STENCIL_CLEAR_TAG_VALUE_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -25,8 +25,8 @@ foreign import CALLCONV unsafe "dynamic" dyn_glStencilClearTagEXT ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> GLuint -> IO ())
  
-gl_STENCIL_CLEAR_TAG_VALUE_EXT :: GLenum
-gl_STENCIL_CLEAR_TAG_VALUE_EXT = 35059
- 
 gl_STENCIL_TAG_BITS_EXT :: GLenum
 gl_STENCIL_TAG_BITS_EXT = 35058
+ 
+gl_STENCIL_CLEAR_TAG_VALUE_EXT :: GLenum
+gl_STENCIL_CLEAR_TAG_VALUE_EXT = 35059
