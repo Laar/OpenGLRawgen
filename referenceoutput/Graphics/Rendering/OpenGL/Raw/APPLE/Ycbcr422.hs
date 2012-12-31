@@ -1,8 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.APPLE.Ycbcr422
-       (gl_UNSIGNED_SHORT_8_8_REV_APPLE, gl_UNSIGNED_SHORT_8_8_APPLE,
-        gl_YCBCR_422_APPLE)
+       (gl_YCBCR_422_APPLE, gl_UNSIGNED_SHORT_8_8_REV_APPLE,
+        gl_UNSIGNED_SHORT_8_8_APPLE)
        where
 import Graphics.Rendering.OpenGL.Raw.APPLE.Rgb422
        (gl_UNSIGNED_SHORT_8_8_REV_APPLE, gl_UNSIGNED_SHORT_8_8_APPLE)

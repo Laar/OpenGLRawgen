@@ -1,11 +1,11 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.Texture3D
-       (glTexSubImage3DEXT, glTexImage3DEXT, gl_MAX_3D_TEXTURE_SIZE_EXT,
-        gl_TEXTURE_WRAP_R_EXT, gl_TEXTURE_DEPTH_EXT,
-        gl_PROXY_TEXTURE_3D_EXT, gl_TEXTURE_3D_EXT,
-        gl_UNPACK_IMAGE_HEIGHT_EXT, gl_UNPACK_SKIP_IMAGES_EXT,
-        gl_PACK_IMAGE_HEIGHT_EXT, gl_PACK_SKIP_IMAGES_EXT)
+       (glTexSubImage3DEXT, glTexImage3DEXT, gl_UNPACK_SKIP_IMAGES_EXT,
+        gl_UNPACK_IMAGE_HEIGHT_EXT, gl_TEXTURE_WRAP_R_EXT,
+        gl_TEXTURE_DEPTH_EXT, gl_TEXTURE_3D_EXT, gl_PROXY_TEXTURE_3D_EXT,
+        gl_PACK_SKIP_IMAGES_EXT, gl_PACK_IMAGE_HEIGHT_EXT,
+        gl_MAX_3D_TEXTURE_SIZE_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -64,8 +64,11 @@ foreign import CALLCONV unsafe "dynamic" dyn_glTexImage3DEXT ::
                         GLsizei ->
                           GLsizei -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ())
  
-gl_MAX_3D_TEXTURE_SIZE_EXT :: GLenum
-gl_MAX_3D_TEXTURE_SIZE_EXT = 32883
+gl_UNPACK_SKIP_IMAGES_EXT :: GLenum
+gl_UNPACK_SKIP_IMAGES_EXT = 32877
+ 
+gl_UNPACK_IMAGE_HEIGHT_EXT :: GLenum
+gl_UNPACK_IMAGE_HEIGHT_EXT = 32878
  
 gl_TEXTURE_WRAP_R_EXT :: GLenum
 gl_TEXTURE_WRAP_R_EXT = 32882
@@ -73,20 +76,17 @@ gl_TEXTURE_WRAP_R_EXT = 32882
 gl_TEXTURE_DEPTH_EXT :: GLenum
 gl_TEXTURE_DEPTH_EXT = 32881
  
-gl_PROXY_TEXTURE_3D_EXT :: GLenum
-gl_PROXY_TEXTURE_3D_EXT = 32880
- 
 gl_TEXTURE_3D_EXT :: GLenum
 gl_TEXTURE_3D_EXT = 32879
  
-gl_UNPACK_IMAGE_HEIGHT_EXT :: GLenum
-gl_UNPACK_IMAGE_HEIGHT_EXT = 32878
+gl_PROXY_TEXTURE_3D_EXT :: GLenum
+gl_PROXY_TEXTURE_3D_EXT = 32880
  
-gl_UNPACK_SKIP_IMAGES_EXT :: GLenum
-gl_UNPACK_SKIP_IMAGES_EXT = 32877
+gl_PACK_SKIP_IMAGES_EXT :: GLenum
+gl_PACK_SKIP_IMAGES_EXT = 32875
  
 gl_PACK_IMAGE_HEIGHT_EXT :: GLenum
 gl_PACK_IMAGE_HEIGHT_EXT = 32876
  
-gl_PACK_SKIP_IMAGES_EXT :: GLenum
-gl_PACK_SKIP_IMAGES_EXT = 32875
+gl_MAX_3D_TEXTURE_SIZE_EXT :: GLenum
+gl_MAX_3D_TEXTURE_SIZE_EXT = 32883

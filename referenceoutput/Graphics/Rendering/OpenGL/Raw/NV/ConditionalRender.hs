@@ -2,8 +2,8 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.ConditionalRender
        (glEndConditionalRenderNV, glBeginConditionalRenderNV,
-        gl_QUERY_BY_REGION_NO_WAIT_NV, gl_QUERY_BY_REGION_WAIT_NV,
-        gl_QUERY_NO_WAIT_NV, gl_QUERY_WAIT_NV)
+        gl_QUERY_WAIT_NV, gl_QUERY_NO_WAIT_NV, gl_QUERY_BY_REGION_WAIT_NV,
+        gl_QUERY_BY_REGION_NO_WAIT_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -44,14 +44,14 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> IO ())
  
-gl_QUERY_BY_REGION_NO_WAIT_NV :: GLenum
-gl_QUERY_BY_REGION_NO_WAIT_NV = 36374
- 
-gl_QUERY_BY_REGION_WAIT_NV :: GLenum
-gl_QUERY_BY_REGION_WAIT_NV = 36373
+gl_QUERY_WAIT_NV :: GLenum
+gl_QUERY_WAIT_NV = 36371
  
 gl_QUERY_NO_WAIT_NV :: GLenum
 gl_QUERY_NO_WAIT_NV = 36372
  
-gl_QUERY_WAIT_NV :: GLenum
-gl_QUERY_WAIT_NV = 36371
+gl_QUERY_BY_REGION_WAIT_NV :: GLenum
+gl_QUERY_BY_REGION_WAIT_NV = 36373
+ 
+gl_QUERY_BY_REGION_NO_WAIT_NV :: GLenum
+gl_QUERY_BY_REGION_NO_WAIT_NV = 36374

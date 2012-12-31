@@ -1,17 +1,18 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core10
-       (glViewport, glDepthRange, glIsEnabled, glGetTexLevelParameteriv,
-        glGetTexLevelParameterfv, glGetTexParameteriv, glGetTexParameterfv,
-        glGetTexImage, glGetString, glGetIntegerv, glGetFloatv, glGetError,
-        glGetDoublev, glGetBooleanv, glReadPixels, glReadBuffer,
-        glPixelStorei, glPixelStoref, glDepthFunc, glStencilOp,
-        glStencilFunc, glLogicOp, glBlendFunc, glFlush, glFinish, glEnable,
-        glDisable, glDepthMask, glColorMask, glStencilMask, glClearDepth,
-        glClearStencil, glClearColor, glClear, glDrawBuffer, glTexImage2D,
-        glTexImage1D, glTexParameteriv, glTexParameteri, glTexParameterfv,
-        glTexParameterf, glScissor, glPolygonMode, glPointSize,
-        glLineWidth, glHint, glFrontFace, glCullFace)
+       (glViewport, glTexParameteriv, glTexParameteri, glTexParameterfv,
+        glTexParameterf, glTexImage2D, glTexImage1D, glStencilOp,
+        glStencilMask, glStencilFunc, glScissor, glReadPixels,
+        glReadBuffer, glPolygonMode, glPointSize, glPixelStorei,
+        glPixelStoref, glLogicOp, glLineWidth, glIsEnabled, glHint,
+        glGetTexParameteriv, glGetTexParameterfv, glGetTexLevelParameteriv,
+        glGetTexLevelParameterfv, glGetTexImage, glGetString,
+        glGetIntegerv, glGetFloatv, glGetError, glGetDoublev,
+        glGetBooleanv, glFrontFace, glFlush, glFinish, glEnable,
+        glDrawBuffer, glDisable, glDepthRange, glDepthMask, glDepthFunc,
+        glCullFace, glColorMask, glClearStencil, glClearDepth,
+        glClearColor, glClear, glBlendFunc)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -33,21 +34,308 @@ foreign import CALLCONV unsafe "dynamic" dyn_glViewport ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLint -> GLint -> GLsizei -> GLsizei -> IO ())
  
-{-# NOINLINE ptr_glDepthRange #-}
+{-# NOINLINE ptr_glTexParameteriv #-}
  
-ptr_glDepthRange :: FunPtr a
-ptr_glDepthRange
+ptr_glTexParameteriv :: FunPtr a
+ptr_glTexParameteriv
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_1_0"
-        "glDepthRange"
+        "glTexParameteriv"
  
-glDepthRange :: GLclampd -> GLclampd -> IO ()
-glDepthRange = dyn_glDepthRange ptr_glDepthRange
+glTexParameteriv :: GLenum -> GLenum -> Ptr GLint -> IO ()
+glTexParameteriv = dyn_glTexParameteriv ptr_glTexParameteriv
  
-foreign import CALLCONV unsafe "dynamic" dyn_glDepthRange ::
+foreign import CALLCONV unsafe "dynamic" dyn_glTexParameteriv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLclampd -> GLclampd -> IO ())
+                 (GLenum -> GLenum -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glTexParameteri #-}
+ 
+ptr_glTexParameteri :: FunPtr a
+ptr_glTexParameteri
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glTexParameteri"
+ 
+glTexParameteri :: GLenum -> GLenum -> GLint -> IO ()
+glTexParameteri = dyn_glTexParameteri ptr_glTexParameteri
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexParameteri ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> GLint -> IO ())
+ 
+{-# NOINLINE ptr_glTexParameterfv #-}
+ 
+ptr_glTexParameterfv :: FunPtr a
+ptr_glTexParameterfv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glTexParameterfv"
+ 
+glTexParameterfv :: GLenum -> GLenum -> Ptr GLfloat -> IO ()
+glTexParameterfv = dyn_glTexParameterfv ptr_glTexParameterfv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexParameterfv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glTexParameterf #-}
+ 
+ptr_glTexParameterf :: FunPtr a
+ptr_glTexParameterf
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glTexParameterf"
+ 
+glTexParameterf :: GLenum -> GLenum -> GLfloat -> IO ()
+glTexParameterf = dyn_glTexParameterf ptr_glTexParameterf
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexParameterf ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glTexImage2D #-}
+ 
+ptr_glTexImage2D :: FunPtr a
+ptr_glTexImage2D
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glTexImage2D"
+ 
+glTexImage2D ::
+             GLenum ->
+               GLint ->
+                 GLint ->
+                   GLsizei -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ()
+glTexImage2D = dyn_glTexImage2D ptr_glTexImage2D
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexImage2D ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum ->
+                    GLint ->
+                      GLint ->
+                        GLsizei -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ())
+ 
+{-# NOINLINE ptr_glTexImage1D #-}
+ 
+ptr_glTexImage1D :: FunPtr a
+ptr_glTexImage1D
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glTexImage1D"
+ 
+glTexImage1D ::
+             GLenum ->
+               GLint ->
+                 GLint -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ()
+glTexImage1D = dyn_glTexImage1D ptr_glTexImage1D
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glTexImage1D ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum ->
+                    GLint ->
+                      GLint -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ())
+ 
+{-# NOINLINE ptr_glStencilOp #-}
+ 
+ptr_glStencilOp :: FunPtr a
+ptr_glStencilOp
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glStencilOp"
+ 
+glStencilOp :: GLenum -> GLenum -> GLenum -> IO ()
+glStencilOp = dyn_glStencilOp ptr_glStencilOp
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glStencilOp ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glStencilMask #-}
+ 
+ptr_glStencilMask :: FunPtr a
+ptr_glStencilMask
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glStencilMask"
+ 
+glStencilMask :: GLuint -> IO ()
+glStencilMask = dyn_glStencilMask ptr_glStencilMask
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glStencilMask ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glStencilFunc #-}
+ 
+ptr_glStencilFunc :: FunPtr a
+ptr_glStencilFunc
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glStencilFunc"
+ 
+glStencilFunc :: GLenum -> GLint -> GLuint -> IO ()
+glStencilFunc = dyn_glStencilFunc ptr_glStencilFunc
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glStencilFunc ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLint -> GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glScissor #-}
+ 
+ptr_glScissor :: FunPtr a
+ptr_glScissor
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glScissor"
+ 
+glScissor :: GLint -> GLint -> GLsizei -> GLsizei -> IO ()
+glScissor = dyn_glScissor ptr_glScissor
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glScissor ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> GLint -> GLsizei -> GLsizei -> IO ())
+ 
+{-# NOINLINE ptr_glReadPixels #-}
+ 
+ptr_glReadPixels :: FunPtr a
+ptr_glReadPixels
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glReadPixels"
+ 
+glReadPixels ::
+             GLint ->
+               GLint -> GLsizei -> GLsizei -> GLenum -> GLenum -> Ptr a -> IO ()
+glReadPixels = dyn_glReadPixels ptr_glReadPixels
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glReadPixels ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint ->
+                    GLint -> GLsizei -> GLsizei -> GLenum -> GLenum -> Ptr a -> IO ())
+ 
+{-# NOINLINE ptr_glReadBuffer #-}
+ 
+ptr_glReadBuffer :: FunPtr a
+ptr_glReadBuffer
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glReadBuffer"
+ 
+glReadBuffer :: GLenum -> IO ()
+glReadBuffer = dyn_glReadBuffer ptr_glReadBuffer
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glReadBuffer ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glPolygonMode #-}
+ 
+ptr_glPolygonMode :: FunPtr a
+ptr_glPolygonMode
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glPolygonMode"
+ 
+glPolygonMode :: GLenum -> GLenum -> IO ()
+glPolygonMode = dyn_glPolygonMode ptr_glPolygonMode
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glPolygonMode ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glPointSize #-}
+ 
+ptr_glPointSize :: FunPtr a
+ptr_glPointSize
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glPointSize"
+ 
+glPointSize :: GLfloat -> IO ()
+glPointSize = dyn_glPointSize ptr_glPointSize
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glPointSize ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glPixelStorei #-}
+ 
+ptr_glPixelStorei :: FunPtr a
+ptr_glPixelStorei
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glPixelStorei"
+ 
+glPixelStorei :: GLenum -> GLint -> IO ()
+glPixelStorei = dyn_glPixelStorei ptr_glPixelStorei
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glPixelStorei ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLint -> IO ())
+ 
+{-# NOINLINE ptr_glPixelStoref #-}
+ 
+ptr_glPixelStoref :: FunPtr a
+ptr_glPixelStoref
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glPixelStoref"
+ 
+glPixelStoref :: GLenum -> GLfloat -> IO ()
+glPixelStoref = dyn_glPixelStoref ptr_glPixelStoref
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glPixelStoref ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glLogicOp #-}
+ 
+ptr_glLogicOp :: FunPtr a
+ptr_glLogicOp
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glLogicOp"
+ 
+glLogicOp :: GLenum -> IO ()
+glLogicOp = dyn_glLogicOp ptr_glLogicOp
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glLogicOp ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glLineWidth #-}
+ 
+ptr_glLineWidth :: FunPtr a
+ptr_glLineWidth
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glLineWidth"
+ 
+glLineWidth :: GLfloat -> IO ()
+glLineWidth = dyn_glLineWidth ptr_glLineWidth
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glLineWidth ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLfloat -> IO ())
  
 {-# NOINLINE ptr_glIsEnabled #-}
  
@@ -64,6 +352,56 @@ glIsEnabled = dyn_glIsEnabled ptr_glIsEnabled
 foreign import CALLCONV unsafe "dynamic" dyn_glIsEnabled ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO GLboolean)
+ 
+{-# NOINLINE ptr_glHint #-}
+ 
+ptr_glHint :: FunPtr a
+ptr_glHint
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glHint"
+ 
+glHint :: GLenum -> GLenum -> IO ()
+glHint = dyn_glHint ptr_glHint
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glHint ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glGetTexParameteriv #-}
+ 
+ptr_glGetTexParameteriv :: FunPtr a
+ptr_glGetTexParameteriv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glGetTexParameteriv"
+ 
+glGetTexParameteriv :: GLenum -> GLenum -> Ptr GLint -> IO ()
+glGetTexParameteriv
+  = dyn_glGetTexParameteriv ptr_glGetTexParameteriv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetTexParameteriv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> Ptr GLint -> IO ())
+ 
+{-# NOINLINE ptr_glGetTexParameterfv #-}
+ 
+ptr_glGetTexParameterfv :: FunPtr a
+ptr_glGetTexParameterfv
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glGetTexParameterfv"
+ 
+glGetTexParameterfv :: GLenum -> GLenum -> Ptr GLfloat -> IO ()
+glGetTexParameterfv
+  = dyn_glGetTexParameterfv ptr_glGetTexParameterfv
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetTexParameterfv ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> Ptr GLfloat -> IO ())
  
 {-# NOINLINE ptr_glGetTexLevelParameteriv #-}
  
@@ -102,40 +440,6 @@ foreign import CALLCONV unsafe "dynamic"
                dyn_glGetTexLevelParameterfv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLint -> GLenum -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glGetTexParameteriv #-}
- 
-ptr_glGetTexParameteriv :: FunPtr a
-ptr_glGetTexParameteriv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glGetTexParameteriv"
- 
-glGetTexParameteriv :: GLenum -> GLenum -> Ptr GLint -> IO ()
-glGetTexParameteriv
-  = dyn_glGetTexParameteriv ptr_glGetTexParameteriv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetTexParameteriv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glGetTexParameterfv #-}
- 
-ptr_glGetTexParameterfv :: FunPtr a
-ptr_glGetTexParameterfv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glGetTexParameterfv"
- 
-glGetTexParameterfv :: GLenum -> GLenum -> Ptr GLfloat -> IO ()
-glGetTexParameterfv
-  = dyn_glGetTexParameterfv ptr_glGetTexParameterfv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetTexParameterfv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> Ptr GLfloat -> IO ())
  
 {-# NOINLINE ptr_glGetTexImage #-}
  
@@ -250,152 +554,21 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetBooleanv ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> Ptr GLboolean -> IO ())
  
-{-# NOINLINE ptr_glReadPixels #-}
+{-# NOINLINE ptr_glFrontFace #-}
  
-ptr_glReadPixels :: FunPtr a
-ptr_glReadPixels
+ptr_glFrontFace :: FunPtr a
+ptr_glFrontFace
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_1_0"
-        "glReadPixels"
+        "glFrontFace"
  
-glReadPixels ::
-             GLint ->
-               GLint -> GLsizei -> GLsizei -> GLenum -> GLenum -> Ptr a -> IO ()
-glReadPixels = dyn_glReadPixels ptr_glReadPixels
+glFrontFace :: GLenum -> IO ()
+glFrontFace = dyn_glFrontFace ptr_glFrontFace
  
-foreign import CALLCONV unsafe "dynamic" dyn_glReadPixels ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint ->
-                    GLint -> GLsizei -> GLsizei -> GLenum -> GLenum -> Ptr a -> IO ())
- 
-{-# NOINLINE ptr_glReadBuffer #-}
- 
-ptr_glReadBuffer :: FunPtr a
-ptr_glReadBuffer
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glReadBuffer"
- 
-glReadBuffer :: GLenum -> IO ()
-glReadBuffer = dyn_glReadBuffer ptr_glReadBuffer
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glReadBuffer ::
+foreign import CALLCONV unsafe "dynamic" dyn_glFrontFace ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
- 
-{-# NOINLINE ptr_glPixelStorei #-}
- 
-ptr_glPixelStorei :: FunPtr a
-ptr_glPixelStorei
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glPixelStorei"
- 
-glPixelStorei :: GLenum -> GLint -> IO ()
-glPixelStorei = dyn_glPixelStorei ptr_glPixelStorei
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glPixelStorei ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLint -> IO ())
- 
-{-# NOINLINE ptr_glPixelStoref #-}
- 
-ptr_glPixelStoref :: FunPtr a
-ptr_glPixelStoref
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glPixelStoref"
- 
-glPixelStoref :: GLenum -> GLfloat -> IO ()
-glPixelStoref = dyn_glPixelStoref ptr_glPixelStoref
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glPixelStoref ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glDepthFunc #-}
- 
-ptr_glDepthFunc :: FunPtr a
-ptr_glDepthFunc
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glDepthFunc"
- 
-glDepthFunc :: GLenum -> IO ()
-glDepthFunc = dyn_glDepthFunc ptr_glDepthFunc
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDepthFunc ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> IO ())
- 
-{-# NOINLINE ptr_glStencilOp #-}
- 
-ptr_glStencilOp :: FunPtr a
-ptr_glStencilOp
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glStencilOp"
- 
-glStencilOp :: GLenum -> GLenum -> GLenum -> IO ()
-glStencilOp = dyn_glStencilOp ptr_glStencilOp
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glStencilOp ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> GLenum -> IO ())
- 
-{-# NOINLINE ptr_glStencilFunc #-}
- 
-ptr_glStencilFunc :: FunPtr a
-ptr_glStencilFunc
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glStencilFunc"
- 
-glStencilFunc :: GLenum -> GLint -> GLuint -> IO ()
-glStencilFunc = dyn_glStencilFunc ptr_glStencilFunc
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glStencilFunc ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLint -> GLuint -> IO ())
- 
-{-# NOINLINE ptr_glLogicOp #-}
- 
-ptr_glLogicOp :: FunPtr a
-ptr_glLogicOp
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glLogicOp"
- 
-glLogicOp :: GLenum -> IO ()
-glLogicOp = dyn_glLogicOp ptr_glLogicOp
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glLogicOp ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> IO ())
- 
-{-# NOINLINE ptr_glBlendFunc #-}
- 
-ptr_glBlendFunc :: FunPtr a
-ptr_glBlendFunc
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glBlendFunc"
- 
-glBlendFunc :: GLenum -> GLenum -> IO ()
-glBlendFunc = dyn_glBlendFunc ptr_glBlendFunc
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glBlendFunc ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> IO ())
  
 {-# NOINLINE ptr_glFlush #-}
  
@@ -443,6 +616,22 @@ foreign import CALLCONV unsafe "dynamic" dyn_glEnable ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
+{-# NOINLINE ptr_glDrawBuffer #-}
+ 
+ptr_glDrawBuffer :: FunPtr a
+ptr_glDrawBuffer
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glDrawBuffer"
+ 
+glDrawBuffer :: GLenum -> IO ()
+glDrawBuffer = dyn_glDrawBuffer ptr_glDrawBuffer
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glDrawBuffer ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> IO ())
+ 
 {-# NOINLINE ptr_glDisable #-}
  
 ptr_glDisable :: FunPtr a
@@ -458,6 +647,22 @@ glDisable = dyn_glDisable ptr_glDisable
 foreign import CALLCONV unsafe "dynamic" dyn_glDisable ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glDepthRange #-}
+ 
+ptr_glDepthRange :: FunPtr a
+ptr_glDepthRange
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glDepthRange"
+ 
+glDepthRange :: GLdouble -> GLdouble -> IO ()
+glDepthRange = dyn_glDepthRange ptr_glDepthRange
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glDepthRange ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLdouble -> GLdouble -> IO ())
  
 {-# NOINLINE ptr_glDepthMask #-}
  
@@ -475,321 +680,19 @@ foreign import CALLCONV unsafe "dynamic" dyn_glDepthMask ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLboolean -> IO ())
  
-{-# NOINLINE ptr_glColorMask #-}
+{-# NOINLINE ptr_glDepthFunc #-}
  
-ptr_glColorMask :: FunPtr a
-ptr_glColorMask
+ptr_glDepthFunc :: FunPtr a
+ptr_glDepthFunc
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_VERSION_1_0"
-        "glColorMask"
+        "glDepthFunc"
  
-glColorMask ::
-            GLboolean -> GLboolean -> GLboolean -> GLboolean -> IO ()
-glColorMask = dyn_glColorMask ptr_glColorMask
+glDepthFunc :: GLenum -> IO ()
+glDepthFunc = dyn_glDepthFunc ptr_glDepthFunc
  
-foreign import CALLCONV unsafe "dynamic" dyn_glColorMask ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLboolean -> GLboolean -> GLboolean -> GLboolean -> IO ())
- 
-{-# NOINLINE ptr_glStencilMask #-}
- 
-ptr_glStencilMask :: FunPtr a
-ptr_glStencilMask
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glStencilMask"
- 
-glStencilMask :: GLuint -> IO ()
-glStencilMask = dyn_glStencilMask ptr_glStencilMask
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glStencilMask ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO ())
- 
-{-# NOINLINE ptr_glClearDepth #-}
- 
-ptr_glClearDepth :: FunPtr a
-ptr_glClearDepth
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glClearDepth"
- 
-glClearDepth :: GLclampd -> IO ()
-glClearDepth = dyn_glClearDepth ptr_glClearDepth
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glClearDepth ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLclampd -> IO ())
- 
-{-# NOINLINE ptr_glClearStencil #-}
- 
-ptr_glClearStencil :: FunPtr a
-ptr_glClearStencil
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glClearStencil"
- 
-glClearStencil :: GLint -> IO ()
-glClearStencil = dyn_glClearStencil ptr_glClearStencil
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glClearStencil ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> IO ())
- 
-{-# NOINLINE ptr_glClearColor #-}
- 
-ptr_glClearColor :: FunPtr a
-ptr_glClearColor
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glClearColor"
- 
-glClearColor ::
-             GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ()
-glClearColor = dyn_glClearColor ptr_glClearColor
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glClearColor ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLclampf -> GLclampf -> GLclampf -> GLclampf -> IO ())
- 
-{-# NOINLINE ptr_glClear #-}
- 
-ptr_glClear :: FunPtr a
-ptr_glClear
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glClear"
- 
-glClear :: GLbitfield -> IO ()
-glClear = dyn_glClear ptr_glClear
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glClear ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLbitfield -> IO ())
- 
-{-# NOINLINE ptr_glDrawBuffer #-}
- 
-ptr_glDrawBuffer :: FunPtr a
-ptr_glDrawBuffer
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glDrawBuffer"
- 
-glDrawBuffer :: GLenum -> IO ()
-glDrawBuffer = dyn_glDrawBuffer ptr_glDrawBuffer
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDrawBuffer ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> IO ())
- 
-{-# NOINLINE ptr_glTexImage2D #-}
- 
-ptr_glTexImage2D :: FunPtr a
-ptr_glTexImage2D
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glTexImage2D"
- 
-glTexImage2D ::
-             GLenum ->
-               GLint ->
-                 GLint ->
-                   GLsizei -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ()
-glTexImage2D = dyn_glTexImage2D ptr_glTexImage2D
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexImage2D ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum ->
-                    GLint ->
-                      GLint ->
-                        GLsizei -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ())
- 
-{-# NOINLINE ptr_glTexImage1D #-}
- 
-ptr_glTexImage1D :: FunPtr a
-ptr_glTexImage1D
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glTexImage1D"
- 
-glTexImage1D ::
-             GLenum ->
-               GLint ->
-                 GLint -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ()
-glTexImage1D = dyn_glTexImage1D ptr_glTexImage1D
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexImage1D ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum ->
-                    GLint ->
-                      GLint -> GLsizei -> GLint -> GLenum -> GLenum -> Ptr a -> IO ())
- 
-{-# NOINLINE ptr_glTexParameteriv #-}
- 
-ptr_glTexParameteriv :: FunPtr a
-ptr_glTexParameteriv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glTexParameteriv"
- 
-glTexParameteriv :: GLenum -> GLenum -> Ptr GLint -> IO ()
-glTexParameteriv = dyn_glTexParameteriv ptr_glTexParameteriv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexParameteriv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> Ptr GLint -> IO ())
- 
-{-# NOINLINE ptr_glTexParameteri #-}
- 
-ptr_glTexParameteri :: FunPtr a
-ptr_glTexParameteri
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glTexParameteri"
- 
-glTexParameteri :: GLenum -> GLenum -> GLint -> IO ()
-glTexParameteri = dyn_glTexParameteri ptr_glTexParameteri
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexParameteri ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> GLint -> IO ())
- 
-{-# NOINLINE ptr_glTexParameterfv #-}
- 
-ptr_glTexParameterfv :: FunPtr a
-ptr_glTexParameterfv
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glTexParameterfv"
- 
-glTexParameterfv :: GLenum -> GLenum -> Ptr GLfloat -> IO ()
-glTexParameterfv = dyn_glTexParameterfv ptr_glTexParameterfv
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexParameterfv ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glTexParameterf #-}
- 
-ptr_glTexParameterf :: FunPtr a
-ptr_glTexParameterf
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glTexParameterf"
- 
-glTexParameterf :: GLenum -> GLenum -> GLfloat -> IO ()
-glTexParameterf = dyn_glTexParameterf ptr_glTexParameterf
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glTexParameterf ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glScissor #-}
- 
-ptr_glScissor :: FunPtr a
-ptr_glScissor
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glScissor"
- 
-glScissor :: GLint -> GLint -> GLsizei -> GLsizei -> IO ()
-glScissor = dyn_glScissor ptr_glScissor
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glScissor ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> GLint -> GLsizei -> GLsizei -> IO ())
- 
-{-# NOINLINE ptr_glPolygonMode #-}
- 
-ptr_glPolygonMode :: FunPtr a
-ptr_glPolygonMode
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glPolygonMode"
- 
-glPolygonMode :: GLenum -> GLenum -> IO ()
-glPolygonMode = dyn_glPolygonMode ptr_glPolygonMode
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glPolygonMode ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> IO ())
- 
-{-# NOINLINE ptr_glPointSize #-}
- 
-ptr_glPointSize :: FunPtr a
-ptr_glPointSize
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glPointSize"
- 
-glPointSize :: GLfloat -> IO ()
-glPointSize = dyn_glPointSize ptr_glPointSize
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glPointSize ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glLineWidth #-}
- 
-ptr_glLineWidth :: FunPtr a
-ptr_glLineWidth
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glLineWidth"
- 
-glLineWidth :: GLfloat -> IO ()
-glLineWidth = dyn_glLineWidth ptr_glLineWidth
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glLineWidth ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glHint #-}
- 
-ptr_glHint :: FunPtr a
-ptr_glHint
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glHint"
- 
-glHint :: GLenum -> GLenum -> IO ()
-glHint = dyn_glHint ptr_glHint
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glHint ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLenum -> IO ())
- 
-{-# NOINLINE ptr_glFrontFace #-}
- 
-ptr_glFrontFace :: FunPtr a
-ptr_glFrontFace
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_0"
-        "glFrontFace"
- 
-glFrontFace :: GLenum -> IO ()
-glFrontFace = dyn_glFrontFace ptr_glFrontFace
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glFrontFace ::
+foreign import CALLCONV unsafe "dynamic" dyn_glDepthFunc ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
@@ -808,3 +711,100 @@ glCullFace = dyn_glCullFace ptr_glCullFace
 foreign import CALLCONV unsafe "dynamic" dyn_glCullFace ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
+ 
+{-# NOINLINE ptr_glColorMask #-}
+ 
+ptr_glColorMask :: FunPtr a
+ptr_glColorMask
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glColorMask"
+ 
+glColorMask ::
+            GLboolean -> GLboolean -> GLboolean -> GLboolean -> IO ()
+glColorMask = dyn_glColorMask ptr_glColorMask
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glColorMask ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLboolean -> GLboolean -> GLboolean -> GLboolean -> IO ())
+ 
+{-# NOINLINE ptr_glClearStencil #-}
+ 
+ptr_glClearStencil :: FunPtr a
+ptr_glClearStencil
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glClearStencil"
+ 
+glClearStencil :: GLint -> IO ()
+glClearStencil = dyn_glClearStencil ptr_glClearStencil
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glClearStencil ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> IO ())
+ 
+{-# NOINLINE ptr_glClearDepth #-}
+ 
+ptr_glClearDepth :: FunPtr a
+ptr_glClearDepth
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glClearDepth"
+ 
+glClearDepth :: GLdouble -> IO ()
+glClearDepth = dyn_glClearDepth ptr_glClearDepth
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glClearDepth ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glClearColor #-}
+ 
+ptr_glClearColor :: FunPtr a
+ptr_glClearColor
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glClearColor"
+ 
+glClearColor :: GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ()
+glClearColor = dyn_glClearColor ptr_glClearColor
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glClearColor ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLfloat -> GLfloat -> GLfloat -> GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glClear #-}
+ 
+ptr_glClear :: FunPtr a
+ptr_glClear
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glClear"
+ 
+glClear :: GLbitfield -> IO ()
+glClear = dyn_glClear ptr_glClear
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glClear ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLbitfield -> IO ())
+ 
+{-# NOINLINE ptr_glBlendFunc #-}
+ 
+ptr_glBlendFunc :: FunPtr a
+ptr_glBlendFunc
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_0"
+        "glBlendFunc"
+ 
+glBlendFunc :: GLenum -> GLenum -> IO ()
+glBlendFunc = dyn_glBlendFunc ptr_glBlendFunc
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glBlendFunc ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLenum -> IO ())

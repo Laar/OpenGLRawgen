@@ -1,16 +1,43 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.TextureMultisample
-       (glTextureImage3DMultisampleCoverageNV,
+       (glTextureImage3DMultisampleNV,
+        glTextureImage3DMultisampleCoverageNV,
+        glTextureImage2DMultisampleNV,
         glTextureImage2DMultisampleCoverageNV,
-        glTextureImage3DMultisampleNV, glTextureImage2DMultisampleNV,
         glTexImage3DMultisampleCoverageNV,
-        glTexImage2DMultisampleCoverageNV, gl_TEXTURE_COLOR_SAMPLES_NV,
-        gl_TEXTURE_COVERAGE_SAMPLES_NV)
+        glTexImage2DMultisampleCoverageNV, gl_TEXTURE_COVERAGE_SAMPLES_NV,
+        gl_TEXTURE_COLOR_SAMPLES_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glTextureImage3DMultisampleNV #-}
+ 
+ptr_glTextureImage3DMultisampleNV :: FunPtr a
+ptr_glTextureImage3DMultisampleNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_texture_multisample"
+        "glTextureImage3DMultisampleNV"
+ 
+glTextureImage3DMultisampleNV ::
+                              GLuint ->
+                                GLenum ->
+                                  GLsizei ->
+                                    GLint -> GLsizei -> GLsizei -> GLsizei -> GLboolean -> IO ()
+glTextureImage3DMultisampleNV
+  = dyn_glTextureImage3DMultisampleNV
+      ptr_glTextureImage3DMultisampleNV
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glTextureImage3DMultisampleNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint ->
+                    GLenum ->
+                      GLsizei ->
+                        GLint -> GLsizei -> GLsizei -> GLsizei -> GLboolean -> IO ())
  
 {-# NOINLINE ptr_glTextureImage3DMultisampleCoverageNV #-}
  
@@ -41,6 +68,30 @@ foreign import CALLCONV unsafe "dynamic"
                         GLsizei ->
                           GLint -> GLsizei -> GLsizei -> GLsizei -> GLboolean -> IO ())
  
+{-# NOINLINE ptr_glTextureImage2DMultisampleNV #-}
+ 
+ptr_glTextureImage2DMultisampleNV :: FunPtr a
+ptr_glTextureImage2DMultisampleNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_texture_multisample"
+        "glTextureImage2DMultisampleNV"
+ 
+glTextureImage2DMultisampleNV ::
+                              GLuint ->
+                                GLenum ->
+                                  GLsizei -> GLint -> GLsizei -> GLsizei -> GLboolean -> IO ()
+glTextureImage2DMultisampleNV
+  = dyn_glTextureImage2DMultisampleNV
+      ptr_glTextureImage2DMultisampleNV
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glTextureImage2DMultisampleNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint ->
+                    GLenum ->
+                      GLsizei -> GLint -> GLsizei -> GLsizei -> GLboolean -> IO ())
+ 
 {-# NOINLINE ptr_glTextureImage2DMultisampleCoverageNV #-}
  
 ptr_glTextureImage2DMultisampleCoverageNV :: FunPtr a
@@ -67,56 +118,6 @@ foreign import CALLCONV unsafe "dynamic"
                     GLenum ->
                       GLsizei ->
                         GLsizei -> GLint -> GLsizei -> GLsizei -> GLboolean -> IO ())
- 
-{-# NOINLINE ptr_glTextureImage3DMultisampleNV #-}
- 
-ptr_glTextureImage3DMultisampleNV :: FunPtr a
-ptr_glTextureImage3DMultisampleNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_texture_multisample"
-        "glTextureImage3DMultisampleNV"
- 
-glTextureImage3DMultisampleNV ::
-                              GLuint ->
-                                GLenum ->
-                                  GLsizei ->
-                                    GLint -> GLsizei -> GLsizei -> GLsizei -> GLboolean -> IO ()
-glTextureImage3DMultisampleNV
-  = dyn_glTextureImage3DMultisampleNV
-      ptr_glTextureImage3DMultisampleNV
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glTextureImage3DMultisampleNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint ->
-                    GLenum ->
-                      GLsizei ->
-                        GLint -> GLsizei -> GLsizei -> GLsizei -> GLboolean -> IO ())
- 
-{-# NOINLINE ptr_glTextureImage2DMultisampleNV #-}
- 
-ptr_glTextureImage2DMultisampleNV :: FunPtr a
-ptr_glTextureImage2DMultisampleNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_texture_multisample"
-        "glTextureImage2DMultisampleNV"
- 
-glTextureImage2DMultisampleNV ::
-                              GLuint ->
-                                GLenum ->
-                                  GLsizei -> GLint -> GLsizei -> GLsizei -> GLboolean -> IO ()
-glTextureImage2DMultisampleNV
-  = dyn_glTextureImage2DMultisampleNV
-      ptr_glTextureImage2DMultisampleNV
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glTextureImage2DMultisampleNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint ->
-                    GLenum ->
-                      GLsizei -> GLint -> GLsizei -> GLsizei -> GLboolean -> IO ())
  
 {-# NOINLINE ptr_glTexImage3DMultisampleCoverageNV #-}
  
@@ -168,8 +169,8 @@ foreign import CALLCONV unsafe "dynamic"
                     GLsizei ->
                       GLsizei -> GLint -> GLsizei -> GLsizei -> GLboolean -> IO ())
  
-gl_TEXTURE_COLOR_SAMPLES_NV :: GLenum
-gl_TEXTURE_COLOR_SAMPLES_NV = 36934
- 
 gl_TEXTURE_COVERAGE_SAMPLES_NV :: GLenum
 gl_TEXTURE_COVERAGE_SAMPLES_NV = 36933
+ 
+gl_TEXTURE_COLOR_SAMPLES_NV :: GLenum
+gl_TEXTURE_COLOR_SAMPLES_NV = 36934

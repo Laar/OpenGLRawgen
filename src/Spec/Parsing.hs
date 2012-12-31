@@ -87,6 +87,7 @@ parseEnumLines = sequence_ . map parseEnumLine
 
 parseEnumLine :: EnumLine -> EP ()
 parseEnumLine (Start cat _) = put cat
+parseEnumLine (Profile Compatibility) = modify toDeprecatedCat
 parseEnumLine (Enum n v _)  = addEnumValue n v >> addEnumLocation n
 parseEnumLine (Use _ n)     = addEnumLocation n
 parseEnumLine _             = return ()
@@ -120,9 +121,12 @@ parseFSpec funcs tm = foldr add mempty $ map (convertFunc tm) funcs
             = (addLocation c fn lMap, addValue fn fv vMap)
 
 convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
-convertFunc tm rf = (funCategory rf, (wrapName name, RawFunc name ty alias))
+convertFunc tm rf = (cat, (wrapName name, RawFunc name ty alias))
     where
         name = funName rf
+        cat = case funProfile rf of
+            Nothing -> funCategory rf
+            Just Compatibility -> toDeprecatedCat $ funCategory rf
         ty   = foldr (-->>)
             (convertRetType $ funReturnType rf)
             (map paramToType $ funParameters rf)
@@ -147,6 +151,12 @@ pReuseLine = (,) <$> (pCategory <* blanks) <*> (sepBy pCategory (char ',' *> bla
 
 -----------------------------------------------------------------------------
 
+toDeprecatedCat :: Category -> Category
+toDeprecatedCat c = case c of
+    Version ma mi _ -> Version ma mi True
+    Extension e n _ -> Extension e n True
+    Name n          -> Name n
+
 -- | Convert the 'ReturnType' supplied by openGL-api to a type useable for
 -- Language.Haskell.Exts
 convertRetType :: ReturnType -> Type
@@ -154,14 +164,17 @@ convertRetType rt = addIOType $ case rt of
     Boolean      -> tyCon' "GLboolean"
     BufferOffset -> tyCon' "GLsizeiptr"
     ErrorCode    -> tyCon' "GLenum" -- TODO lookup
+    Float32      -> tyCon' "GLfloat"
     FramebufferStatus -> tyCon' "GLenum" -- lookup
     GLEnum       -> tyCon' "GLenum"
     HandleARB    -> tyCon' "GLuint" -- lookup
     Int32        -> tyCon' "GLint"
+    Path         -> tyCon' "GLuint" -- lookup, seems to be an object
     S.List       -> tyCon' "GLuint" -- lookup
     S.String     -> TyApp (tyCon' "Ptr") (tyCon' "GLchar")
     Sync         -> tyCon' "GLsync"
     UInt32       -> tyCon' "GLuint"
+    UInt64       -> tyCon' "GLuint64"
     Void         -> unit_tycon
     VoidPointer  -> TyApp (tyCon' "Ptr") (tyVar' "a") -- TODO improve the type variable
     VdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
@@ -184,6 +197,7 @@ lookupType t p tm = case M.lookup t tm of
             GLbyte      -> tyCon' "GLbyte"
             GLchar      -> tyCon' "GLchar"
             GLcharARB   -> tyCon' "GLchar"
+            GLcharStarConst -> tyCon' "GLchar" -- LOOKUP if it needs a pointer
             GLclampd    -> tyCon' "GLclampd"
             GLclampf    -> tyCon' "GLclampf"
             GLdouble    -> tyCon' "GLdouble"
@@ -215,6 +229,7 @@ lookupType t p tm = case M.lookup t tm of
             GLvoid      -> (tyVar' "a")
             GLvoidStarConst -> TyApp (tyCon' "Ptr") (tyVar' "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
             GLvdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
+            GLdebugproc    -> tyCon' "GLdebugproc"
             GLdebugprocARB -> tyCon' "GLdebugprocARB" -- lookup
             GLdebugprocAMD -> tyCon' "GLdebugprocAMD" -- lookup
 

@@ -1,6 +1,12 @@
+#################################
+### POSSIBLY MODIFIED VERSION ###
+### used for the OpenGLRawgen ###
+### haskell binding generator ###
+#################################
+
 # enumext.spec - list of GL enumerants for glext.h header
 #
-# $Revision: 16728 $ on $Date: 2012-01-26 02:57:23 -0800 (Thu, 26 Jan 2012) $
+# $Revision: 19241 $ on $Date: 2012-09-19 19:02:24 -0700 (Wed, 19 Sep 2012) $
 
 # This is derived from the master GL enumerant registry (enum.spec).
 #
@@ -41,6 +47,7 @@ passthru: /* BeginMode */
 	TRIANGLES					= 0x0004	# BeginMode
 	TRIANGLE_STRIP					= 0x0005	# BeginMode
 	TRIANGLE_FAN					= 0x0006	# BeginMode
+	QUADS						= 0x0007	# BeginMode
 passthru: /* AlphaFunction */
 	NEVER						= 0x0200	# AlphaFunction
 	LESS						= 0x0201	# AlphaFunction
@@ -91,6 +98,7 @@ passthru: /* GetPName */
 	LINE_WIDTH					= 0x0B21 # 1 F	# GetPName
 	LINE_WIDTH_RANGE				= 0x0B22 # 2 F	# GetPName
 	LINE_WIDTH_GRANULARITY				= 0x0B23 # 1 F	# GetPName
+	POLYGON_MODE					= 0x0B40 # 2 I	# GetPName
 	POLYGON_SMOOTH					= 0x0B41 # 1 I	# GetPName
 	CULL_FACE					= 0x0B44 # 1 I	# GetPName
 	CULL_FACE_MODE					= 0x0B45 # 1 I	# GetPName
@@ -172,6 +180,10 @@ passthru: /* DataType */
 	UNSIGNED_INT					= 0x1405	# DataType
 	FLOAT						= 0x1406	# DataType
 	DOUBLE						= 0x140A	# DataType
+# Deprecated in GL 3.0; undeprecated in GL 4.3 / KHR_debug
+passthru: /* ErrorCode */
+	STACK_OVERFLOW					= 0x0503	# ErrorCode
+	STACK_UNDERFLOW					= 0x0504	# ErrorCode
 passthru: /* LogicOp */
 	CLEAR						= 0x1500	# LogicOp
 	AND						= 0x1501	# LogicOp
@@ -251,8 +263,7 @@ passthru: /* PixelInternalFormat */
 	RGB10_A2					= 0x8059	# PixelInternalFormat
 	RGBA12						= 0x805A	# PixelInternalFormat
 	RGBA16						= 0x805B	# PixelInternalFormat
-
-VERSION_1_1_DEPRECATED enum:
+profile: compatibility
 passthru: /* AttribMask */
 	CURRENT_BIT					= 0x00000001	# AttribMask
 	POINT_BIT					= 0x00000002	# AttribMask
@@ -277,7 +288,6 @@ passthru: /* ClientAttribMask */
 	CLIENT_VERTEX_ARRAY_BIT				= 0x00000002	# ClientAttribMask
 	CLIENT_ALL_ATTRIB_BITS				= 0xFFFFFFFF	# ClientAttribMask
 passthru: /* BeginMode */
-	QUADS						= 0x0007	# BeginMode
 	QUAD_STRIP					= 0x0008	# BeginMode
 	POLYGON						= 0x0009	# BeginMode
 passthru: /* AccumOp */
@@ -291,9 +301,6 @@ passthru: /* DrawBufferMode */
 	AUX1						= 0x040A	# DrawBufferMode
 	AUX2						= 0x040B	# DrawBufferMode
 	AUX3						= 0x040C	# DrawBufferMode
-passthru: /* ErrorCode */
-	STACK_OVERFLOW					= 0x0503	# ErrorCode
-	STACK_UNDERFLOW					= 0x0504	# ErrorCode
 passthru: /* FeedbackType */
 	2D						= 0x0600	# FeedbackType
 	3D						= 0x0601	# FeedbackType
@@ -355,7 +362,6 @@ passthru: /* GetPName */
 	MAX_LIST_NESTING				= 0x0B31 # 1 I	# GetPName
 	LIST_BASE					= 0x0B32 # 1 I	# GetPName
 	LIST_INDEX					= 0x0B33 # 1 I	# GetPName
-	POLYGON_MODE					= 0x0B40 # 2 I	# GetPName
 	POLYGON_STIPPLE					= 0x0B42 # 1 I	# GetPName
 	EDGE_FLAG					= 0x0B43 # 1 I	# GetPName
 	LIGHTING					= 0x0B50 # 1 I	# GetPName
@@ -661,8 +667,7 @@ VERSION_1_2 enum:
 	SMOOTH_LINE_WIDTH_RANGE				= 0x0B22 # 2 F
 	SMOOTH_LINE_WIDTH_GRANULARITY			= 0x0B23 # 1 F
 	ALIASED_LINE_WIDTH_RANGE			= 0x846E # 2 F
-
-VERSION_1_2_DEPRECATED enum:
+profile: compatibility
 	RESCALE_NORMAL					= 0x803A # 1 I # Equivalent to EXT_rescale_normal
 	LIGHT_MODEL_COLOR_CONTROL			= 0x81F8 # 1 I
 	SINGLE_COLOR					= 0x81F9
@@ -681,8 +686,7 @@ ARB_imaging enum:
 	BLEND_EQUATION					= 0x8009 # 1 I
 	FUNC_SUBTRACT					= 0x800A # Equivalent to EXT_blend_subtract
 	FUNC_REVERSE_SUBTRACT				= 0x800B
-
-ARB_imaging_DEPRECATED enum:
+profile: compatibility
 	CONVOLUTION_1D					= 0x8010 # 1 I # Equivalent to EXT_convolution
 	CONVOLUTION_2D					= 0x8011 # 1 I
 	SEPARABLE_2D					= 0x8012 # 1 I
@@ -815,8 +819,7 @@ VERSION_1_3 enum:
 	NUM_COMPRESSED_TEXTURE_FORMATS			= 0x86A2
 	COMPRESSED_TEXTURE_FORMATS			= 0x86A3
 	CLAMP_TO_BORDER					= 0x812D	# Promoted from ARB_texture_border_clamp
-
-VERSION_1_3_DEPRECATED enum:
+profile: compatibility
 	CLIENT_ACTIVE_TEXTURE				= 0x84E1 # 1 I
 	MAX_TEXTURE_UNITS				= 0x84E2 # 1 I
 	TRANSPOSE_MODELVIEW_MATRIX			= 0x84E3 # 16 F # Promoted from ARB_transpose_matrix
@@ -879,8 +882,7 @@ VERSION_1_4 enum:
 	TEXTURE_DEPTH_SIZE				= 0x884A
 	TEXTURE_COMPARE_MODE				= 0x884C
 	TEXTURE_COMPARE_FUNC				= 0x884D
-
-VERSION_1_4_DEPRECATED enum:
+profile: compatibility
 	POINT_SIZE_MIN					= 0x8126 # 1 F
 	POINT_SIZE_MAX					= 0x8127 # 1 F
 	POINT_DISTANCE_ATTENUATION			= 0x8129 # 3 F
@@ -940,8 +942,9 @@ VERSION_1_5 enum:
 	DYNAMIC_READ					= 0x88E9 # ARB_vertex_buffer_object
 	DYNAMIC_COPY					= 0x88EA # ARB_vertex_buffer_object
 	SAMPLES_PASSED					= 0x8914 # ARB_occlusion_query
-
-VERSION_1_5_DEPRECATED enum:
+# New naming scheme (reintroduced in GL 3.3)
+	SRC1_ALPHA					= 0x8589    # alias GL_SOURCE1_ALPHA
+profile: compatibility
 	VERTEX_ARRAY_BUFFER_BINDING			= 0x8896 # ARB_vertex_buffer_object
 	NORMAL_ARRAY_BUFFER_BINDING			= 0x8897 # ARB_vertex_buffer_object
 	COLOR_ARRAY_BUFFER_BINDING			= 0x8898 # ARB_vertex_buffer_object
@@ -964,7 +967,6 @@ VERSION_1_5_DEPRECATED enum:
 	SRC1_RGB					= 0x8581    # alias GL_SOURCE1_RGB
 	SRC2_RGB					= 0x8582    # alias GL_SOURCE2_RGB
 	SRC0_ALPHA					= 0x8588    # alias GL_SOURCE0_ALPHA
-	SRC1_ALPHA					= 0x8589    # alias GL_SOURCE1_ALPHA
 	SRC2_ALPHA					= 0x858A    # alias GL_SOURCE2_ALPHA
 
 ###############################################################################
@@ -1054,8 +1056,7 @@ VERSION_2_0 enum:
 	STENCIL_BACK_REF				= 0x8CA3    # ARB_stencil_two_side
 	STENCIL_BACK_VALUE_MASK				= 0x8CA4    # ARB_stencil_two_side
 	STENCIL_BACK_WRITEMASK				= 0x8CA5    # ARB_stencil_two_side
-
-VERSION_2_0_DEPRECATED enum:
+profile: compatibility
 	VERTEX_PROGRAM_TWO_SIDE				= 0x8643    # ARB_vertex_shader
 	POINT_SPRITE					= 0x8861    # ARB_point_sprite
 	COORD_REPLACE					= 0x8862    # ARB_point_sprite
@@ -1085,8 +1086,7 @@ VERSION_2_1 enum:
 	SRGB8_ALPHA8					= 0x8C43    # EXT_texture_sRGB
 	COMPRESSED_SRGB					= 0x8C48    # EXT_texture_sRGB
 	COMPRESSED_SRGB_ALPHA				= 0x8C49    # EXT_texture_sRGB
-
-VERSION_2_1_DEPRECATED enum:
+profile: compatibility
 	CURRENT_RASTER_SECONDARY_COLOR			= 0x845F    # New for 2.1
 	SLUMINANCE_ALPHA				= 0x8C44    # EXT_texture_sRGB
 	SLUMINANCE8_ALPHA8				= 0x8C45    # EXT_texture_sRGB
@@ -1327,8 +1327,7 @@ passthru: /* Reuse tokens from ARB_texture_rg */
 	use ARB_texture_rg		    RG32UI
 passthru: /* Reuse tokens from ARB_vertex_array_object */
 	use ARB_vertex_array_object	    VERTEX_ARRAY_BINDING
-
-VERSION_3_0_DEPRECATED enum:
+profile: compatibility
 	CLAMP_VERTEX_COLOR				= 0x891A
 	CLAMP_FRAGMENT_COLOR				= 0x891B
 	ALPHA_INTEGER					= 0x8D97
@@ -1355,7 +1354,6 @@ VERSION_3_1 enum:
 	MAX_TEXTURE_BUFFER_SIZE				= 0x8C2B    # ARB_texture_buffer_object
 	TEXTURE_BINDING_BUFFER				= 0x8C2C    # ARB_texture_buffer_object
 	TEXTURE_BUFFER_DATA_STORE_BINDING		= 0x8C2D    # ARB_texture_buffer_object
-	TEXTURE_BUFFER_FORMAT				= 0x8C2E    # ARB_texture_buffer_object
 	TEXTURE_RECTANGLE				= 0x84F5    # ARB_texture_rectangle
 	TEXTURE_BINDING_RECTANGLE			= 0x84F6    # ARB_texture_rectangle
 	PROXY_TEXTURE_RECTANGLE				= 0x84F7    # ARB_texture_rectangle
@@ -1615,15 +1613,14 @@ passthru: /* Reuse tokens from ARB_tessellation_shader */
 	use ARB_tessellation_shader	    TESS_EVALUATION_SHADER
 	use ARB_tessellation_shader	    TESS_CONTROL_SHADER
 passthru: /* Reuse tokens from ARB_texture_buffer_object_rgb32 (none) */
-# EDIT Corrected ARB_tessellation_shader
 passthru: /* Reuse tokens from ARB_transform_feedback2 */
-	use ARB_transform_feedback2	    TRANSFORM_FEEDBACK
-	use ARB_transform_feedback2	    TRANSFORM_FEEDBACK_BUFFER_PAUSED
-	use ARB_transform_feedback2	    TRANSFORM_FEEDBACK_BUFFER_ACTIVE
-	use ARB_transform_feedback2	    TRANSFORM_FEEDBACK_BINDING
+	use ARB_tessellation_shader	    TRANSFORM_FEEDBACK
+	use ARB_tessellation_shader	    TRANSFORM_FEEDBACK_BUFFER_PAUSED
+	use ARB_tessellation_shader	    TRANSFORM_FEEDBACK_BUFFER_ACTIVE
+	use ARB_tessellation_shader	    TRANSFORM_FEEDBACK_BINDING
 passthru: /* Reuse tokens from ARB_transform_feedback3 */
-	use ARB_transform_feedback3	    MAX_TRANSFORM_FEEDBACK_BUFFERS
-	use ARB_transform_feedback3	    MAX_VERTEX_STREAMS
+	use ARB_tessellation_shader	    MAX_TRANSFORM_FEEDBACK_BUFFERS
+	use ARB_tessellation_shader	    MAX_VERTEX_STREAMS
 
 ###############################################################################
 #
@@ -1643,10 +1640,12 @@ passthru: /* Reuse tokens from ARB_ES2_compatibility */
 	use ARB_ES2_compatibility	    MEDIUM_INT
 	use ARB_ES2_compatibility	    HIGH_INT
 	use ARB_ES2_compatibility	    SHADER_COMPILER
+	use ARB_ES2_compatibility	    SHADER_BINARY_FORMATS
 	use ARB_ES2_compatibility	    NUM_SHADER_BINARY_FORMATS
 	use ARB_ES2_compatibility	    MAX_VERTEX_UNIFORM_VECTORS
 	use ARB_ES2_compatibility	    MAX_VARYING_VECTORS
 	use ARB_ES2_compatibility	    MAX_FRAGMENT_UNIFORM_VECTORS
+	use ARB_ES2_compatibility	    RGB565
 passthru: /* Reuse tokens from ARB_get_program_binary */
 	use ARB_get_program_binary	    PROGRAM_BINARY_RETRIEVABLE_HINT
 	use ARB_get_program_binary	    PROGRAM_BINARY_LENGTH
@@ -1794,6 +1793,295 @@ passthru: /* Reuse tokens from ARB_shader_image_load_store */
 passthru: /* Reuse tokens from ARB_shading_language_packing (none) */
 passthru: /* Reuse tokens from ARB_texture_storage */
 	use ARB_texture_storage		    TEXTURE_IMMUTABLE_FORMAT
+
+###############################################################################
+#
+# OpenGL 4.3 enums
+#
+###############################################################################
+
+VERSION_4_3 enum:
+	NUM_SHADING_LANGUAGE_VERSIONS			= 0x82E9
+	VERTEX_ATTRIB_ARRAY_LONG			= 0x874E
+passthru: /* Reuse tokens from ARB_arrays_of_arrays (none, GLSL only) */
+passthru: /* Reuse tokens from ARB_fragment_layer_viewport (none, GLSL only) */
+passthru: /* Reuse tokens from ARB_shader_image_size (none, GLSL only) */
+passthru: /* Reuse tokens from ARB_ES3_compatibility */
+	use ARB_ES3_compatibility		    COMPRESSED_RGB8_ETC2
+	use ARB_ES3_compatibility		    COMPRESSED_SRGB8_ETC2
+	use ARB_ES3_compatibility		    COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2
+	use ARB_ES3_compatibility		    COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2
+	use ARB_ES3_compatibility		    COMPRESSED_RGBA8_ETC2_EAC
+	use ARB_ES3_compatibility		    COMPRESSED_SRGB8_ALPHA8_ETC2_EAC
+	use ARB_ES3_compatibility		    COMPRESSED_R11_EAC
+	use ARB_ES3_compatibility		    COMPRESSED_SIGNED_R11_EAC
+	use ARB_ES3_compatibility		    COMPRESSED_RG11_EAC
+	use ARB_ES3_compatibility		    COMPRESSED_SIGNED_RG11_EAC
+	use ARB_ES3_compatibility		    PRIMITIVE_RESTART_FIXED_INDEX
+	use ARB_ES3_compatibility		    ANY_SAMPLES_PASSED_CONSERVATIVE
+	use ARB_ES3_compatibility		    MAX_ELEMENT_INDEX
+passthru: /* Reuse tokens from ARB_clear_buffer_object (none) */
+passthru: /* Reuse tokens from ARB_compute_shader */
+	use ARB_compute_shader			    COMPUTE_SHADER
+	use ARB_compute_shader			    MAX_COMPUTE_UNIFORM_BLOCKS
+	use ARB_compute_shader			    MAX_COMPUTE_TEXTURE_IMAGE_UNITS
+	use ARB_compute_shader			    MAX_COMPUTE_IMAGE_UNIFORMS
+	use ARB_compute_shader			    MAX_COMPUTE_SHARED_MEMORY_SIZE
+	use ARB_compute_shader			    MAX_COMPUTE_UNIFORM_COMPONENTS
+	use ARB_compute_shader			    MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS
+	use ARB_compute_shader			    MAX_COMPUTE_ATOMIC_COUNTERS
+	use ARB_compute_shader			    MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS
+	use ARB_compute_shader			    MAX_COMPUTE_LOCAL_INVOCATIONS
+	use ARB_compute_shader			    MAX_COMPUTE_WORK_GROUP_COUNT
+	use ARB_compute_shader			    MAX_COMPUTE_WORK_GROUP_SIZE
+	use ARB_compute_shader			    COMPUTE_LOCAL_WORK_SIZE
+	use ARB_compute_shader			    UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER
+	use ARB_compute_shader			    ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER
+	use ARB_compute_shader			    DISPATCH_INDIRECT_BUFFER
+	use ARB_compute_shader			    DISPATCH_INDIRECT_BUFFER_BINDING
+passthru: /* Reuse tokens from ARB_copy_image (none) */
+passthru: /* Reuse tokens from KHR_debug */
+	use KHR_debug				    DEBUG_OUTPUT_SYNCHRONOUS
+	use KHR_debug				    DEBUG_NEXT_LOGGED_MESSAGE_LENGTH
+	use KHR_debug				    DEBUG_CALLBACK_FUNCTION
+	use KHR_debug				    DEBUG_CALLBACK_USER_PARAM
+	use KHR_debug				    DEBUG_SOURCE_API
+	use KHR_debug				    DEBUG_SOURCE_WINDOW_SYSTEM
+	use KHR_debug				    DEBUG_SOURCE_SHADER_COMPILER
+	use KHR_debug				    DEBUG_SOURCE_THIRD_PARTY
+	use KHR_debug				    DEBUG_SOURCE_APPLICATION
+	use KHR_debug				    DEBUG_SOURCE_OTHER
+	use KHR_debug				    DEBUG_TYPE_ERROR
+	use KHR_debug				    DEBUG_TYPE_DEPRECATED_BEHAVIOR
+	use KHR_debug				    DEBUG_TYPE_UNDEFINED_BEHAVIOR
+	use KHR_debug				    DEBUG_TYPE_PORTABILITY
+	use KHR_debug				    DEBUG_TYPE_PERFORMANCE
+	use KHR_debug				    DEBUG_TYPE_OTHER
+	use KHR_debug				    MAX_DEBUG_MESSAGE_LENGTH
+	use KHR_debug				    MAX_DEBUG_LOGGED_MESSAGES
+	use KHR_debug				    DEBUG_LOGGED_MESSAGES
+	use KHR_debug				    DEBUG_SEVERITY_HIGH
+	use KHR_debug				    DEBUG_SEVERITY_MEDIUM
+	use KHR_debug				    DEBUG_SEVERITY_LOW
+	use KHR_debug				    DEBUG_TYPE_MARKER
+	use KHR_debug				    DEBUG_TYPE_PUSH_GROUP
+	use KHR_debug				    DEBUG_TYPE_POP_GROUP
+	use KHR_debug				    DEBUG_SEVERITY_NOTIFICATION
+	use KHR_debug				    MAX_DEBUG_GROUP_STACK_DEPTH
+	use KHR_debug				    DEBUG_GROUP_STACK_DEPTH
+	use KHR_debug				    BUFFER
+	use KHR_debug				    SHADER
+	use KHR_debug				    PROGRAM
+	use KHR_debug				    QUERY
+	use KHR_debug				    PROGRAM_PIPELINE
+	use KHR_debug				    SAMPLER
+	use KHR_debug				    DISPLAY_LIST
+	use KHR_debug				    MAX_LABEL_LENGTH
+	use KHR_debug				    DEBUG_OUTPUT
+	use KHR_debug				    CONTEXT_FLAG_DEBUG_BIT
+	use ErrorCode				    STACK_UNDERFLOW
+	use ErrorCode				    STACK_OVERFLOW
+passthru: /* Reuse tokens from ARB_explicit_uniform_location */
+	use ARB_explicit_uniform_location	    MAX_UNIFORM_LOCATIONS
+passthru: /* Reuse tokens from ARB_framebuffer_no_attachments */
+	use ARB_framebuffer_no_attachments	    FRAMEBUFFER_DEFAULT_WIDTH
+	use ARB_framebuffer_no_attachments	    FRAMEBUFFER_DEFAULT_HEIGHT
+	use ARB_framebuffer_no_attachments	    FRAMEBUFFER_DEFAULT_LAYERS
+	use ARB_framebuffer_no_attachments	    FRAMEBUFFER_DEFAULT_SAMPLES
+	use ARB_framebuffer_no_attachments	    FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS
+	use ARB_framebuffer_no_attachments	    MAX_FRAMEBUFFER_WIDTH
+	use ARB_framebuffer_no_attachments	    MAX_FRAMEBUFFER_HEIGHT
+	use ARB_framebuffer_no_attachments	    MAX_FRAMEBUFFER_LAYERS
+	use ARB_framebuffer_no_attachments	    MAX_FRAMEBUFFER_SAMPLES
+passthru: /* Reuse tokens from ARB_internalformat_query2 */
+	use ARB_internalformat_query2		    INTERNALFORMAT_SUPPORTED
+	use ARB_internalformat_query2		    INTERNALFORMAT_PREFERRED
+	use ARB_internalformat_query2		    INTERNALFORMAT_RED_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_GREEN_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_BLUE_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_ALPHA_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_DEPTH_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_STENCIL_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_SHARED_SIZE
+	use ARB_internalformat_query2		    INTERNALFORMAT_RED_TYPE
+	use ARB_internalformat_query2		    INTERNALFORMAT_GREEN_TYPE
+	use ARB_internalformat_query2		    INTERNALFORMAT_BLUE_TYPE
+	use ARB_internalformat_query2		    INTERNALFORMAT_ALPHA_TYPE
+	use ARB_internalformat_query2		    INTERNALFORMAT_DEPTH_TYPE
+	use ARB_internalformat_query2		    INTERNALFORMAT_STENCIL_TYPE
+	use ARB_internalformat_query2		    MAX_WIDTH
+	use ARB_internalformat_query2		    MAX_HEIGHT
+	use ARB_internalformat_query2		    MAX_DEPTH
+	use ARB_internalformat_query2		    MAX_LAYERS
+	use ARB_internalformat_query2		    MAX_COMBINED_DIMENSIONS
+	use ARB_internalformat_query2		    COLOR_COMPONENTS
+	use ARB_internalformat_query2		    DEPTH_COMPONENTS
+	use ARB_internalformat_query2		    STENCIL_COMPONENTS
+	use ARB_internalformat_query2		    COLOR_RENDERABLE
+	use ARB_internalformat_query2		    DEPTH_RENDERABLE
+	use ARB_internalformat_query2		    STENCIL_RENDERABLE
+	use ARB_internalformat_query2		    FRAMEBUFFER_RENDERABLE
+	use ARB_internalformat_query2		    FRAMEBUFFER_RENDERABLE_LAYERED
+	use ARB_internalformat_query2		    FRAMEBUFFER_BLEND
+	use ARB_internalformat_query2		    READ_PIXELS
+	use ARB_internalformat_query2		    READ_PIXELS_FORMAT
+	use ARB_internalformat_query2		    READ_PIXELS_TYPE
+	use ARB_internalformat_query2		    TEXTURE_IMAGE_FORMAT
+	use ARB_internalformat_query2		    TEXTURE_IMAGE_TYPE
+	use ARB_internalformat_query2		    GET_TEXTURE_IMAGE_FORMAT
+	use ARB_internalformat_query2		    GET_TEXTURE_IMAGE_TYPE
+	use ARB_internalformat_query2		    MIPMAP
+	use ARB_internalformat_query2		    MANUAL_GENERATE_MIPMAP
+	use ARB_internalformat_query2		    AUTO_GENERATE_MIPMAP
+	use ARB_internalformat_query2		    COLOR_ENCODING
+	use ARB_internalformat_query2		    SRGB_READ
+	use ARB_internalformat_query2		    SRGB_WRITE
+	use ARB_internalformat_query2		    FILTER
+	use ARB_internalformat_query2		    VERTEX_TEXTURE
+	use ARB_internalformat_query2		    TESS_CONTROL_TEXTURE
+	use ARB_internalformat_query2		    TESS_EVALUATION_TEXTURE
+	use ARB_internalformat_query2		    GEOMETRY_TEXTURE
+	use ARB_internalformat_query2		    FRAGMENT_TEXTURE
+	use ARB_internalformat_query2		    COMPUTE_TEXTURE
+	use ARB_internalformat_query2		    TEXTURE_SHADOW
+	use ARB_internalformat_query2		    TEXTURE_GATHER
+	use ARB_internalformat_query2		    TEXTURE_GATHER_SHADOW
+	use ARB_internalformat_query2		    SHADER_IMAGE_LOAD
+	use ARB_internalformat_query2		    SHADER_IMAGE_STORE
+	use ARB_internalformat_query2		    SHADER_IMAGE_ATOMIC
+	use ARB_internalformat_query2		    IMAGE_TEXEL_SIZE
+	use ARB_internalformat_query2		    IMAGE_COMPATIBILITY_CLASS
+	use ARB_internalformat_query2		    IMAGE_PIXEL_FORMAT
+	use ARB_internalformat_query2		    IMAGE_PIXEL_TYPE
+	use ARB_internalformat_query2		    SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST
+	use ARB_internalformat_query2		    SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST
+	use ARB_internalformat_query2		    SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE
+	use ARB_internalformat_query2		    SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE
+	use ARB_internalformat_query2		    TEXTURE_COMPRESSED_BLOCK_WIDTH
+	use ARB_internalformat_query2		    TEXTURE_COMPRESSED_BLOCK_HEIGHT
+	use ARB_internalformat_query2		    TEXTURE_COMPRESSED_BLOCK_SIZE
+	use ARB_internalformat_query2		    CLEAR_BUFFER
+	use ARB_internalformat_query2		    TEXTURE_VIEW
+	use ARB_internalformat_query2		    VIEW_COMPATIBILITY_CLASS
+	use ARB_internalformat_query2		    FULL_SUPPORT
+	use ARB_internalformat_query2		    CAVEAT_SUPPORT
+	use ARB_internalformat_query2		    IMAGE_CLASS_4_X_32
+	use ARB_internalformat_query2		    IMAGE_CLASS_2_X_32
+	use ARB_internalformat_query2		    IMAGE_CLASS_1_X_32
+	use ARB_internalformat_query2		    IMAGE_CLASS_4_X_16
+	use ARB_internalformat_query2		    IMAGE_CLASS_2_X_16
+	use ARB_internalformat_query2		    IMAGE_CLASS_1_X_16
+	use ARB_internalformat_query2		    IMAGE_CLASS_4_X_8
+	use ARB_internalformat_query2		    IMAGE_CLASS_2_X_8
+	use ARB_internalformat_query2		    IMAGE_CLASS_1_X_8
+	use ARB_internalformat_query2		    IMAGE_CLASS_11_11_10
+	use ARB_internalformat_query2		    IMAGE_CLASS_10_10_10_2
+	use ARB_internalformat_query2		    VIEW_CLASS_128_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_96_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_64_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_48_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_32_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_24_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_16_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_8_BITS
+	use ARB_internalformat_query2		    VIEW_CLASS_S3TC_DXT1_RGB
+	use ARB_internalformat_query2		    VIEW_CLASS_S3TC_DXT1_RGBA
+	use ARB_internalformat_query2		    VIEW_CLASS_S3TC_DXT3_RGBA
+	use ARB_internalformat_query2		    VIEW_CLASS_S3TC_DXT5_RGBA
+	use ARB_internalformat_query2		    VIEW_CLASS_RGTC1_RED
+	use ARB_internalformat_query2		    VIEW_CLASS_RGTC2_RG
+	use ARB_internalformat_query2		    VIEW_CLASS_BPTC_UNORM
+	use ARB_internalformat_query2		    VIEW_CLASS_BPTC_FLOAT
+passthru: /* Reuse tokens from ARB_invalidate_subdata (none) */
+passthru: /* Reuse tokens from ARB_multi_draw_indirect (none) */
+passthru: /* Reuse tokens from ARB_program_interface_query */
+	use ARB_program_interface_query		    UNIFORM
+	use ARB_program_interface_query		    UNIFORM_BLOCK
+	use ARB_program_interface_query		    PROGRAM_INPUT
+	use ARB_program_interface_query		    PROGRAM_OUTPUT
+	use ARB_program_interface_query		    BUFFER_VARIABLE
+	use ARB_program_interface_query		    SHADER_STORAGE_BLOCK
+	use ARB_program_interface_query		    VERTEX_SUBROUTINE
+	use ARB_program_interface_query		    TESS_CONTROL_SUBROUTINE
+	use ARB_program_interface_query		    TESS_EVALUATION_SUBROUTINE
+	use ARB_program_interface_query		    GEOMETRY_SUBROUTINE
+	use ARB_program_interface_query		    FRAGMENT_SUBROUTINE
+	use ARB_program_interface_query		    COMPUTE_SUBROUTINE
+	use ARB_program_interface_query		    VERTEX_SUBROUTINE_UNIFORM
+	use ARB_program_interface_query		    TESS_CONTROL_SUBROUTINE_UNIFORM
+	use ARB_program_interface_query		    TESS_EVALUATION_SUBROUTINE_UNIFORM
+	use ARB_program_interface_query		    GEOMETRY_SUBROUTINE_UNIFORM
+	use ARB_program_interface_query		    FRAGMENT_SUBROUTINE_UNIFORM
+	use ARB_program_interface_query		    COMPUTE_SUBROUTINE_UNIFORM
+	use ARB_program_interface_query		    TRANSFORM_FEEDBACK_VARYING
+	use ARB_program_interface_query		    ACTIVE_RESOURCES
+	use ARB_program_interface_query		    MAX_NAME_LENGTH
+	use ARB_program_interface_query		    MAX_NUM_ACTIVE_VARIABLES
+	use ARB_program_interface_query		    MAX_NUM_COMPATIBLE_SUBROUTINES
+	use ARB_program_interface_query		    NAME_LENGTH
+	use ARB_program_interface_query		    TYPE
+	use ARB_program_interface_query		    ARRAY_SIZE
+	use ARB_program_interface_query		    OFFSET
+	use ARB_program_interface_query		    BLOCK_INDEX
+	use ARB_program_interface_query		    ARRAY_STRIDE
+	use ARB_program_interface_query		    MATRIX_STRIDE
+	use ARB_program_interface_query		    IS_ROW_MAJOR
+	use ARB_program_interface_query		    ATOMIC_COUNTER_BUFFER_INDEX
+	use ARB_program_interface_query		    BUFFER_BINDING
+	use ARB_program_interface_query		    BUFFER_DATA_SIZE
+	use ARB_program_interface_query		    NUM_ACTIVE_VARIABLES
+	use ARB_program_interface_query		    ACTIVE_VARIABLES
+	use ARB_program_interface_query		    REFERENCED_BY_VERTEX_SHADER
+	use ARB_program_interface_query		    REFERENCED_BY_TESS_CONTROL_SHADER
+	use ARB_program_interface_query		    REFERENCED_BY_TESS_EVALUATION_SHADER
+	use ARB_program_interface_query		    REFERENCED_BY_GEOMETRY_SHADER
+	use ARB_program_interface_query		    REFERENCED_BY_FRAGMENT_SHADER
+	use ARB_program_interface_query		    REFERENCED_BY_COMPUTE_SHADER
+	use ARB_program_interface_query		    TOP_LEVEL_ARRAY_SIZE
+	use ARB_program_interface_query		    TOP_LEVEL_ARRAY_STRIDE
+	use ARB_program_interface_query		    LOCATION
+	use ARB_program_interface_query		    LOCATION_INDEX
+	use ARB_program_interface_query		    IS_PER_PATCH
+passthru: /* Reuse tokens from ARB_robust_buffer_access_behavior (none) */
+passthru: /* Reuse tokens from ARB_shader_storage_buffer_object */
+	use ARB_shader_storage_buffer_object	    SHADER_STORAGE_BUFFER
+	use ARB_shader_storage_buffer_object	    SHADER_STORAGE_BUFFER_BINDING
+	use ARB_shader_storage_buffer_object	    SHADER_STORAGE_BUFFER_START
+	use ARB_shader_storage_buffer_object	    SHADER_STORAGE_BUFFER_SIZE
+	use ARB_shader_storage_buffer_object	    MAX_VERTEX_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_GEOMETRY_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_FRAGMENT_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_COMPUTE_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_COMBINED_SHADER_STORAGE_BLOCKS
+	use ARB_shader_storage_buffer_object	    MAX_SHADER_STORAGE_BUFFER_BINDINGS
+	use ARB_shader_storage_buffer_object	    MAX_SHADER_STORAGE_BLOCK_SIZE
+	use ARB_shader_storage_buffer_object	    SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT
+	use ARB_shader_storage_buffer_object	    SHADER_STORAGE_BARRIER_BIT
+	use ARB_shader_storage_buffer_object	    MAX_COMBINED_SHADER_OUTPUT_RESOURCES
+passthru: /* Reuse tokens from ARB_stencil_texturing */
+	use ARB_stencil_texturing		    DEPTH_STENCIL_TEXTURE_MODE
+passthru: /* Reuse tokens from ARB_texture_buffer_range */
+	use ARB_texture_buffer_range		    TEXTURE_BUFFER_OFFSET
+	use ARB_texture_buffer_range		    TEXTURE_BUFFER_SIZE
+	use ARB_texture_buffer_range		    TEXTURE_BUFFER_OFFSET_ALIGNMENT
+passthru: /* Reuse tokens from ARB_texture_query_levels (none) */
+passthru: /* Reuse tokens from ARB_texture_storage_multisample (none) */
+passthru: /* Reuse tokens from ARB_texture_view */
+	use ARB_texture_view			    TEXTURE_VIEW_MIN_LEVEL
+	use ARB_texture_view			    TEXTURE_VIEW_NUM_LEVELS
+	use ARB_texture_view			    TEXTURE_VIEW_MIN_LAYER
+	use ARB_texture_view			    TEXTURE_VIEW_NUM_LAYERS
+	use ARB_texture_view			    TEXTURE_IMMUTABLE_LEVELS
+passthru: /* Reuse tokens from ARB_vertex_attrib_binding */
+	use ARB_vertex_attrib_binding		    VERTEX_ATTRIB_BINDING
+	use ARB_vertex_attrib_binding		    VERTEX_ATTRIB_RELATIVE_OFFSET
+	use ARB_vertex_attrib_binding		    VERTEX_BINDING_DIVISOR
+	use ARB_vertex_attrib_binding		    VERTEX_BINDING_OFFSET
+	use ARB_vertex_attrib_binding		    VERTEX_BINDING_STRIDE
+	use ARB_vertex_attrib_binding		    MAX_VERTEX_ATTRIB_RELATIVE_OFFSET
+	use ARB_vertex_attrib_binding		    MAX_VERTEX_ATTRIB_BINDINGS
 
 
 ###############################################################################
@@ -2569,8 +2857,7 @@ ARB_framebuffer_object enum:
 	RENDERBUFFER_STENCIL_SIZE			= 0x8D55
 	FRAMEBUFFER_INCOMPLETE_MULTISAMPLE		= 0x8D56
 	MAX_SAMPLES					= 0x8D57
-
-ARB_framebuffer_object_DEPRECATED enum:
+profile: compatibility
 	INDEX						= 0x8222
 	TEXTURE_LUMINANCE_TYPE				= 0x8C14
 	TEXTURE_INTENSITY_TYPE				= 0x8C15
@@ -2736,8 +3023,10 @@ passthru: /* ARB_compatibility just defines tokens from core 3.0 */
 
 # ARB Extension #59
 ARB_copy_buffer enum:
-	COPY_READ_BUFFER				= 0x8F36
-	COPY_WRITE_BUFFER				= 0x8F37
+	COPY_READ_BUFFER_BINDING			= 0x8F36
+	COPY_READ_BUFFER				= GL_COPY_READ_BUFFER_BINDING
+	COPY_WRITE_BUFFER_BINDING			= 0x8F37
+	COPY_WRITE_BUFFER				= GL_COPY_WRITE_BUFFER_BINDING
 
 ###############################################################################
 
@@ -2861,6 +3150,7 @@ ARB_texture_cube_map_array enum:
 ARB_texture_gather enum:
 	MIN_PROGRAM_TEXTURE_GATHER_OFFSET_ARB		= 0x8E5E
 	MAX_PROGRAM_TEXTURE_GATHER_OFFSET_ARB		= 0x8E5F
+	MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS_ARB	= 0x8F9F
 
 ###############################################################################
 
@@ -2896,7 +3186,7 @@ ARB_texture_compression_bptc enum:
 # ARB Extension #78
 ARB_blend_func_extended enum:
 	SRC1_COLOR					= 0x88F9
-	use VERSION_1_5_DEPRECATED	    SRC1_ALPHA
+	use VERSION_1_5			    SRC1_ALPHA
 	ONE_MINUS_SRC1_COLOR				= 0x88FA
 	ONE_MINUS_SRC1_ALPHA				= 0x88FB
 	MAX_DUAL_SOURCE_DRAW_BUFFERS			= 0x88FC
@@ -2971,8 +3261,7 @@ ARB_gpu_shader5 enum:
 	MIN_FRAGMENT_INTERPOLATION_OFFSET		= 0x8E5B
 	MAX_FRAGMENT_INTERPOLATION_OFFSET		= 0x8E5C
 	FRAGMENT_INTERPOLATION_OFFSET_BITS		= 0x8E5D
-# EDIT ARB_texture_multisample -> ARB_transform_feedback3
-	use ARB_transform_feedback3	    MAX_VERTEX_STREAMS
+	use ARB_texture_multisample	    MAX_VERTEX_STREAMS
 
 ###############################################################################
 
@@ -3063,8 +3352,10 @@ ARB_texture_buffer_object_rgb32 enum:
 # ARB Extension #93
 ARB_transform_feedback2 enum:
 	TRANSFORM_FEEDBACK				= 0x8E22
-	TRANSFORM_FEEDBACK_BUFFER_PAUSED		= 0x8E23
-	TRANSFORM_FEEDBACK_BUFFER_ACTIVE		= 0x8E24
+	TRANSFORM_FEEDBACK_PAUSED			= 0x8E23
+	TRANSFORM_FEEDBACK_BUFFER_PAUSED		= GL_TRANSFORM_FEEDBACK_PAUSED
+	TRANSFORM_FEEDBACK_ACTIVE			= 0x8E24
+	TRANSFORM_FEEDBACK_BUFFER_ACTIVE		= GL_TRANSFORM_FEEDBACK_ACTIVE
 	TRANSFORM_FEEDBACK_BINDING			= 0x8E25
 
 ###############################################################################
@@ -3088,10 +3379,12 @@ ARB_ES2_compatibility enum:
 	MEDIUM_INT					= 0x8DF4
 	HIGH_INT					= 0x8DF5
 	SHADER_COMPILER					= 0x8DFA
+	SHADER_BINARY_FORMATS				= 0x8DF8
 	NUM_SHADER_BINARY_FORMATS			= 0x8DF9
 	MAX_VERTEX_UNIFORM_VECTORS			= 0x8DFB
 	MAX_VARYING_VECTORS				= 0x8DFC
 	MAX_FRAGMENT_UNIFORM_VECTORS			= 0x8DFD
+	RGB565						= 0x8D62
 
 ###############################################################################
 
@@ -3381,10 +3674,458 @@ ARB_shading_language_packing enum:
 ARB_texture_storage enum:
 	TEXTURE_IMMUTABLE_FORMAT			= 0x912F
 
+###############################################################################
+
+# ARB Extension #118
+KHR_texture_compression_astc_ldr enum:
+	COMPRESSED_RGBA_ASTC_4x4_KHR			= 0x93B0
+	COMPRESSED_RGBA_ASTC_5x4_KHR			= 0x93B1
+	COMPRESSED_RGBA_ASTC_5x5_KHR			= 0x93B2
+	COMPRESSED_RGBA_ASTC_6x5_KHR			= 0x93B3
+	COMPRESSED_RGBA_ASTC_6x6_KHR			= 0x93B4
+	COMPRESSED_RGBA_ASTC_8x5_KHR			= 0x93B5
+	COMPRESSED_RGBA_ASTC_8x6_KHR			= 0x93B6
+	COMPRESSED_RGBA_ASTC_8x8_KHR			= 0x93B7
+	COMPRESSED_RGBA_ASTC_10x5_KHR			= 0x93B8
+	COMPRESSED_RGBA_ASTC_10x6_KHR			= 0x93B9
+	COMPRESSED_RGBA_ASTC_10x8_KHR			= 0x93BA
+	COMPRESSED_RGBA_ASTC_10x10_KHR			= 0x93BB
+	COMPRESSED_RGBA_ASTC_12x10_KHR			= 0x93BC
+	COMPRESSED_RGBA_ASTC_12x12_KHR			= 0x93BD
+	COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR		= 0x93D0
+	COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR		= 0x93D1
+	COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR		= 0x93D2
+	COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR		= 0x93D3
+	COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR		= 0x93D4
+	COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR		= 0x93D5
+	COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR		= 0x93D6
+	COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR		= 0x93D7
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR		= 0x93D8
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR		= 0x93D9
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR		= 0x93DA
+	COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR		= 0x93DB
+	COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR		= 0x93DC
+	COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR		= 0x93DD
+
+###############################################################################
+
+# ARB Extension #119
+KHR_debug enum:
+	DEBUG_OUTPUT_SYNCHRONOUS			= 0x8242
+	DEBUG_NEXT_LOGGED_MESSAGE_LENGTH		= 0x8243
+	DEBUG_CALLBACK_FUNCTION				= 0x8244
+	DEBUG_CALLBACK_USER_PARAM			= 0x8245
+	DEBUG_SOURCE_API				= 0x8246
+	DEBUG_SOURCE_WINDOW_SYSTEM			= 0x8247
+	DEBUG_SOURCE_SHADER_COMPILER			= 0x8248
+	DEBUG_SOURCE_THIRD_PARTY			= 0x8249
+	DEBUG_SOURCE_APPLICATION			= 0x824A
+	DEBUG_SOURCE_OTHER				= 0x824B
+	DEBUG_TYPE_ERROR				= 0x824C
+	DEBUG_TYPE_DEPRECATED_BEHAVIOR			= 0x824D
+	DEBUG_TYPE_UNDEFINED_BEHAVIOR			= 0x824E
+	DEBUG_TYPE_PORTABILITY				= 0x824F
+	DEBUG_TYPE_PERFORMANCE				= 0x8250
+	DEBUG_TYPE_OTHER				= 0x8251
+	DEBUG_TYPE_MARKER				= 0x8268
+	DEBUG_TYPE_PUSH_GROUP				= 0x8269
+	DEBUG_TYPE_POP_GROUP				= 0x826A
+	DEBUG_SEVERITY_NOTIFICATION			= 0x826B
+	MAX_DEBUG_GROUP_STACK_DEPTH			= 0x826C
+	DEBUG_GROUP_STACK_DEPTH				= 0x826D
+	BUFFER						= 0x82E0
+	SHADER						= 0x82E1
+	PROGRAM						= 0x82E2
+	QUERY						= 0x82E3
+	PROGRAM_PIPELINE				= 0x82E4
+# SYNC = 0x82E5 no longer used in extension
+	SAMPLER						= 0x82E6
+	DISPLAY_LIST					= 0x82E7
+passthru: /* DISPLAY_LIST used in compatibility profile only */
+	MAX_LABEL_LENGTH				= 0x82E8
+	MAX_DEBUG_MESSAGE_LENGTH			= 0x9143
+	MAX_DEBUG_LOGGED_MESSAGES			= 0x9144
+	DEBUG_LOGGED_MESSAGES				= 0x9145
+	DEBUG_SEVERITY_HIGH				= 0x9146
+	DEBUG_SEVERITY_MEDIUM				= 0x9147
+	DEBUG_SEVERITY_LOW				= 0x9148
+	DEBUG_OUTPUT					= 0x92E0
+	CONTEXT_FLAG_DEBUG_BIT				= 0x00000002
+	use ErrorCode			    STACK_UNDERFLOW
+	use ErrorCode			    STACK_OVERFLOW
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #120
+ARB_arrays_of_arrays enum:
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #121
+ARB_clear_buffer_object enum:
+
+###############################################################################
+
+# ARB Extension #122
+ARB_compute_shader enum:
+	COMPUTE_SHADER					= 0x91B9
+	MAX_COMPUTE_UNIFORM_BLOCKS			= 0x91BB
+	MAX_COMPUTE_TEXTURE_IMAGE_UNITS			= 0x91BC
+	MAX_COMPUTE_IMAGE_UNIFORMS			= 0x91BD
+	MAX_COMPUTE_SHARED_MEMORY_SIZE			= 0x8262
+	MAX_COMPUTE_UNIFORM_COMPONENTS			= 0x8263
+	MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS		= 0x8264
+	MAX_COMPUTE_ATOMIC_COUNTERS			= 0x8265
+	MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS		= 0x8266
+	MAX_COMPUTE_LOCAL_INVOCATIONS			= 0x90EB
+	MAX_COMPUTE_WORK_GROUP_COUNT			= 0x91BE
+	MAX_COMPUTE_WORK_GROUP_SIZE			= 0x91BF
+	COMPUTE_LOCAL_WORK_SIZE				= 0x8267
+	UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER	= 0x90EC
+	ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER = 0x90ED
+	DISPATCH_INDIRECT_BUFFER			= 0x90EE
+	DISPATCH_INDIRECT_BUFFER_BINDING		= 0x90EF
+	COMPUTE_SHADER_BIT				= 0x00000020	# UseProgramStages <stage> bitfield
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #123
+ARB_copy_image enum:
+
+###############################################################################
+
+# ARB Extension #124 (renumbered from 142)
+ARB_texture_view enum:
+	TEXTURE_VIEW_MIN_LEVEL				= 0x82DB
+	TEXTURE_VIEW_NUM_LEVELS				= 0x82DC
+	TEXTURE_VIEW_MIN_LAYER				= 0x82DD
+	TEXTURE_VIEW_NUM_LAYERS				= 0x82DE
+	TEXTURE_IMMUTABLE_LEVELS			= 0x82DF
+
+###############################################################################
+
+# ARB Extension #125 (renumbered from 143)
+ARB_vertex_attrib_binding enum:
+	VERTEX_ATTRIB_BINDING				= 0x82D4
+	VERTEX_ATTRIB_RELATIVE_OFFSET			= 0x82D5
+	VERTEX_BINDING_DIVISOR				= 0x82D6
+	VERTEX_BINDING_OFFSET				= 0x82D7
+	VERTEX_BINDING_STRIDE				= 0x82D8
+	MAX_VERTEX_ATTRIB_RELATIVE_OFFSET		= 0x82D9
+	MAX_VERTEX_ATTRIB_BINDINGS			= 0x82DA
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #126 (renumbered from 144)
+ARB_robustness_isolation enum:
+
+###############################################################################
+
+# ARB Extension #127
+ARB_ES3_compatibility enum:
+	COMPRESSED_RGB8_ETC2				= 0x9274
+	COMPRESSED_SRGB8_ETC2				= 0x9275
+	COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2	= 0x9276
+	COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2	= 0x9277
+	COMPRESSED_RGBA8_ETC2_EAC			= 0x9278
+	COMPRESSED_SRGB8_ALPHA8_ETC2_EAC		= 0x9279
+	COMPRESSED_R11_EAC				= 0x9270
+	COMPRESSED_SIGNED_R11_EAC			= 0x9271
+	COMPRESSED_RG11_EAC				= 0x9272
+	COMPRESSED_SIGNED_RG11_EAC			= 0x9273
+	PRIMITIVE_RESTART_FIXED_INDEX			= 0x8D69
+	ANY_SAMPLES_PASSED_CONSERVATIVE			= 0x8D6A
+	MAX_ELEMENT_INDEX				= 0x8D6B
+
+###############################################################################
+
+# ARB Extension #128
+ARB_explicit_uniform_location enum:
+	MAX_UNIFORM_LOCATIONS				= 0x826E
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #129
+ARB_fragment_layer_viewport enum:
+
+###############################################################################
+
+# ARB Extension #130
+ARB_framebuffer_no_attachments enum:
+	FRAMEBUFFER_DEFAULT_WIDTH			= 0x9310
+	FRAMEBUFFER_DEFAULT_HEIGHT			= 0x9311
+	FRAMEBUFFER_DEFAULT_LAYERS			= 0x9312
+	FRAMEBUFFER_DEFAULT_SAMPLES			= 0x9313
+	FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS	= 0x9314
+	MAX_FRAMEBUFFER_WIDTH				= 0x9315
+	MAX_FRAMEBUFFER_HEIGHT				= 0x9316
+	MAX_FRAMEBUFFER_LAYERS				= 0x9317
+	MAX_FRAMEBUFFER_SAMPLES				= 0x9318
+
+###############################################################################
+
+# ARB Extension #131
+ARB_internalformat_query2 enum:
+	use ARB_shader_image_load_store     IMAGE_FORMAT_COMPATIBILITY_TYPE
+	use ARB_internalformat_query	    NUM_SAMPLE_COUNTS
+	use VERSION_3_0			    RENDERBUFFER
+	use VERSION_1_3			    SAMPLES
+	use GetPName			    TEXTURE_1D
+	use VERSION_3_0			    TEXTURE_1D_ARRAY
+	use GetPName			    TEXTURE_2D
+	use VERSION_3_0			    TEXTURE_2D_ARRAY
+	use VERSION_1_2			    TEXTURE_3D
+	use VERSION_1_3			    TEXTURE_CUBE_MAP
+	use ARB_texture_cube_map	    TEXTURE_CUBE_MAP_ARRAY
+	use VERSION_3_1			    TEXTURE_RECTANGLE
+	use VERSION_3_1			    TEXTURE_BUFFER
+	use ARB_texture_multisample	    TEXTURE_2D_MULTISAMPLE
+	use ARB_texture_multisample	    TEXTURE_2D_MULTISAMPLE_ARRAY
+	use VERSION_1_3			    TEXTURE_COMPRESSED
+	INTERNALFORMAT_SUPPORTED			= 0x826F
+	INTERNALFORMAT_PREFERRED			= 0x8270
+	INTERNALFORMAT_RED_SIZE				= 0x8271
+	INTERNALFORMAT_GREEN_SIZE			= 0x8272
+	INTERNALFORMAT_BLUE_SIZE			= 0x8273
+	INTERNALFORMAT_ALPHA_SIZE			= 0x8274
+	INTERNALFORMAT_DEPTH_SIZE			= 0x8275
+	INTERNALFORMAT_STENCIL_SIZE			= 0x8276
+	INTERNALFORMAT_SHARED_SIZE			= 0x8277
+	INTERNALFORMAT_RED_TYPE				= 0x8278
+	INTERNALFORMAT_GREEN_TYPE			= 0x8279
+	INTERNALFORMAT_BLUE_TYPE			= 0x827A
+	INTERNALFORMAT_ALPHA_TYPE			= 0x827B
+	INTERNALFORMAT_DEPTH_TYPE			= 0x827C
+	INTERNALFORMAT_STENCIL_TYPE			= 0x827D
+	MAX_WIDTH					= 0x827E
+	MAX_HEIGHT					= 0x827F
+	MAX_DEPTH					= 0x8280
+	MAX_LAYERS					= 0x8281
+	MAX_COMBINED_DIMENSIONS				= 0x8282
+	COLOR_COMPONENTS				= 0x8283
+	DEPTH_COMPONENTS				= 0x8284
+	STENCIL_COMPONENTS				= 0x8285
+	COLOR_RENDERABLE				= 0x8286
+	DEPTH_RENDERABLE				= 0x8287
+	STENCIL_RENDERABLE				= 0x8288
+	FRAMEBUFFER_RENDERABLE				= 0x8289
+	FRAMEBUFFER_RENDERABLE_LAYERED			= 0x828A
+	FRAMEBUFFER_BLEND				= 0x828B
+	READ_PIXELS					= 0x828C
+	READ_PIXELS_FORMAT				= 0x828D
+	READ_PIXELS_TYPE				= 0x828E
+	TEXTURE_IMAGE_FORMAT				= 0x828F
+	TEXTURE_IMAGE_TYPE				= 0x8290
+	GET_TEXTURE_IMAGE_FORMAT			= 0x8291
+	GET_TEXTURE_IMAGE_TYPE				= 0x8292
+	MIPMAP						= 0x8293
+	MANUAL_GENERATE_MIPMAP				= 0x8294
+# Should be deprecated
+	AUTO_GENERATE_MIPMAP				= 0x8295
+	COLOR_ENCODING					= 0x8296
+	SRGB_READ					= 0x8297
+	SRGB_WRITE					= 0x8298
+	SRGB_DECODE_ARB					= 0x8299
+	FILTER						= 0x829A
+	VERTEX_TEXTURE					= 0x829B
+	TESS_CONTROL_TEXTURE				= 0x829C
+	TESS_EVALUATION_TEXTURE				= 0x829D
+	GEOMETRY_TEXTURE				= 0x829E
+	FRAGMENT_TEXTURE				= 0x829F
+	COMPUTE_TEXTURE					= 0x82A0
+	TEXTURE_SHADOW					= 0x82A1
+	TEXTURE_GATHER					= 0x82A2
+	TEXTURE_GATHER_SHADOW				= 0x82A3
+	SHADER_IMAGE_LOAD				= 0x82A4
+	SHADER_IMAGE_STORE				= 0x82A5
+	SHADER_IMAGE_ATOMIC				= 0x82A6
+	IMAGE_TEXEL_SIZE				= 0x82A7
+	IMAGE_COMPATIBILITY_CLASS			= 0x82A8
+	IMAGE_PIXEL_FORMAT				= 0x82A9
+	IMAGE_PIXEL_TYPE				= 0x82AA
+	SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST		= 0x82AC
+	SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST		= 0x82AD
+	SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE		= 0x82AE
+	SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE		= 0x82AF
+	TEXTURE_COMPRESSED_BLOCK_WIDTH			= 0x82B1
+	TEXTURE_COMPRESSED_BLOCK_HEIGHT			= 0x82B2
+	TEXTURE_COMPRESSED_BLOCK_SIZE			= 0x82B3
+	CLEAR_BUFFER					= 0x82B4
+	TEXTURE_VIEW					= 0x82B5
+	VIEW_COMPATIBILITY_CLASS			= 0x82B6
+	FULL_SUPPORT					= 0x82B7
+	CAVEAT_SUPPORT					= 0x82B8
+	IMAGE_CLASS_4_X_32				= 0x82B9
+	IMAGE_CLASS_2_X_32				= 0x82BA
+	IMAGE_CLASS_1_X_32				= 0x82BB
+	IMAGE_CLASS_4_X_16				= 0x82BC
+	IMAGE_CLASS_2_X_16				= 0x82BD
+	IMAGE_CLASS_1_X_16				= 0x82BE
+	IMAGE_CLASS_4_X_8				= 0x82BF
+	IMAGE_CLASS_2_X_8				= 0x82C0
+	IMAGE_CLASS_1_X_8				= 0x82C1
+	IMAGE_CLASS_11_11_10				= 0x82C2
+	IMAGE_CLASS_10_10_10_2				= 0x82C3
+	VIEW_CLASS_128_BITS				= 0x82C4
+	VIEW_CLASS_96_BITS				= 0x82C5
+	VIEW_CLASS_64_BITS				= 0x82C6
+	VIEW_CLASS_48_BITS				= 0x82C7
+	VIEW_CLASS_32_BITS				= 0x82C8
+	VIEW_CLASS_24_BITS				= 0x82C9
+	VIEW_CLASS_16_BITS				= 0x82CA
+	VIEW_CLASS_8_BITS				= 0x82CB
+	VIEW_CLASS_S3TC_DXT1_RGB			= 0x82CC
+	VIEW_CLASS_S3TC_DXT1_RGBA			= 0x82CD
+	VIEW_CLASS_S3TC_DXT3_RGBA			= 0x82CE
+	VIEW_CLASS_S3TC_DXT5_RGBA			= 0x82CF
+	VIEW_CLASS_RGTC1_RED				= 0x82D0
+	VIEW_CLASS_RGTC2_RG				= 0x82D1
+	VIEW_CLASS_BPTC_UNORM				= 0x82D2
+	VIEW_CLASS_BPTC_FLOAT				= 0x82D3
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #132
+ARB_invalidate_subdata enum:
+
+###############################################################################
+
+# No new tokens ; might not exist as an ARB extension
+# ARB Extension #133
+ARB_multi_draw_indirect enum:
+
+###############################################################################
+
+# ARB Extension #134
+ARB_program_interface_query enum:
+	UNIFORM						= 0x92E1
+	UNIFORM_BLOCK					= 0x92E2
+	PROGRAM_INPUT					= 0x92E3
+	PROGRAM_OUTPUT					= 0x92E4
+	BUFFER_VARIABLE					= 0x92E5
+	SHADER_STORAGE_BLOCK				= 0x92E6
+	use ARB_shader_atomic_counters	    ATOMIC_COUNTER_BUFFER
+	VERTEX_SUBROUTINE				= 0x92E8
+	TESS_CONTROL_SUBROUTINE				= 0x92E9
+	TESS_EVALUATION_SUBROUTINE			= 0x92EA
+	GEOMETRY_SUBROUTINE				= 0x92EB
+	FRAGMENT_SUBROUTINE				= 0x92EC
+	COMPUTE_SUBROUTINE				= 0x92ED
+	VERTEX_SUBROUTINE_UNIFORM			= 0x92EE
+	TESS_CONTROL_SUBROUTINE_UNIFORM			= 0x92EF
+	TESS_EVALUATION_SUBROUTINE_UNIFORM		= 0x92F0
+	GEOMETRY_SUBROUTINE_UNIFORM			= 0x92F1
+	FRAGMENT_SUBROUTINE_UNIFORM			= 0x92F2
+	COMPUTE_SUBROUTINE_UNIFORM			= 0x92F3
+	TRANSFORM_FEEDBACK_VARYING			= 0x92F4
+	ACTIVE_RESOURCES				= 0x92F5
+	MAX_NAME_LENGTH					= 0x92F6
+	MAX_NUM_ACTIVE_VARIABLES			= 0x92F7
+	MAX_NUM_COMPATIBLE_SUBROUTINES			= 0x92F8
+	NAME_LENGTH					= 0x92F9
+	TYPE						= 0x92FA
+	ARRAY_SIZE					= 0x92FB
+	OFFSET						= 0x92FC
+	BLOCK_INDEX					= 0x92FD
+	ARRAY_STRIDE					= 0x92FE
+	MATRIX_STRIDE					= 0x92FF
+	IS_ROW_MAJOR					= 0x9300
+	ATOMIC_COUNTER_BUFFER_INDEX			= 0x9301
+	BUFFER_BINDING					= 0x9302
+	BUFFER_DATA_SIZE				= 0x9303
+	NUM_ACTIVE_VARIABLES				= 0x9304
+	ACTIVE_VARIABLES				= 0x9305
+	REFERENCED_BY_VERTEX_SHADER			= 0x9306
+	REFERENCED_BY_TESS_CONTROL_SHADER		= 0x9307
+	REFERENCED_BY_TESS_EVALUATION_SHADER		= 0x9308
+	REFERENCED_BY_GEOMETRY_SHADER			= 0x9309
+	REFERENCED_BY_FRAGMENT_SHADER			= 0x930A
+	REFERENCED_BY_COMPUTE_SHADER			= 0x930B
+	TOP_LEVEL_ARRAY_SIZE				= 0x930C
+	TOP_LEVEL_ARRAY_STRIDE				= 0x930D
+	LOCATION					= 0x930E
+	LOCATION_INDEX					= 0x930F
+	IS_PER_PATCH					= 0x92E7
+	use ARB_shader_subroutine	    NUM_COMPATIBLE_SUBROUTINES
+	use ARB_shader_subroutine	    COMPATIBLE_SUBROUTINES
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #135
+ARB_robust_buffer_access_behavior enum:
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #136
+ARB_shader_image_size enum:
+
+###############################################################################
+
+# ARB Extension #137
+ARB_shader_storage_buffer_object enum:
+	SHADER_STORAGE_BUFFER				= 0x90D2
+	SHADER_STORAGE_BUFFER_BINDING			= 0x90D3
+	SHADER_STORAGE_BUFFER_START			= 0x90D4
+	SHADER_STORAGE_BUFFER_SIZE			= 0x90D5
+	MAX_VERTEX_SHADER_STORAGE_BLOCKS		= 0x90D6
+	MAX_GEOMETRY_SHADER_STORAGE_BLOCKS		= 0x90D7
+	MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS		= 0x90D8
+	MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS	= 0x90D9
+	MAX_FRAGMENT_SHADER_STORAGE_BLOCKS		= 0x90DA
+	MAX_COMPUTE_SHADER_STORAGE_BLOCKS		= 0x90DB
+	MAX_COMBINED_SHADER_STORAGE_BLOCKS		= 0x90DC
+	MAX_SHADER_STORAGE_BUFFER_BINDINGS		= 0x90DD
+	MAX_SHADER_STORAGE_BLOCK_SIZE			= 0x90DE
+	SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT		= 0x90DF
+	SHADER_STORAGE_BARRIER_BIT			= 0x2000
+	MAX_COMBINED_SHADER_OUTPUT_RESOURCES		= GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS
+	use ARB_shader_image_load_store     MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS
+
+###############################################################################
+
+# ARB Extension #138
+ARB_stencil_texturing enum:
+	DEPTH_STENCIL_TEXTURE_MODE			= 0x90EA
+
+###############################################################################
+
+# ARB Extension #139
+ARB_texture_buffer_range enum:
+	TEXTURE_BUFFER_OFFSET				= 0x919D
+	TEXTURE_BUFFER_SIZE				= 0x919E
+	TEXTURE_BUFFER_OFFSET_ALIGNMENT			= 0x919F
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #140
+ARB_texture_query_levels enum:
+
+###############################################################################
+
+# No new tokens
+# ARB Extension #141
+ARB_texture_storage_multisample enum:
+
+###############################################################################
+
+# Extension #142 - GLX_ARB_robustness_application_isolation
+# Extension #143 - WGL_ARB_robustness_application_isolation
+
+###############################################################################
+
 
 ###############################################################################
 #
-# non-ARB extensions follow, in registry order
+# Non-ARB extensions follow, in registry order
 #
 ###############################################################################
 
@@ -3971,7 +4712,7 @@ SGIX_tag_sample_buffer enum:
 ###############################################################################
 
 # Extension #59
-SGIX_ffdMask enum:
+SGIX_FfdMask enum:
 	TEXTURE_DEFORMATION_BIT_SGIX			= 0x00000001
 	GEOMETRY_DEFORMATION_BIT_SGIX			= 0x00000002
 SGIX_polynomial_ffd enum:
@@ -5567,8 +6308,7 @@ ATI_fragment_shader enum:
 	QUARTER_BIT_ATI					= 0x00000010
 	EIGHTH_BIT_ATI					= 0x00000020
 	SATURATE_BIT_ATI				= 0x00000040
-# EDIT the next entry is a duplicate
-#	2X_BIT_ATI					= 0x00000001
+	2X_BIT_ATI					= 0x00000001
 	COMP_BIT_ATI					= 0x00000002
 	NEGATE_BIT_ATI					= 0x00000004
 	BIAS_BIT_ATI					= 0x00000008
@@ -5899,6 +6639,8 @@ S3_s3tc enum:
 	RGB4_S3TC					= 0x83A1
 	RGBA_S3TC					= 0x83A2
 	RGBA4_S3TC					= 0x83A3
+	RGBA_DXT5_S3TC					= 0x83A4
+	RGBA4_DXT5_S3TC					= 0x83A5
 
 ###############################################################################
 
@@ -5928,7 +6670,7 @@ ATI_draw_buffers enum:
 # This is really a WGL extension, but if defined there are
 # some associated GL enumerants.
 ATI_pixel_format_float enum:
-	TYPE_RGBA_FLOAT_ATI				= 0x8820
+	RGBA_FLOAT_MODE_ATI				= 0x8820
 	COLOR_CLEAR_UNCLAMPED_VALUE_ATI			= 0x8835
 
 ###############################################################################
@@ -6564,7 +7306,7 @@ NV_transform_feedback enum:
 	PRIMITIVES_GENERATED_NV				= 0x8C87
 	TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN_NV	= 0x8C88
 	RASTERIZER_DISCARD_NV				= 0x8C89
-	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_ATTRIBS_NV	= 0x8C8A
+	MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS_NV = 0x8C8A
 	MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS_NV	= 0x8C8B
 	INTERLEAVED_ATTRIBS_NV				= 0x8C8C
 	SEPARATE_ATTRIBS_NV				= 0x8C8D
@@ -7024,7 +7766,7 @@ AMD_shader_stencil_export enum:
 
 # Extension #383
 AMD_seamless_cubemap_per_texture enum:
-    use ARB_seamless_cube_map		    TEXTURE_CUBE_MAP_SEAMLESS
+	use ARB_seamless_cube_map	    TEXTURE_CUBE_MAP_SEAMLESS
 
 ###############################################################################
 
@@ -7209,6 +7951,7 @@ AMD_name_gen_delete enum:
 
 # Extension #395
 AMD_debug_output enum:
+	MAX_DEBUG_MESSAGE_LENGTH_AMD			= 0x9143
 	MAX_DEBUG_LOGGED_MESSAGES_AMD			= 0x9144
 	DEBUG_LOGGED_MESSAGES_AMD			= 0x9145
 	DEBUG_SEVERITY_HIGH_AMD				= 0x9146
@@ -7304,8 +8047,143 @@ EXT_framebuffer_multisample_blit_scaled enum:
 
 ###############################################################################
 
-# Extension #410 TBD
-# NV_path_rendering enum:
+# Extension #410
+NV_path_rendering enum:
+	PATH_FORMAT_SVG_NV				= 0x9070
+	PATH_FORMAT_PS_NV				= 0x9071
+	STANDARD_FONT_NAME_NV				= 0x9072
+	SYSTEM_FONT_NAME_NV				= 0x9073
+	FILE_NAME_NV					= 0x9074
+	PATH_STROKE_WIDTH_NV				= 0x9075
+	PATH_END_CAPS_NV				= 0x9076
+	PATH_INITIAL_END_CAP_NV				= 0x9077
+	PATH_TERMINAL_END_CAP_NV			= 0x9078
+	PATH_JOIN_STYLE_NV				= 0x9079
+	PATH_MITER_LIMIT_NV				= 0x907A
+	PATH_DASH_CAPS_NV				= 0x907B
+	PATH_INITIAL_DASH_CAP_NV			= 0x907C
+	PATH_TERMINAL_DASH_CAP_NV			= 0x907D
+	PATH_DASH_OFFSET_NV				= 0x907E
+	PATH_CLIENT_LENGTH_NV				= 0x907F
+	PATH_FILL_MODE_NV				= 0x9080
+	PATH_FILL_MASK_NV				= 0x9081
+	PATH_FILL_COVER_MODE_NV				= 0x9082
+	PATH_STROKE_COVER_MODE_NV			= 0x9083
+	PATH_STROKE_MASK_NV				= 0x9084
+	PATH_SAMPLE_QUALITY_NV				= 0x9085
+	PATH_STROKE_BOUND_NV				= 0x9086
+	PATH_STROKE_OVERSAMPLE_COUNT_NV			= 0x9087
+	COUNT_UP_NV					= 0x9088
+	COUNT_DOWN_NV					= 0x9089
+	PATH_OBJECT_BOUNDING_BOX_NV			= 0x908A
+	CONVEX_HULL_NV					= 0x908B
+	MULTI_HULLS_NV					= 0x908C
+	BOUNDING_BOX_NV					= 0x908D
+	TRANSLATE_X_NV					= 0x908E
+	TRANSLATE_Y_NV					= 0x908F
+	TRANSLATE_2D_NV					= 0x9090
+	TRANSLATE_3D_NV					= 0x9091
+	AFFINE_2D_NV					= 0x9092
+	PROJECTIVE_2D_NV				= 0x9093
+	AFFINE_3D_NV					= 0x9094
+	PROJECTIVE_3D_NV				= 0x9095
+	TRANSPOSE_AFFINE_2D_NV				= 0x9096
+	TRANSPOSE_PROJECTIVE_2D_NV			= 0x9097
+	TRANSPOSE_AFFINE_3D_NV				= 0x9098
+	TRANSPOSE_PROJECTIVE_3D_NV			= 0x9099
+	UTF8_NV						= 0x909A
+	UTF16_NV					= 0x909B
+	BOUNDING_BOX_OF_BOUNDING_BOXES_NV		= 0x909C
+	PATH_COMMAND_COUNT_NV				= 0x909D
+	PATH_COORD_COUNT_NV				= 0x909E
+	PATH_DASH_ARRAY_COUNT_NV			= 0x909F
+	PATH_COMPUTED_LENGTH_NV				= 0x90A0
+	PATH_FILL_BOUNDING_BOX_NV			= 0x90A1
+	PATH_STROKE_BOUNDING_BOX_NV			= 0x90A2
+	SQUARE_NV					= 0x90A3
+	ROUND_NV					= 0x90A4
+	TRIANGULAR_NV					= 0x90A5
+	BEVEL_NV					= 0x90A6
+	MITER_REVERT_NV					= 0x90A7
+	MITER_TRUNCATE_NV				= 0x90A8
+	SKIP_MISSING_GLYPH_NV				= 0x90A9
+	USE_MISSING_GLYPH_NV				= 0x90AA
+	PATH_ERROR_POSITION_NV				= 0x90AB
+	PATH_FOG_GEN_MODE_NV				= 0x90AC
+	ACCUM_ADJACENT_PAIRS_NV				= 0x90AD
+	ADJACENT_PAIRS_NV				= 0x90AE
+	FIRST_TO_REST_NV				= 0x90AF
+	PATH_GEN_MODE_NV				= 0x90B0
+	PATH_GEN_COEFF_NV				= 0x90B1
+	PATH_GEN_COLOR_FORMAT_NV			= 0x90B2
+	PATH_GEN_COMPONENTS_NV				= 0x90B3
+	PATH_STENCIL_FUNC_NV				= 0x90B7
+	PATH_STENCIL_REF_NV				= 0x90B8
+	PATH_STENCIL_VALUE_MASK_NV			= 0x90B9
+	PATH_STENCIL_DEPTH_OFFSET_FACTOR_NV		= 0x90BD
+	PATH_STENCIL_DEPTH_OFFSET_UNITS_NV		= 0x90BE
+	PATH_COVER_DEPTH_FUNC_NV			= 0x90BF
+	PATH_DASH_OFFSET_RESET_NV			= 0x90B4
+	MOVE_TO_RESETS_NV				= 0x90B5
+	MOVE_TO_CONTINUES_NV				= 0x90B6
+	CLOSE_PATH_NV					= 0x00
+	MOVE_TO_NV					= 0x02
+	RELATIVE_MOVE_TO_NV				= 0x03
+	LINE_TO_NV					= 0x04
+	RELATIVE_LINE_TO_NV				= 0x05
+	HORIZONTAL_LINE_TO_NV				= 0x06
+	RELATIVE_HORIZONTAL_LINE_TO_NV			= 0x07
+	VERTICAL_LINE_TO_NV				= 0x08
+	RELATIVE_VERTICAL_LINE_TO_NV			= 0x09
+	QUADRATIC_CURVE_TO_NV				= 0x0A
+	RELATIVE_QUADRATIC_CURVE_TO_NV			= 0x0B
+	CUBIC_CURVE_TO_NV				= 0x0C
+	RELATIVE_CUBIC_CURVE_TO_NV			= 0x0D
+	SMOOTH_QUADRATIC_CURVE_TO_NV			= 0x0E
+	RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV		= 0x0F
+	SMOOTH_CUBIC_CURVE_TO_NV			= 0x10
+	RELATIVE_SMOOTH_CUBIC_CURVE_TO_NV		= 0x11
+	SMALL_CCW_ARC_TO_NV				= 0x12
+	RELATIVE_SMALL_CCW_ARC_TO_NV			= 0x13
+	SMALL_CW_ARC_TO_NV				= 0x14
+	RELATIVE_SMALL_CW_ARC_TO_NV			= 0x15
+	LARGE_CCW_ARC_TO_NV				= 0x16
+	RELATIVE_LARGE_CCW_ARC_TO_NV			= 0x17
+	LARGE_CW_ARC_TO_NV				= 0x18
+	RELATIVE_LARGE_CW_ARC_TO_NV			= 0x19
+	RESTART_PATH_NV					= 0xF0
+	DUP_FIRST_CUBIC_CURVE_TO_NV			= 0xF2
+	DUP_LAST_CUBIC_CURVE_TO_NV			= 0xF4
+	RECT_NV						= 0xF6
+	CIRCULAR_CCW_ARC_TO_NV				= 0xF8
+	CIRCULAR_CW_ARC_TO_NV				= 0xFA
+	CIRCULAR_TANGENT_ARC_TO_NV			= 0xFC
+	ARC_TO_NV					= 0xFE
+	RELATIVE_ARC_TO_NV				= 0xFF
+	BOLD_BIT_NV					= 0x01
+	ITALIC_BIT_NV					= 0x02
+	GLYPH_WIDTH_BIT_NV				= 0x01
+	GLYPH_HEIGHT_BIT_NV				= 0x02
+	GLYPH_HORIZONTAL_BEARING_X_BIT_NV		= 0x04
+	GLYPH_HORIZONTAL_BEARING_Y_BIT_NV		= 0x08
+	GLYPH_HORIZONTAL_BEARING_ADVANCE_BIT_NV		= 0x10
+	GLYPH_VERTICAL_BEARING_X_BIT_NV			= 0x20
+	GLYPH_VERTICAL_BEARING_Y_BIT_NV			= 0x40
+	GLYPH_VERTICAL_BEARING_ADVANCE_BIT_NV		= 0x80
+	GLYPH_HAS_KERNING_NV				= 0x100
+	FONT_X_MIN_BOUNDS_NV				= 0x00010000
+	FONT_Y_MIN_BOUNDS_NV				= 0x00020000
+	FONT_X_MAX_BOUNDS_NV				= 0x00040000
+	FONT_Y_MAX_BOUNDS_NV				= 0x00080000
+	FONT_UNITS_PER_EM_NV				= 0x00100000
+	FONT_ASCENDER_NV				= 0x00200000
+	FONT_DESCENDER_NV				= 0x00400000
+	FONT_HEIGHT_NV					= 0x00800000
+	FONT_MAX_ADVANCE_WIDTH_NV			= 0x01000000
+	FONT_MAX_ADVANCE_HEIGHT_NV			= 0x02000000
+	FONT_UNDERLINE_POSITION_NV			= 0x04000000
+	FONT_UNDERLINE_THICKNESS_NV			= 0x08000000
+	FONT_HAS_KERNING_NV				= 0x10000000
 
 ###############################################################################
 
@@ -7325,4 +8203,55 @@ AMD_stencil_operation_extended enum:
 	REPLACE_VALUE_AMD				= 0x874B
 	STENCIL_OP_VALUE_AMD				= 0x874C
 	STENCIL_BACK_OP_VALUE_AMD			= 0x874D
+
+###############################################################################
+
+# Extension #414 - GLX_EXT_swap_control_tear
+# Extension #415 - WGL_EXT_swap_control_tear
+
+###############################################################################
+
+# No new tokens
+# Extension #416
+AMD_vertex_shader_viewport_index enum:
+
+###############################################################################
+
+# No new tokens
+# Extension #417
+AMD_vertex_shader_layer enum:
+
+###############################################################################
+
+# No new tokens
+# Extension #418
+NV_bindless_texture enum:
+
+###############################################################################
+
+# No new tokens
+# Extension #419
+NV_shader_atomic_float enum:
+
+###############################################################################
+
+# Extension #420
+AMD_query_buffer_object enum:
+	QUERY_BUFFER_AMD				= 0x9192
+	QUERY_BUFFER_BINDING_AMD			= 0x9193
+	QUERY_RESULT_NO_WAIT_AMD			= 0x9194
+
+###############################################################################
+
+# Extension #421
+AMD_sparse_texture enum:
+	VIRTUAL_PAGE_SIZE_X_AMD				= 0x9195
+	VIRTUAL_PAGE_SIZE_Y_AMD				= 0x9196
+	VIRTUAL_PAGE_SIZE_Z_AMD				= 0x9197
+	MAX_SPARSE_TEXTURE_SIZE_AMD			= 0x9198
+	MAX_SPARSE_3D_TEXTURE_SIZE_AMD			= 0x9199
+	MAX_SPARSE_ARRAY_TEXTURE_LAYERS			= 0x919A
+	MIN_SPARSE_LEVEL_AMD				= 0x919B
+	MIN_LOD_WARNING_AMD				= 0x919C
+	TEXTURE_STORAGE_SPARSE_BIT_AMD			= 0x00000001
 

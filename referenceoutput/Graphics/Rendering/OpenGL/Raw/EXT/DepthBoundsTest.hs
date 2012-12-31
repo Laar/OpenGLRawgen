@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.DepthBoundsTest
-       (glDepthBoundsEXT, gl_DEPTH_BOUNDS_EXT, gl_DEPTH_BOUNDS_TEST_EXT)
+       (glDepthBoundsEXT, gl_DEPTH_BOUNDS_TEST_EXT, gl_DEPTH_BOUNDS_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -23,8 +23,8 @@ foreign import CALLCONV unsafe "dynamic" dyn_glDepthBoundsEXT ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLclampd -> GLclampd -> IO ())
  
-gl_DEPTH_BOUNDS_EXT :: GLenum
-gl_DEPTH_BOUNDS_EXT = 34961
- 
 gl_DEPTH_BOUNDS_TEST_EXT :: GLenum
 gl_DEPTH_BOUNDS_TEST_EXT = 34960
+ 
+gl_DEPTH_BOUNDS_EXT :: GLenum
+gl_DEPTH_BOUNDS_EXT = 34961

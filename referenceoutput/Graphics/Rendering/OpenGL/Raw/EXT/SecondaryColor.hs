@@ -9,12 +9,11 @@ module Graphics.Rendering.OpenGL.Raw.EXT.SecondaryColor
         glSecondaryColor3iEXT, glSecondaryColor3fvEXT,
         glSecondaryColor3fEXT, glSecondaryColor3dvEXT,
         glSecondaryColor3dEXT, glSecondaryColor3bvEXT,
-        glSecondaryColor3bEXT, gl_SECONDARY_COLOR_ARRAY_EXT,
-        gl_SECONDARY_COLOR_ARRAY_POINTER_EXT,
+        glSecondaryColor3bEXT, gl_SECONDARY_COLOR_ARRAY_TYPE_EXT,
         gl_SECONDARY_COLOR_ARRAY_STRIDE_EXT,
-        gl_SECONDARY_COLOR_ARRAY_TYPE_EXT,
-        gl_SECONDARY_COLOR_ARRAY_SIZE_EXT, gl_CURRENT_SECONDARY_COLOR_EXT,
-        gl_COLOR_SUM_EXT)
+        gl_SECONDARY_COLOR_ARRAY_SIZE_EXT,
+        gl_SECONDARY_COLOR_ARRAY_POINTER_EXT, gl_SECONDARY_COLOR_ARRAY_EXT,
+        gl_CURRENT_SECONDARY_COLOR_EXT, gl_COLOR_SUM_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -327,20 +326,20 @@ foreign import CALLCONV unsafe "dynamic" dyn_glSecondaryColor3bEXT
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLbyte -> GLbyte -> GLbyte -> IO ())
  
-gl_SECONDARY_COLOR_ARRAY_EXT :: GLenum
-gl_SECONDARY_COLOR_ARRAY_EXT = 33886
- 
-gl_SECONDARY_COLOR_ARRAY_POINTER_EXT :: GLenum
-gl_SECONDARY_COLOR_ARRAY_POINTER_EXT = 33885
+gl_SECONDARY_COLOR_ARRAY_TYPE_EXT :: GLenum
+gl_SECONDARY_COLOR_ARRAY_TYPE_EXT = 33883
  
 gl_SECONDARY_COLOR_ARRAY_STRIDE_EXT :: GLenum
 gl_SECONDARY_COLOR_ARRAY_STRIDE_EXT = 33884
  
-gl_SECONDARY_COLOR_ARRAY_TYPE_EXT :: GLenum
-gl_SECONDARY_COLOR_ARRAY_TYPE_EXT = 33883
- 
 gl_SECONDARY_COLOR_ARRAY_SIZE_EXT :: GLenum
 gl_SECONDARY_COLOR_ARRAY_SIZE_EXT = 33882
+ 
+gl_SECONDARY_COLOR_ARRAY_POINTER_EXT :: GLenum
+gl_SECONDARY_COLOR_ARRAY_POINTER_EXT = 33885
+ 
+gl_SECONDARY_COLOR_ARRAY_EXT :: GLenum
+gl_SECONDARY_COLOR_ARRAY_EXT = 33886
  
 gl_CURRENT_SECONDARY_COLOR_EXT :: GLenum
 gl_CURRENT_SECONDARY_COLOR_EXT = 33881

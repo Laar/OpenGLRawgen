@@ -1,9 +1,9 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ARB.ColorBufferFloat
-       (glClampColorARB, gl_FIXED_ONLY_ARB, gl_CLAMP_READ_COLOR_ARB,
-        gl_CLAMP_FRAGMENT_COLOR_ARB, gl_CLAMP_VERTEX_COLOR_ARB,
-        gl_RGBA_FLOAT_MODE_ARB)
+       (glClampColorARB, gl_RGBA_FLOAT_MODE_ARB, gl_FIXED_ONLY_ARB,
+        gl_CLAMP_VERTEX_COLOR_ARB, gl_CLAMP_READ_COLOR_ARB,
+        gl_CLAMP_FRAGMENT_COLOR_ARB)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -25,17 +25,17 @@ foreign import CALLCONV unsafe "dynamic" dyn_glClampColorARB ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLenum -> IO ())
  
+gl_RGBA_FLOAT_MODE_ARB :: GLenum
+gl_RGBA_FLOAT_MODE_ARB = 34848
+ 
 gl_FIXED_ONLY_ARB :: GLenum
 gl_FIXED_ONLY_ARB = 35101
+ 
+gl_CLAMP_VERTEX_COLOR_ARB :: GLenum
+gl_CLAMP_VERTEX_COLOR_ARB = 35098
  
 gl_CLAMP_READ_COLOR_ARB :: GLenum
 gl_CLAMP_READ_COLOR_ARB = 35100
  
 gl_CLAMP_FRAGMENT_COLOR_ARB :: GLenum
 gl_CLAMP_FRAGMENT_COLOR_ARB = 35099
- 
-gl_CLAMP_VERTEX_COLOR_ARB :: GLenum
-gl_CLAMP_VERTEX_COLOR_ARB = 35098
- 
-gl_RGBA_FLOAT_MODE_ARB :: GLenum
-gl_RGBA_FLOAT_MODE_ARB = 34848

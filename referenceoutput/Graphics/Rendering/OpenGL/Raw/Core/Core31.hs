@@ -1,6 +1,5 @@
 module Graphics.Rendering.OpenGL.Raw.Core.Core31
        (module Graphics.Rendering.OpenGL.Raw.Types,
-        module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core10,
         module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core31,
         module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core30,
         module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core21,
@@ -9,8 +8,10 @@ module Graphics.Rendering.OpenGL.Raw.Core.Core31
         module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core14,
         module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core13,
         module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core12,
-        module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core11)
+        module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core11,
+        module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core10)
        where
+import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core10
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core11
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core12
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core13
@@ -20,5 +21,4 @@ import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core20
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core21
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core30
 import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core31
-import Graphics.Rendering.OpenGL.Raw.Core.Internal.Core10
 import Graphics.Rendering.OpenGL.Raw.Types

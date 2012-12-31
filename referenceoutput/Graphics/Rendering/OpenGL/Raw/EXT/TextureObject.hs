@@ -3,9 +3,9 @@
 module Graphics.Rendering.OpenGL.Raw.EXT.TextureObject
        (glPrioritizeTexturesEXT, glIsTextureEXT, glGenTexturesEXT,
         glDeleteTexturesEXT, glBindTextureEXT, glAreTexturesResidentEXT,
+        gl_TEXTURE_RESIDENT_EXT, gl_TEXTURE_PRIORITY_EXT,
         gl_TEXTURE_3D_BINDING_EXT, gl_TEXTURE_2D_BINDING_EXT,
-        gl_TEXTURE_1D_BINDING_EXT, gl_TEXTURE_RESIDENT_EXT,
-        gl_TEXTURE_PRIORITY_EXT)
+        gl_TEXTURE_1D_BINDING_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -114,6 +114,12 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr GLuint -> Ptr GLboolean -> IO GLboolean)
  
+gl_TEXTURE_RESIDENT_EXT :: GLenum
+gl_TEXTURE_RESIDENT_EXT = 32871
+ 
+gl_TEXTURE_PRIORITY_EXT :: GLenum
+gl_TEXTURE_PRIORITY_EXT = 32870
+ 
 gl_TEXTURE_3D_BINDING_EXT :: GLenum
 gl_TEXTURE_3D_BINDING_EXT = 32874
  
@@ -122,9 +128,3 @@ gl_TEXTURE_2D_BINDING_EXT = 32873
  
 gl_TEXTURE_1D_BINDING_EXT :: GLenum
 gl_TEXTURE_1D_BINDING_EXT = 32872
- 
-gl_TEXTURE_RESIDENT_EXT :: GLenum
-gl_TEXTURE_RESIDENT_EXT = 32871
- 
-gl_TEXTURE_PRIORITY_EXT :: GLenum
-gl_TEXTURE_PRIORITY_EXT = 32870

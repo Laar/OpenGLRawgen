@@ -1,8 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.StencilTwoSide
-       (glActiveStencilFaceEXT, gl_ACTIVE_STENCIL_FACE_EXT,
-        gl_STENCIL_TEST_TWO_SIDE_EXT)
+       (glActiveStencilFaceEXT, gl_STENCIL_TEST_TWO_SIDE_EXT,
+        gl_ACTIVE_STENCIL_FACE_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -26,8 +26,8 @@ foreign import CALLCONV unsafe "dynamic" dyn_glActiveStencilFaceEXT
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
-gl_ACTIVE_STENCIL_FACE_EXT :: GLenum
-gl_ACTIVE_STENCIL_FACE_EXT = 35089
- 
 gl_STENCIL_TEST_TWO_SIDE_EXT :: GLenum
 gl_STENCIL_TEST_TWO_SIDE_EXT = 35088
+ 
+gl_ACTIVE_STENCIL_FACE_EXT :: GLenum
+gl_ACTIVE_STENCIL_FACE_EXT = 35089

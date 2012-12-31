@@ -1,12 +1,35 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ATI.VertexAttribArrayObject
-       (glGetVertexAttribArrayObjectivATI,
-        glGetVertexAttribArrayObjectfvATI, glVertexAttribArrayObjectATI)
+       (glVertexAttribArrayObjectATI, glGetVertexAttribArrayObjectivATI,
+        glGetVertexAttribArrayObjectfvATI)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glVertexAttribArrayObjectATI #-}
+ 
+ptr_glVertexAttribArrayObjectATI :: FunPtr a
+ptr_glVertexAttribArrayObjectATI
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ATI_vertex_attrib_array_object"
+        "glVertexAttribArrayObjectATI"
+ 
+glVertexAttribArrayObjectATI ::
+                             GLuint ->
+                               GLint ->
+                                 GLenum -> GLboolean -> GLsizei -> GLuint -> GLuint -> IO ()
+glVertexAttribArrayObjectATI
+  = dyn_glVertexAttribArrayObjectATI ptr_glVertexAttribArrayObjectATI
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glVertexAttribArrayObjectATI ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint ->
+                    GLint ->
+                      GLenum -> GLboolean -> GLsizei -> GLuint -> GLuint -> IO ())
  
 {-# NOINLINE ptr_glGetVertexAttribArrayObjectivATI #-}
  
@@ -47,26 +70,3 @@ foreign import CALLCONV unsafe "dynamic"
                dyn_glGetVertexAttribArrayObjectfvATI ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glVertexAttribArrayObjectATI #-}
- 
-ptr_glVertexAttribArrayObjectATI :: FunPtr a
-ptr_glVertexAttribArrayObjectATI
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ATI_vertex_attrib_array_object"
-        "glVertexAttribArrayObjectATI"
- 
-glVertexAttribArrayObjectATI ::
-                             GLuint ->
-                               GLint ->
-                                 GLenum -> GLboolean -> GLsizei -> GLuint -> GLuint -> IO ()
-glVertexAttribArrayObjectATI
-  = dyn_glVertexAttribArrayObjectATI ptr_glVertexAttribArrayObjectATI
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glVertexAttribArrayObjectATI ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint ->
-                    GLint ->
-                      GLenum -> GLboolean -> GLsizei -> GLuint -> GLuint -> IO ())

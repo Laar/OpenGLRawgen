@@ -5,64 +5,65 @@ module Graphics.Rendering.OpenGL.Raw.NV.VertexProgram
         glVertexAttribs4dvNV, glVertexAttribs3svNV, glVertexAttribs3fvNV,
         glVertexAttribs3dvNV, glVertexAttribs2svNV, glVertexAttribs2fvNV,
         glVertexAttribs2dvNV, glVertexAttribs1svNV, glVertexAttribs1fvNV,
-        glVertexAttribs1dvNV, glVertexAttrib4ubvNV, glVertexAttrib4ubNV,
-        glVertexAttrib4svNV, glVertexAttrib4sNV, glVertexAttrib4fvNV,
-        glVertexAttrib4fNV, glVertexAttrib4dvNV, glVertexAttrib4dNV,
-        glVertexAttrib3svNV, glVertexAttrib3sNV, glVertexAttrib3fvNV,
-        glVertexAttrib3fNV, glVertexAttrib3dvNV, glVertexAttrib3dNV,
-        glVertexAttrib2svNV, glVertexAttrib2sNV, glVertexAttrib2fvNV,
-        glVertexAttrib2fNV, glVertexAttrib2dvNV, glVertexAttrib2dNV,
-        glVertexAttrib1svNV, glVertexAttrib1sNV, glVertexAttrib1fvNV,
-        glVertexAttrib1fNV, glVertexAttrib1dvNV, glVertexAttrib1dNV,
-        glVertexAttribPointerNV, glTrackMatrixNV,
+        glVertexAttribs1dvNV, glVertexAttribPointerNV,
+        glVertexAttrib4ubvNV, glVertexAttrib4ubNV, glVertexAttrib4svNV,
+        glVertexAttrib4sNV, glVertexAttrib4fvNV, glVertexAttrib4fNV,
+        glVertexAttrib4dvNV, glVertexAttrib4dNV, glVertexAttrib3svNV,
+        glVertexAttrib3sNV, glVertexAttrib3fvNV, glVertexAttrib3fNV,
+        glVertexAttrib3dvNV, glVertexAttrib3dNV, glVertexAttrib2svNV,
+        glVertexAttrib2sNV, glVertexAttrib2fvNV, glVertexAttrib2fNV,
+        glVertexAttrib2dvNV, glVertexAttrib2dNV, glVertexAttrib1svNV,
+        glVertexAttrib1sNV, glVertexAttrib1fvNV, glVertexAttrib1fNV,
+        glVertexAttrib1dvNV, glVertexAttrib1dNV, glTrackMatrixNV,
         glRequestResidentProgramsNV, glProgramParameters4fvNV,
         glProgramParameters4dvNV, glProgramParameter4fvNV,
         glProgramParameter4fNV, glProgramParameter4dvNV,
         glProgramParameter4dNV, glLoadProgramNV, glIsProgramNV,
-        glGetVertexAttribPointervNV, glGetVertexAttribivNV,
-        glGetVertexAttribfvNV, glGetVertexAttribdvNV, glGetTrackMatrixivNV,
-        glGetProgramStringNV, glGetProgramivNV, glGetProgramParameterfvNV,
-        glGetProgramParameterdvNV, glGenProgramsNV, glExecuteProgramNV,
-        glDeleteProgramsNV, glBindProgramNV, glAreProgramsResidentNV,
-        gl_MAP2_VERTEX_ATTRIB15_4_NV, gl_MAP2_VERTEX_ATTRIB14_4_NV,
-        gl_MAP2_VERTEX_ATTRIB13_4_NV, gl_MAP2_VERTEX_ATTRIB12_4_NV,
-        gl_MAP2_VERTEX_ATTRIB11_4_NV, gl_MAP2_VERTEX_ATTRIB10_4_NV,
+        glGetVertexAttribivNV, glGetVertexAttribfvNV,
+        glGetVertexAttribdvNV, glGetVertexAttribPointervNV,
+        glGetTrackMatrixivNV, glGetProgramivNV, glGetProgramStringNV,
+        glGetProgramParameterfvNV, glGetProgramParameterdvNV,
+        glGenProgramsNV, glExecuteProgramNV, glDeleteProgramsNV,
+        glBindProgramNV, glAreProgramsResidentNV,
+        gl_VERTEX_STATE_PROGRAM_NV, gl_VERTEX_PROGRAM_TWO_SIDE_NV,
+        gl_VERTEX_PROGRAM_POINT_SIZE_NV, gl_VERTEX_PROGRAM_NV,
+        gl_VERTEX_PROGRAM_BINDING_NV, gl_VERTEX_ATTRIB_ARRAY9_NV,
+        gl_VERTEX_ATTRIB_ARRAY8_NV, gl_VERTEX_ATTRIB_ARRAY7_NV,
+        gl_VERTEX_ATTRIB_ARRAY6_NV, gl_VERTEX_ATTRIB_ARRAY5_NV,
+        gl_VERTEX_ATTRIB_ARRAY4_NV, gl_VERTEX_ATTRIB_ARRAY3_NV,
+        gl_VERTEX_ATTRIB_ARRAY2_NV, gl_VERTEX_ATTRIB_ARRAY1_NV,
+        gl_VERTEX_ATTRIB_ARRAY15_NV, gl_VERTEX_ATTRIB_ARRAY14_NV,
+        gl_VERTEX_ATTRIB_ARRAY13_NV, gl_VERTEX_ATTRIB_ARRAY12_NV,
+        gl_VERTEX_ATTRIB_ARRAY11_NV, gl_VERTEX_ATTRIB_ARRAY10_NV,
+        gl_VERTEX_ATTRIB_ARRAY0_NV, gl_TRANSPOSE_NV,
+        gl_TRACK_MATRIX_TRANSFORM_NV, gl_TRACK_MATRIX_NV,
+        gl_PROGRAM_TARGET_NV, gl_PROGRAM_STRING_NV, gl_PROGRAM_RESIDENT_NV,
+        gl_PROGRAM_PARAMETER_NV, gl_PROGRAM_LENGTH_NV,
+        gl_PROGRAM_ERROR_POSITION_NV, gl_MODELVIEW_PROJECTION_NV,
+        gl_MAX_TRACK_MATRIX_STACK_DEPTH_NV, gl_MAX_TRACK_MATRICES_NV,
+        gl_MATRIX7_NV, gl_MATRIX6_NV, gl_MATRIX5_NV, gl_MATRIX4_NV,
+        gl_MATRIX3_NV, gl_MATRIX2_NV, gl_MATRIX1_NV, gl_MATRIX0_NV,
         gl_MAP2_VERTEX_ATTRIB9_4_NV, gl_MAP2_VERTEX_ATTRIB8_4_NV,
         gl_MAP2_VERTEX_ATTRIB7_4_NV, gl_MAP2_VERTEX_ATTRIB6_4_NV,
         gl_MAP2_VERTEX_ATTRIB5_4_NV, gl_MAP2_VERTEX_ATTRIB4_4_NV,
         gl_MAP2_VERTEX_ATTRIB3_4_NV, gl_MAP2_VERTEX_ATTRIB2_4_NV,
-        gl_MAP2_VERTEX_ATTRIB1_4_NV, gl_MAP2_VERTEX_ATTRIB0_4_NV,
-        gl_MAP1_VERTEX_ATTRIB15_4_NV, gl_MAP1_VERTEX_ATTRIB14_4_NV,
-        gl_MAP1_VERTEX_ATTRIB13_4_NV, gl_MAP1_VERTEX_ATTRIB12_4_NV,
-        gl_MAP1_VERTEX_ATTRIB11_4_NV, gl_MAP1_VERTEX_ATTRIB10_4_NV,
+        gl_MAP2_VERTEX_ATTRIB1_4_NV, gl_MAP2_VERTEX_ATTRIB15_4_NV,
+        gl_MAP2_VERTEX_ATTRIB14_4_NV, gl_MAP2_VERTEX_ATTRIB13_4_NV,
+        gl_MAP2_VERTEX_ATTRIB12_4_NV, gl_MAP2_VERTEX_ATTRIB11_4_NV,
+        gl_MAP2_VERTEX_ATTRIB10_4_NV, gl_MAP2_VERTEX_ATTRIB0_4_NV,
         gl_MAP1_VERTEX_ATTRIB9_4_NV, gl_MAP1_VERTEX_ATTRIB8_4_NV,
         gl_MAP1_VERTEX_ATTRIB7_4_NV, gl_MAP1_VERTEX_ATTRIB6_4_NV,
         gl_MAP1_VERTEX_ATTRIB5_4_NV, gl_MAP1_VERTEX_ATTRIB4_4_NV,
         gl_MAP1_VERTEX_ATTRIB3_4_NV, gl_MAP1_VERTEX_ATTRIB2_4_NV,
-        gl_MAP1_VERTEX_ATTRIB1_4_NV, gl_MAP1_VERTEX_ATTRIB0_4_NV,
-        gl_VERTEX_ATTRIB_ARRAY15_NV, gl_VERTEX_ATTRIB_ARRAY14_NV,
-        gl_VERTEX_ATTRIB_ARRAY13_NV, gl_VERTEX_ATTRIB_ARRAY12_NV,
-        gl_VERTEX_ATTRIB_ARRAY11_NV, gl_VERTEX_ATTRIB_ARRAY10_NV,
-        gl_VERTEX_ATTRIB_ARRAY9_NV, gl_VERTEX_ATTRIB_ARRAY8_NV,
-        gl_VERTEX_ATTRIB_ARRAY7_NV, gl_VERTEX_ATTRIB_ARRAY6_NV,
-        gl_VERTEX_ATTRIB_ARRAY5_NV, gl_VERTEX_ATTRIB_ARRAY4_NV,
-        gl_VERTEX_ATTRIB_ARRAY3_NV, gl_VERTEX_ATTRIB_ARRAY2_NV,
-        gl_VERTEX_ATTRIB_ARRAY1_NV, gl_VERTEX_ATTRIB_ARRAY0_NV,
-        gl_PROGRAM_ERROR_POSITION_NV, gl_VERTEX_PROGRAM_BINDING_NV,
-        gl_TRACK_MATRIX_TRANSFORM_NV, gl_TRACK_MATRIX_NV,
-        gl_PROGRAM_RESIDENT_NV, gl_PROGRAM_TARGET_NV,
-        gl_ATTRIB_ARRAY_POINTER_NV, gl_PROGRAM_PARAMETER_NV,
-        gl_VERTEX_PROGRAM_TWO_SIDE_NV, gl_VERTEX_PROGRAM_POINT_SIZE_NV,
-        gl_CURRENT_MATRIX_NV, gl_CURRENT_MATRIX_STACK_DEPTH_NV,
-        gl_MATRIX7_NV, gl_MATRIX6_NV, gl_MATRIX5_NV, gl_MATRIX4_NV,
-        gl_MATRIX3_NV, gl_MATRIX2_NV, gl_MATRIX1_NV, gl_MATRIX0_NV,
-        gl_MAX_TRACK_MATRICES_NV, gl_MAX_TRACK_MATRIX_STACK_DEPTH_NV,
-        gl_INVERSE_TRANSPOSE_NV, gl_TRANSPOSE_NV, gl_INVERSE_NV,
-        gl_IDENTITY_NV, gl_MODELVIEW_PROJECTION_NV, gl_PROGRAM_STRING_NV,
-        gl_PROGRAM_LENGTH_NV, gl_CURRENT_ATTRIB_NV,
-        gl_ATTRIB_ARRAY_TYPE_NV, gl_ATTRIB_ARRAY_STRIDE_NV,
-        gl_ATTRIB_ARRAY_SIZE_NV, gl_VERTEX_STATE_PROGRAM_NV,
-        gl_VERTEX_PROGRAM_NV)
+        gl_MAP1_VERTEX_ATTRIB1_4_NV, gl_MAP1_VERTEX_ATTRIB15_4_NV,
+        gl_MAP1_VERTEX_ATTRIB14_4_NV, gl_MAP1_VERTEX_ATTRIB13_4_NV,
+        gl_MAP1_VERTEX_ATTRIB12_4_NV, gl_MAP1_VERTEX_ATTRIB11_4_NV,
+        gl_MAP1_VERTEX_ATTRIB10_4_NV, gl_MAP1_VERTEX_ATTRIB0_4_NV,
+        gl_INVERSE_TRANSPOSE_NV, gl_INVERSE_NV, gl_IDENTITY_NV,
+        gl_CURRENT_MATRIX_STACK_DEPTH_NV, gl_CURRENT_MATRIX_NV,
+        gl_CURRENT_ATTRIB_NV, gl_ATTRIB_ARRAY_TYPE_NV,
+        gl_ATTRIB_ARRAY_STRIDE_NV, gl_ATTRIB_ARRAY_SIZE_NV,
+        gl_ATTRIB_ARRAY_POINTER_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -289,6 +290,25 @@ glVertexAttribs1dvNV
 foreign import CALLCONV unsafe "dynamic" dyn_glVertexAttribs1dvNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLsizei -> Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glVertexAttribPointerNV #-}
+ 
+ptr_glVertexAttribPointerNV :: FunPtr a
+ptr_glVertexAttribPointerNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_vertex_program"
+        "glVertexAttribPointerNV"
+ 
+glVertexAttribPointerNV ::
+                        GLuint -> GLint -> GLenum -> GLsizei -> Ptr a -> IO ()
+glVertexAttribPointerNV
+  = dyn_glVertexAttribPointerNV ptr_glVertexAttribPointerNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glVertexAttribPointerNV
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLint -> GLenum -> GLsizei -> Ptr a -> IO ())
  
 {-# NOINLINE ptr_glVertexAttrib4ubvNV #-}
  
@@ -727,25 +747,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glVertexAttrib1dNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLdouble -> IO ())
  
-{-# NOINLINE ptr_glVertexAttribPointerNV #-}
- 
-ptr_glVertexAttribPointerNV :: FunPtr a
-ptr_glVertexAttribPointerNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_vertex_program"
-        "glVertexAttribPointerNV"
- 
-glVertexAttribPointerNV ::
-                        GLuint -> GLint -> GLenum -> GLsizei -> Ptr a -> IO ()
-glVertexAttribPointerNV
-  = dyn_glVertexAttribPointerNV ptr_glVertexAttribPointerNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glVertexAttribPointerNV
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLint -> GLenum -> GLsizei -> Ptr a -> IO ())
- 
 {-# NOINLINE ptr_glTrackMatrixNV #-}
  
 ptr_glTrackMatrixNV :: FunPtr a
@@ -930,25 +931,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glIsProgramNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO GLboolean)
  
-{-# NOINLINE ptr_glGetVertexAttribPointervNV #-}
- 
-ptr_glGetVertexAttribPointervNV :: FunPtr a
-ptr_glGetVertexAttribPointervNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_vertex_program"
-        "glGetVertexAttribPointervNV"
- 
-glGetVertexAttribPointervNV ::
-                            GLuint -> GLenum -> Ptr (Ptr a) -> IO ()
-glGetVertexAttribPointervNV
-  = dyn_glGetVertexAttribPointervNV ptr_glGetVertexAttribPointervNV
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glGetVertexAttribPointervNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr (Ptr a) -> IO ())
- 
 {-# NOINLINE ptr_glGetVertexAttribivNV #-}
  
 ptr_glGetVertexAttribivNV :: FunPtr a
@@ -1003,6 +985,25 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetVertexAttribdvNV
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> Ptr GLdouble -> IO ())
  
+{-# NOINLINE ptr_glGetVertexAttribPointervNV #-}
+ 
+ptr_glGetVertexAttribPointervNV :: FunPtr a
+ptr_glGetVertexAttribPointervNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_vertex_program"
+        "glGetVertexAttribPointervNV"
+ 
+glGetVertexAttribPointervNV ::
+                            GLuint -> GLenum -> Ptr (Ptr a) -> IO ()
+glGetVertexAttribPointervNV
+  = dyn_glGetVertexAttribPointervNV ptr_glGetVertexAttribPointervNV
+ 
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glGetVertexAttribPointervNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr (Ptr a) -> IO ())
+ 
 {-# NOINLINE ptr_glGetTrackMatrixivNV #-}
  
 ptr_glGetTrackMatrixivNV :: FunPtr a
@@ -1021,6 +1022,22 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetTrackMatrixivNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLuint -> GLenum -> Ptr GLint -> IO ())
  
+{-# NOINLINE ptr_glGetProgramivNV #-}
+ 
+ptr_glGetProgramivNV :: FunPtr a
+ptr_glGetProgramivNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_vertex_program"
+        "glGetProgramivNV"
+ 
+glGetProgramivNV :: GLuint -> GLenum -> Ptr GLint -> IO ()
+glGetProgramivNV = dyn_glGetProgramivNV ptr_glGetProgramivNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramivNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr GLint -> IO ())
+ 
 {-# NOINLINE ptr_glGetProgramStringNV #-}
  
 ptr_glGetProgramStringNV :: FunPtr a
@@ -1037,22 +1054,6 @@ glGetProgramStringNV
 foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramStringNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLenum -> Ptr GLubyte -> IO ())
- 
-{-# NOINLINE ptr_glGetProgramivNV #-}
- 
-ptr_glGetProgramivNV :: FunPtr a
-ptr_glGetProgramivNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_vertex_program"
-        "glGetProgramivNV"
- 
-glGetProgramivNV :: GLuint -> GLenum -> Ptr GLint -> IO ()
-glGetProgramivNV = dyn_glGetProgramivNV ptr_glGetProgramivNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetProgramivNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr GLint -> IO ())
  
 {-# NOINLINE ptr_glGetProgramParameterfvNV #-}
  
@@ -1175,119 +1176,20 @@ foreign import CALLCONV unsafe "dynamic" dyn_glAreProgramsResidentNV
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr GLuint -> Ptr GLboolean -> IO GLboolean)
  
-gl_MAP2_VERTEX_ATTRIB15_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB15_4_NV = 34431
+gl_VERTEX_STATE_PROGRAM_NV :: GLenum
+gl_VERTEX_STATE_PROGRAM_NV = 34337
  
-gl_MAP2_VERTEX_ATTRIB14_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB14_4_NV = 34430
+gl_VERTEX_PROGRAM_TWO_SIDE_NV :: GLenum
+gl_VERTEX_PROGRAM_TWO_SIDE_NV = 34371
  
-gl_MAP2_VERTEX_ATTRIB13_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB13_4_NV = 34429
+gl_VERTEX_PROGRAM_POINT_SIZE_NV :: GLenum
+gl_VERTEX_PROGRAM_POINT_SIZE_NV = 34370
  
-gl_MAP2_VERTEX_ATTRIB12_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB12_4_NV = 34428
+gl_VERTEX_PROGRAM_NV :: GLenum
+gl_VERTEX_PROGRAM_NV = 34336
  
-gl_MAP2_VERTEX_ATTRIB11_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB11_4_NV = 34427
- 
-gl_MAP2_VERTEX_ATTRIB10_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB10_4_NV = 34426
- 
-gl_MAP2_VERTEX_ATTRIB9_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB9_4_NV = 34425
- 
-gl_MAP2_VERTEX_ATTRIB8_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB8_4_NV = 34424
- 
-gl_MAP2_VERTEX_ATTRIB7_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB7_4_NV = 34423
- 
-gl_MAP2_VERTEX_ATTRIB6_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB6_4_NV = 34422
- 
-gl_MAP2_VERTEX_ATTRIB5_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB5_4_NV = 34421
- 
-gl_MAP2_VERTEX_ATTRIB4_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB4_4_NV = 34420
- 
-gl_MAP2_VERTEX_ATTRIB3_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB3_4_NV = 34419
- 
-gl_MAP2_VERTEX_ATTRIB2_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB2_4_NV = 34418
- 
-gl_MAP2_VERTEX_ATTRIB1_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB1_4_NV = 34417
- 
-gl_MAP2_VERTEX_ATTRIB0_4_NV :: GLenum
-gl_MAP2_VERTEX_ATTRIB0_4_NV = 34416
- 
-gl_MAP1_VERTEX_ATTRIB15_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB15_4_NV = 34415
- 
-gl_MAP1_VERTEX_ATTRIB14_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB14_4_NV = 34414
- 
-gl_MAP1_VERTEX_ATTRIB13_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB13_4_NV = 34413
- 
-gl_MAP1_VERTEX_ATTRIB12_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB12_4_NV = 34412
- 
-gl_MAP1_VERTEX_ATTRIB11_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB11_4_NV = 34411
- 
-gl_MAP1_VERTEX_ATTRIB10_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB10_4_NV = 34410
- 
-gl_MAP1_VERTEX_ATTRIB9_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB9_4_NV = 34409
- 
-gl_MAP1_VERTEX_ATTRIB8_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB8_4_NV = 34408
- 
-gl_MAP1_VERTEX_ATTRIB7_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB7_4_NV = 34407
- 
-gl_MAP1_VERTEX_ATTRIB6_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB6_4_NV = 34406
- 
-gl_MAP1_VERTEX_ATTRIB5_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB5_4_NV = 34405
- 
-gl_MAP1_VERTEX_ATTRIB4_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB4_4_NV = 34404
- 
-gl_MAP1_VERTEX_ATTRIB3_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB3_4_NV = 34403
- 
-gl_MAP1_VERTEX_ATTRIB2_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB2_4_NV = 34402
- 
-gl_MAP1_VERTEX_ATTRIB1_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB1_4_NV = 34401
- 
-gl_MAP1_VERTEX_ATTRIB0_4_NV :: GLenum
-gl_MAP1_VERTEX_ATTRIB0_4_NV = 34400
- 
-gl_VERTEX_ATTRIB_ARRAY15_NV :: GLenum
-gl_VERTEX_ATTRIB_ARRAY15_NV = 34399
- 
-gl_VERTEX_ATTRIB_ARRAY14_NV :: GLenum
-gl_VERTEX_ATTRIB_ARRAY14_NV = 34398
- 
-gl_VERTEX_ATTRIB_ARRAY13_NV :: GLenum
-gl_VERTEX_ATTRIB_ARRAY13_NV = 34397
- 
-gl_VERTEX_ATTRIB_ARRAY12_NV :: GLenum
-gl_VERTEX_ATTRIB_ARRAY12_NV = 34396
- 
-gl_VERTEX_ATTRIB_ARRAY11_NV :: GLenum
-gl_VERTEX_ATTRIB_ARRAY11_NV = 34395
- 
-gl_VERTEX_ATTRIB_ARRAY10_NV :: GLenum
-gl_VERTEX_ATTRIB_ARRAY10_NV = 34394
+gl_VERTEX_PROGRAM_BINDING_NV :: GLenum
+gl_VERTEX_PROGRAM_BINDING_NV = 34378
  
 gl_VERTEX_ATTRIB_ARRAY9_NV :: GLenum
 gl_VERTEX_ATTRIB_ARRAY9_NV = 34393
@@ -1316,14 +1218,29 @@ gl_VERTEX_ATTRIB_ARRAY2_NV = 34386
 gl_VERTEX_ATTRIB_ARRAY1_NV :: GLenum
 gl_VERTEX_ATTRIB_ARRAY1_NV = 34385
  
+gl_VERTEX_ATTRIB_ARRAY15_NV :: GLenum
+gl_VERTEX_ATTRIB_ARRAY15_NV = 34399
+ 
+gl_VERTEX_ATTRIB_ARRAY14_NV :: GLenum
+gl_VERTEX_ATTRIB_ARRAY14_NV = 34398
+ 
+gl_VERTEX_ATTRIB_ARRAY13_NV :: GLenum
+gl_VERTEX_ATTRIB_ARRAY13_NV = 34397
+ 
+gl_VERTEX_ATTRIB_ARRAY12_NV :: GLenum
+gl_VERTEX_ATTRIB_ARRAY12_NV = 34396
+ 
+gl_VERTEX_ATTRIB_ARRAY11_NV :: GLenum
+gl_VERTEX_ATTRIB_ARRAY11_NV = 34395
+ 
+gl_VERTEX_ATTRIB_ARRAY10_NV :: GLenum
+gl_VERTEX_ATTRIB_ARRAY10_NV = 34394
+ 
 gl_VERTEX_ATTRIB_ARRAY0_NV :: GLenum
 gl_VERTEX_ATTRIB_ARRAY0_NV = 34384
  
-gl_PROGRAM_ERROR_POSITION_NV :: GLenum
-gl_PROGRAM_ERROR_POSITION_NV = 34379
- 
-gl_VERTEX_PROGRAM_BINDING_NV :: GLenum
-gl_VERTEX_PROGRAM_BINDING_NV = 34378
+gl_TRANSPOSE_NV :: GLenum
+gl_TRANSPOSE_NV = 34348
  
 gl_TRACK_MATRIX_TRANSFORM_NV :: GLenum
 gl_TRACK_MATRIX_TRANSFORM_NV = 34377
@@ -1331,29 +1248,32 @@ gl_TRACK_MATRIX_TRANSFORM_NV = 34377
 gl_TRACK_MATRIX_NV :: GLenum
 gl_TRACK_MATRIX_NV = 34376
  
-gl_PROGRAM_RESIDENT_NV :: GLenum
-gl_PROGRAM_RESIDENT_NV = 34375
- 
 gl_PROGRAM_TARGET_NV :: GLenum
 gl_PROGRAM_TARGET_NV = 34374
  
-gl_ATTRIB_ARRAY_POINTER_NV :: GLenum
-gl_ATTRIB_ARRAY_POINTER_NV = 34373
+gl_PROGRAM_STRING_NV :: GLenum
+gl_PROGRAM_STRING_NV = 34344
+ 
+gl_PROGRAM_RESIDENT_NV :: GLenum
+gl_PROGRAM_RESIDENT_NV = 34375
  
 gl_PROGRAM_PARAMETER_NV :: GLenum
 gl_PROGRAM_PARAMETER_NV = 34372
  
-gl_VERTEX_PROGRAM_TWO_SIDE_NV :: GLenum
-gl_VERTEX_PROGRAM_TWO_SIDE_NV = 34371
+gl_PROGRAM_LENGTH_NV :: GLenum
+gl_PROGRAM_LENGTH_NV = 34343
  
-gl_VERTEX_PROGRAM_POINT_SIZE_NV :: GLenum
-gl_VERTEX_PROGRAM_POINT_SIZE_NV = 34370
+gl_PROGRAM_ERROR_POSITION_NV :: GLenum
+gl_PROGRAM_ERROR_POSITION_NV = 34379
  
-gl_CURRENT_MATRIX_NV :: GLenum
-gl_CURRENT_MATRIX_NV = 34369
+gl_MODELVIEW_PROJECTION_NV :: GLenum
+gl_MODELVIEW_PROJECTION_NV = 34345
  
-gl_CURRENT_MATRIX_STACK_DEPTH_NV :: GLenum
-gl_CURRENT_MATRIX_STACK_DEPTH_NV = 34368
+gl_MAX_TRACK_MATRIX_STACK_DEPTH_NV :: GLenum
+gl_MAX_TRACK_MATRIX_STACK_DEPTH_NV = 34350
+ 
+gl_MAX_TRACK_MATRICES_NV :: GLenum
+gl_MAX_TRACK_MATRICES_NV = 34351
  
 gl_MATRIX7_NV :: GLenum
 gl_MATRIX7_NV = 34359
@@ -1379,17 +1299,104 @@ gl_MATRIX1_NV = 34353
 gl_MATRIX0_NV :: GLenum
 gl_MATRIX0_NV = 34352
  
-gl_MAX_TRACK_MATRICES_NV :: GLenum
-gl_MAX_TRACK_MATRICES_NV = 34351
+gl_MAP2_VERTEX_ATTRIB9_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB9_4_NV = 34425
  
-gl_MAX_TRACK_MATRIX_STACK_DEPTH_NV :: GLenum
-gl_MAX_TRACK_MATRIX_STACK_DEPTH_NV = 34350
+gl_MAP2_VERTEX_ATTRIB8_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB8_4_NV = 34424
+ 
+gl_MAP2_VERTEX_ATTRIB7_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB7_4_NV = 34423
+ 
+gl_MAP2_VERTEX_ATTRIB6_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB6_4_NV = 34422
+ 
+gl_MAP2_VERTEX_ATTRIB5_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB5_4_NV = 34421
+ 
+gl_MAP2_VERTEX_ATTRIB4_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB4_4_NV = 34420
+ 
+gl_MAP2_VERTEX_ATTRIB3_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB3_4_NV = 34419
+ 
+gl_MAP2_VERTEX_ATTRIB2_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB2_4_NV = 34418
+ 
+gl_MAP2_VERTEX_ATTRIB1_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB1_4_NV = 34417
+ 
+gl_MAP2_VERTEX_ATTRIB15_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB15_4_NV = 34431
+ 
+gl_MAP2_VERTEX_ATTRIB14_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB14_4_NV = 34430
+ 
+gl_MAP2_VERTEX_ATTRIB13_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB13_4_NV = 34429
+ 
+gl_MAP2_VERTEX_ATTRIB12_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB12_4_NV = 34428
+ 
+gl_MAP2_VERTEX_ATTRIB11_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB11_4_NV = 34427
+ 
+gl_MAP2_VERTEX_ATTRIB10_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB10_4_NV = 34426
+ 
+gl_MAP2_VERTEX_ATTRIB0_4_NV :: GLenum
+gl_MAP2_VERTEX_ATTRIB0_4_NV = 34416
+ 
+gl_MAP1_VERTEX_ATTRIB9_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB9_4_NV = 34409
+ 
+gl_MAP1_VERTEX_ATTRIB8_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB8_4_NV = 34408
+ 
+gl_MAP1_VERTEX_ATTRIB7_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB7_4_NV = 34407
+ 
+gl_MAP1_VERTEX_ATTRIB6_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB6_4_NV = 34406
+ 
+gl_MAP1_VERTEX_ATTRIB5_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB5_4_NV = 34405
+ 
+gl_MAP1_VERTEX_ATTRIB4_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB4_4_NV = 34404
+ 
+gl_MAP1_VERTEX_ATTRIB3_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB3_4_NV = 34403
+ 
+gl_MAP1_VERTEX_ATTRIB2_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB2_4_NV = 34402
+ 
+gl_MAP1_VERTEX_ATTRIB1_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB1_4_NV = 34401
+ 
+gl_MAP1_VERTEX_ATTRIB15_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB15_4_NV = 34415
+ 
+gl_MAP1_VERTEX_ATTRIB14_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB14_4_NV = 34414
+ 
+gl_MAP1_VERTEX_ATTRIB13_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB13_4_NV = 34413
+ 
+gl_MAP1_VERTEX_ATTRIB12_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB12_4_NV = 34412
+ 
+gl_MAP1_VERTEX_ATTRIB11_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB11_4_NV = 34411
+ 
+gl_MAP1_VERTEX_ATTRIB10_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB10_4_NV = 34410
+ 
+gl_MAP1_VERTEX_ATTRIB0_4_NV :: GLenum
+gl_MAP1_VERTEX_ATTRIB0_4_NV = 34400
  
 gl_INVERSE_TRANSPOSE_NV :: GLenum
 gl_INVERSE_TRANSPOSE_NV = 34349
- 
-gl_TRANSPOSE_NV :: GLenum
-gl_TRANSPOSE_NV = 34348
  
 gl_INVERSE_NV :: GLenum
 gl_INVERSE_NV = 34347
@@ -1397,14 +1404,11 @@ gl_INVERSE_NV = 34347
 gl_IDENTITY_NV :: GLenum
 gl_IDENTITY_NV = 34346
  
-gl_MODELVIEW_PROJECTION_NV :: GLenum
-gl_MODELVIEW_PROJECTION_NV = 34345
+gl_CURRENT_MATRIX_STACK_DEPTH_NV :: GLenum
+gl_CURRENT_MATRIX_STACK_DEPTH_NV = 34368
  
-gl_PROGRAM_STRING_NV :: GLenum
-gl_PROGRAM_STRING_NV = 34344
- 
-gl_PROGRAM_LENGTH_NV :: GLenum
-gl_PROGRAM_LENGTH_NV = 34343
+gl_CURRENT_MATRIX_NV :: GLenum
+gl_CURRENT_MATRIX_NV = 34369
  
 gl_CURRENT_ATTRIB_NV :: GLenum
 gl_CURRENT_ATTRIB_NV = 34342
@@ -1418,8 +1422,5 @@ gl_ATTRIB_ARRAY_STRIDE_NV = 34340
 gl_ATTRIB_ARRAY_SIZE_NV :: GLenum
 gl_ATTRIB_ARRAY_SIZE_NV = 34339
  
-gl_VERTEX_STATE_PROGRAM_NV :: GLenum
-gl_VERTEX_STATE_PROGRAM_NV = 34337
- 
-gl_VERTEX_PROGRAM_NV :: GLenum
-gl_VERTEX_PROGRAM_NV = 34336
+gl_ATTRIB_ARRAY_POINTER_NV :: GLenum
+gl_ATTRIB_ARRAY_POINTER_NV = 34373

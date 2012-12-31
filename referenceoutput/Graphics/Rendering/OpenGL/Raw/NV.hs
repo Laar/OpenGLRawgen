@@ -1,7 +1,5 @@
 module Graphics.Rendering.OpenGL.Raw.NV
-       (module Graphics.Rendering.OpenGL.Raw.NV.TextureBarrier,
-        module Graphics.Rendering.OpenGL.Raw.NV.CopyImage,
-        module Graphics.Rendering.OpenGL.Raw.NV.VideoCapture,
+       (module Graphics.Rendering.OpenGL.Raw.NV.VideoCapture,
         module Graphics.Rendering.OpenGL.Raw.NV.VertexProgram4,
         module Graphics.Rendering.OpenGL.Raw.NV.VertexProgram3,
         module Graphics.Rendering.OpenGL.Raw.NV.VertexProgram2Option,
@@ -20,6 +18,7 @@ module Graphics.Rendering.OpenGL.Raw.NV
         module Graphics.Rendering.OpenGL.Raw.NV.TextureMultisample,
         module Graphics.Rendering.OpenGL.Raw.NV.TextureExpandNormal,
         module Graphics.Rendering.OpenGL.Raw.NV.TextureEnvCombine4,
+        module Graphics.Rendering.OpenGL.Raw.NV.TextureBarrier,
         module Graphics.Rendering.OpenGL.Raw.NV.TexgenReflection,
         module Graphics.Rendering.OpenGL.Raw.NV.TexgenEmboss,
         module Graphics.Rendering.OpenGL.Raw.NV.TessellationProgram5,
@@ -31,6 +30,7 @@ module Graphics.Rendering.OpenGL.Raw.NV
         module Graphics.Rendering.OpenGL.Raw.NV.PresentVideo,
         module Graphics.Rendering.OpenGL.Raw.NV.PointSprite,
         module Graphics.Rendering.OpenGL.Raw.NV.PixelDataRange,
+        module Graphics.Rendering.OpenGL.Raw.NV.PathRendering,
         module Graphics.Rendering.OpenGL.Raw.NV.ParameterBufferObject,
         module Graphics.Rendering.OpenGL.Raw.NV.PackedDepthStencil,
         module Graphics.Rendering.OpenGL.Raw.NV.OcclusionQuery,
@@ -52,11 +52,15 @@ module Graphics.Rendering.OpenGL.Raw.NV
         module Graphics.Rendering.OpenGL.Raw.NV.Evaluators,
         module Graphics.Rendering.OpenGL.Raw.NV.DepthClamp,
         module Graphics.Rendering.OpenGL.Raw.NV.DepthBufferFloat,
+        module Graphics.Rendering.OpenGL.Raw.NV.CopyImage,
         module Graphics.Rendering.OpenGL.Raw.NV.CopyDepthToColor,
-        module Graphics.Rendering.OpenGL.Raw.NV.ConditionalRender)
+        module Graphics.Rendering.OpenGL.Raw.NV.ConditionalRender,
+        module Graphics.Rendering.OpenGL.Raw.NV.BindlessTexture)
        where
+import Graphics.Rendering.OpenGL.Raw.NV.BindlessTexture
 import Graphics.Rendering.OpenGL.Raw.NV.ConditionalRender
 import Graphics.Rendering.OpenGL.Raw.NV.CopyDepthToColor
+import Graphics.Rendering.OpenGL.Raw.NV.CopyImage
 import Graphics.Rendering.OpenGL.Raw.NV.DepthBufferFloat
 import Graphics.Rendering.OpenGL.Raw.NV.DepthClamp
 import Graphics.Rendering.OpenGL.Raw.NV.Evaluators
@@ -78,6 +82,7 @@ import Graphics.Rendering.OpenGL.Raw.NV.MultisampleFilterHint
 import Graphics.Rendering.OpenGL.Raw.NV.OcclusionQuery
 import Graphics.Rendering.OpenGL.Raw.NV.PackedDepthStencil
 import Graphics.Rendering.OpenGL.Raw.NV.ParameterBufferObject
+import Graphics.Rendering.OpenGL.Raw.NV.PathRendering
 import Graphics.Rendering.OpenGL.Raw.NV.PixelDataRange
 import Graphics.Rendering.OpenGL.Raw.NV.PointSprite
 import Graphics.Rendering.OpenGL.Raw.NV.PresentVideo
@@ -89,6 +94,7 @@ import Graphics.Rendering.OpenGL.Raw.NV.ShaderBufferStore
 import Graphics.Rendering.OpenGL.Raw.NV.TessellationProgram5
 import Graphics.Rendering.OpenGL.Raw.NV.TexgenEmboss
 import Graphics.Rendering.OpenGL.Raw.NV.TexgenReflection
+import Graphics.Rendering.OpenGL.Raw.NV.TextureBarrier
 import Graphics.Rendering.OpenGL.Raw.NV.TextureEnvCombine4
 import Graphics.Rendering.OpenGL.Raw.NV.TextureExpandNormal
 import Graphics.Rendering.OpenGL.Raw.NV.TextureMultisample
@@ -108,5 +114,3 @@ import Graphics.Rendering.OpenGL.Raw.NV.VertexProgram2Option
 import Graphics.Rendering.OpenGL.Raw.NV.VertexProgram3
 import Graphics.Rendering.OpenGL.Raw.NV.VertexProgram4
 import Graphics.Rendering.OpenGL.Raw.NV.VideoCapture
-import Graphics.Rendering.OpenGL.Raw.NV.CopyImage
-import Graphics.Rendering.OpenGL.Raw.NV.TextureBarrier

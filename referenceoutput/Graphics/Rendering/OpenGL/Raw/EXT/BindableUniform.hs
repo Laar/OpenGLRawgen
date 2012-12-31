@@ -1,16 +1,32 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.BindableUniform
-       (glGetUniformOffsetEXT, glGetUniformBufferSizeEXT,
-        glUniformBufferEXT, gl_UNIFORM_BUFFER_BINDING_EXT,
-        gl_UNIFORM_BUFFER_EXT, gl_MAX_BINDABLE_UNIFORM_SIZE_EXT,
+       (glUniformBufferEXT, glGetUniformOffsetEXT,
+        glGetUniformBufferSizeEXT, gl_UNIFORM_BUFFER_EXT,
+        gl_UNIFORM_BUFFER_BINDING_EXT, gl_MAX_VERTEX_BINDABLE_UNIFORMS_EXT,
         gl_MAX_GEOMETRY_BINDABLE_UNIFORMS_EXT,
         gl_MAX_FRAGMENT_BINDABLE_UNIFORMS_EXT,
-        gl_MAX_VERTEX_BINDABLE_UNIFORMS_EXT)
+        gl_MAX_BINDABLE_UNIFORM_SIZE_EXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glUniformBufferEXT #-}
+ 
+ptr_glUniformBufferEXT :: FunPtr a
+ptr_glUniformBufferEXT
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_EXT_bindable_uniform"
+        "glUniformBufferEXT"
+ 
+glUniformBufferEXT :: GLuint -> GLint -> GLuint -> IO ()
+glUniformBufferEXT = dyn_glUniformBufferEXT ptr_glUniformBufferEXT
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glUniformBufferEXT ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLint -> GLuint -> IO ())
  
 {-# NOINLINE ptr_glGetUniformOffsetEXT #-}
  
@@ -48,30 +64,14 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLint -> IO GLint)
  
-{-# NOINLINE ptr_glUniformBufferEXT #-}
- 
-ptr_glUniformBufferEXT :: FunPtr a
-ptr_glUniformBufferEXT
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_EXT_bindable_uniform"
-        "glUniformBufferEXT"
- 
-glUniformBufferEXT :: GLuint -> GLint -> GLuint -> IO ()
-glUniformBufferEXT = dyn_glUniformBufferEXT ptr_glUniformBufferEXT
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glUniformBufferEXT ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLint -> GLuint -> IO ())
+gl_UNIFORM_BUFFER_EXT :: GLenum
+gl_UNIFORM_BUFFER_EXT = 36334
  
 gl_UNIFORM_BUFFER_BINDING_EXT :: GLenum
 gl_UNIFORM_BUFFER_BINDING_EXT = 36335
  
-gl_UNIFORM_BUFFER_EXT :: GLenum
-gl_UNIFORM_BUFFER_EXT = 36334
- 
-gl_MAX_BINDABLE_UNIFORM_SIZE_EXT :: GLenum
-gl_MAX_BINDABLE_UNIFORM_SIZE_EXT = 36333
+gl_MAX_VERTEX_BINDABLE_UNIFORMS_EXT :: GLenum
+gl_MAX_VERTEX_BINDABLE_UNIFORMS_EXT = 36322
  
 gl_MAX_GEOMETRY_BINDABLE_UNIFORMS_EXT :: GLenum
 gl_MAX_GEOMETRY_BINDABLE_UNIFORMS_EXT = 36324
@@ -79,5 +79,5 @@ gl_MAX_GEOMETRY_BINDABLE_UNIFORMS_EXT = 36324
 gl_MAX_FRAGMENT_BINDABLE_UNIFORMS_EXT :: GLenum
 gl_MAX_FRAGMENT_BINDABLE_UNIFORMS_EXT = 36323
  
-gl_MAX_VERTEX_BINDABLE_UNIFORMS_EXT :: GLenum
-gl_MAX_VERTEX_BINDABLE_UNIFORMS_EXT = 36322
+gl_MAX_BINDABLE_UNIFORM_SIZE_EXT :: GLenum
+gl_MAX_BINDABLE_UNIFORM_SIZE_EXT = 36333

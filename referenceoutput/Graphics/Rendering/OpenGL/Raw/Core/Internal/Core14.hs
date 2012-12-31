@@ -3,13 +3,13 @@
 module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core14
        (glPointParameteriv, glPointParameteri, glPointParameterfv,
         glPointParameterf, glMultiDrawElements, glMultiDrawArrays,
-        glBlendFuncSeparate, gl_TEXTURE_COMPARE_FUNC,
-        gl_TEXTURE_COMPARE_MODE, gl_TEXTURE_DEPTH_SIZE, gl_DECR_WRAP,
-        gl_INCR_WRAP, gl_TEXTURE_LOD_BIAS, gl_MAX_TEXTURE_LOD_BIAS,
-        gl_MIRRORED_REPEAT, gl_DEPTH_COMPONENT32, gl_DEPTH_COMPONENT24,
-        gl_DEPTH_COMPONENT16, gl_POINT_FADE_THRESHOLD_SIZE,
-        gl_BLEND_SRC_ALPHA, gl_BLEND_DST_ALPHA, gl_BLEND_SRC_RGB,
-        gl_BLEND_DST_RGB)
+        glBlendFuncSeparate, gl_TEXTURE_LOD_BIAS, gl_TEXTURE_DEPTH_SIZE,
+        gl_TEXTURE_COMPARE_MODE, gl_TEXTURE_COMPARE_FUNC,
+        gl_POINT_FADE_THRESHOLD_SIZE, gl_MIRRORED_REPEAT,
+        gl_MAX_TEXTURE_LOD_BIAS, gl_INCR_WRAP, gl_DEPTH_COMPONENT32,
+        gl_DEPTH_COMPONENT24, gl_DEPTH_COMPONENT16, gl_DECR_WRAP,
+        gl_BLEND_SRC_RGB, gl_BLEND_SRC_ALPHA, gl_BLEND_DST_RGB,
+        gl_BLEND_DST_ALPHA)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -89,14 +89,14 @@ ptr_glMultiDrawElements
         "glMultiDrawElements"
  
 glMultiDrawElements ::
-                    GLenum -> Ptr GLsizei -> GLenum -> Ptr (Ptr a) -> GLsizei -> IO ()
+                    GLenum -> Ptr GLsizei -> GLenum -> Ptr (Ptr b) -> GLsizei -> IO ()
 glMultiDrawElements
   = dyn_glMultiDrawElements ptr_glMultiDrawElements
  
 foreign import CALLCONV unsafe "dynamic" dyn_glMultiDrawElements ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum ->
-                    Ptr GLsizei -> GLenum -> Ptr (Ptr a) -> GLsizei -> IO ())
+                    Ptr GLsizei -> GLenum -> Ptr (Ptr b) -> GLsizei -> IO ())
  
 {-# NOINLINE ptr_glMultiDrawArrays #-}
  
@@ -133,29 +133,29 @@ foreign import CALLCONV unsafe "dynamic" dyn_glBlendFuncSeparate ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLenum -> GLenum -> GLenum -> IO ())
  
-gl_TEXTURE_COMPARE_FUNC :: GLenum
-gl_TEXTURE_COMPARE_FUNC = 34893
- 
-gl_TEXTURE_COMPARE_MODE :: GLenum
-gl_TEXTURE_COMPARE_MODE = 34892
+gl_TEXTURE_LOD_BIAS :: GLenum
+gl_TEXTURE_LOD_BIAS = 34049
  
 gl_TEXTURE_DEPTH_SIZE :: GLenum
 gl_TEXTURE_DEPTH_SIZE = 34890
  
-gl_DECR_WRAP :: GLenum
-gl_DECR_WRAP = 34056
+gl_TEXTURE_COMPARE_MODE :: GLenum
+gl_TEXTURE_COMPARE_MODE = 34892
  
-gl_INCR_WRAP :: GLenum
-gl_INCR_WRAP = 34055
+gl_TEXTURE_COMPARE_FUNC :: GLenum
+gl_TEXTURE_COMPARE_FUNC = 34893
  
-gl_TEXTURE_LOD_BIAS :: GLenum
-gl_TEXTURE_LOD_BIAS = 34049
+gl_POINT_FADE_THRESHOLD_SIZE :: GLenum
+gl_POINT_FADE_THRESHOLD_SIZE = 33064
+ 
+gl_MIRRORED_REPEAT :: GLenum
+gl_MIRRORED_REPEAT = 33648
  
 gl_MAX_TEXTURE_LOD_BIAS :: GLenum
 gl_MAX_TEXTURE_LOD_BIAS = 34045
  
-gl_MIRRORED_REPEAT :: GLenum
-gl_MIRRORED_REPEAT = 33648
+gl_INCR_WRAP :: GLenum
+gl_INCR_WRAP = 34055
  
 gl_DEPTH_COMPONENT32 :: GLenum
 gl_DEPTH_COMPONENT32 = 33191
@@ -166,17 +166,17 @@ gl_DEPTH_COMPONENT24 = 33190
 gl_DEPTH_COMPONENT16 :: GLenum
 gl_DEPTH_COMPONENT16 = 33189
  
-gl_POINT_FADE_THRESHOLD_SIZE :: GLenum
-gl_POINT_FADE_THRESHOLD_SIZE = 33064
- 
-gl_BLEND_SRC_ALPHA :: GLenum
-gl_BLEND_SRC_ALPHA = 32971
- 
-gl_BLEND_DST_ALPHA :: GLenum
-gl_BLEND_DST_ALPHA = 32970
+gl_DECR_WRAP :: GLenum
+gl_DECR_WRAP = 34056
  
 gl_BLEND_SRC_RGB :: GLenum
 gl_BLEND_SRC_RGB = 32969
  
+gl_BLEND_SRC_ALPHA :: GLenum
+gl_BLEND_SRC_ALPHA = 32971
+ 
 gl_BLEND_DST_RGB :: GLenum
 gl_BLEND_DST_RGB = 32968
+ 
+gl_BLEND_DST_ALPHA :: GLenum
+gl_BLEND_DST_ALPHA = 32970

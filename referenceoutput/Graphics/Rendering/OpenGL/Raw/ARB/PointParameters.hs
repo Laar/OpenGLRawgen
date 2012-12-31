@@ -2,9 +2,9 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ARB.PointParameters
        (glPointParameterfvARB, glPointParameterfARB,
-        gl_POINT_DISTANCE_ATTENUATION_ARB,
-        gl_POINT_FADE_THRESHOLD_SIZE_ARB, gl_POINT_SIZE_MAX_ARB,
-        gl_POINT_SIZE_MIN_ARB)
+        gl_POINT_SIZE_MIN_ARB, gl_POINT_SIZE_MAX_ARB,
+        gl_POINT_FADE_THRESHOLD_SIZE_ARB,
+        gl_POINT_DISTANCE_ATTENUATION_ARB)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -45,14 +45,14 @@ foreign import CALLCONV unsafe "dynamic" dyn_glPointParameterfARB ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLfloat -> IO ())
  
-gl_POINT_DISTANCE_ATTENUATION_ARB :: GLenum
-gl_POINT_DISTANCE_ATTENUATION_ARB = 33065
- 
-gl_POINT_FADE_THRESHOLD_SIZE_ARB :: GLenum
-gl_POINT_FADE_THRESHOLD_SIZE_ARB = 33064
+gl_POINT_SIZE_MIN_ARB :: GLenum
+gl_POINT_SIZE_MIN_ARB = 33062
  
 gl_POINT_SIZE_MAX_ARB :: GLenum
 gl_POINT_SIZE_MAX_ARB = 33063
  
-gl_POINT_SIZE_MIN_ARB :: GLenum
-gl_POINT_SIZE_MIN_ARB = 33062
+gl_POINT_FADE_THRESHOLD_SIZE_ARB :: GLenum
+gl_POINT_FADE_THRESHOLD_SIZE_ARB = 33064
+ 
+gl_POINT_DISTANCE_ATTENUATION_ARB :: GLenum
+gl_POINT_DISTANCE_ATTENUATION_ARB = 33065

@@ -1,108 +1,36 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core13Compatibility
-       (glMultTransposeMatrixd, glMultTransposeMatrixf,
-        glLoadTransposeMatrixd, glLoadTransposeMatrixf, glMultiTexCoord4sv,
-        glMultiTexCoord4s, glMultiTexCoord4iv, glMultiTexCoord4i,
-        glMultiTexCoord4fv, glMultiTexCoord4f, glMultiTexCoord4dv,
-        glMultiTexCoord4d, glMultiTexCoord3sv, glMultiTexCoord3s,
-        glMultiTexCoord3iv, glMultiTexCoord3i, glMultiTexCoord3fv,
-        glMultiTexCoord3f, glMultiTexCoord3dv, glMultiTexCoord3d,
-        glMultiTexCoord2sv, glMultiTexCoord2s, glMultiTexCoord2iv,
-        glMultiTexCoord2i, glMultiTexCoord2fv, glMultiTexCoord2f,
-        glMultiTexCoord2dv, glMultiTexCoord2d, glMultiTexCoord1sv,
-        glMultiTexCoord1s, glMultiTexCoord1iv, glMultiTexCoord1i,
-        glMultiTexCoord1fv, glMultiTexCoord1f, glMultiTexCoord1dv,
-        glMultiTexCoord1d, glClientActiveTexture, gl_DOT3_RGBA,
-        gl_DOT3_RGB, gl_PREVIOUS, gl_PRIMARY_COLOR, gl_CONSTANT,
-        gl_SUBTRACT, gl_INTERPOLATE, gl_ADD_SIGNED, gl_RGB_SCALE,
-        gl_OPERAND2_ALPHA, gl_OPERAND1_ALPHA, gl_OPERAND0_ALPHA,
-        gl_OPERAND2_RGB, gl_OPERAND1_RGB, gl_OPERAND0_RGB,
-        gl_SOURCE2_ALPHA, gl_SOURCE1_ALPHA, gl_SOURCE0_ALPHA,
-        gl_SOURCE2_RGB, gl_SOURCE1_RGB, gl_SOURCE0_RGB, gl_COMBINE_ALPHA,
-        gl_COMBINE_RGB, gl_COMBINE, gl_COMPRESSED_INTENSITY,
-        gl_COMPRESSED_LUMINANCE_ALPHA, gl_COMPRESSED_LUMINANCE,
-        gl_COMPRESSED_ALPHA, gl_REFLECTION_MAP, gl_NORMAL_MAP,
-        gl_MULTISAMPLE_BIT, gl_TRANSPOSE_COLOR_MATRIX,
+       (glMultiTexCoord4sv, glMultiTexCoord4s, glMultiTexCoord4iv,
+        glMultiTexCoord4i, glMultiTexCoord4fv, glMultiTexCoord4f,
+        glMultiTexCoord4dv, glMultiTexCoord4d, glMultiTexCoord3sv,
+        glMultiTexCoord3s, glMultiTexCoord3iv, glMultiTexCoord3i,
+        glMultiTexCoord3fv, glMultiTexCoord3f, glMultiTexCoord3dv,
+        glMultiTexCoord3d, glMultiTexCoord2sv, glMultiTexCoord2s,
+        glMultiTexCoord2iv, glMultiTexCoord2i, glMultiTexCoord2fv,
+        glMultiTexCoord2f, glMultiTexCoord2dv, glMultiTexCoord2d,
+        glMultiTexCoord1sv, glMultiTexCoord1s, glMultiTexCoord1iv,
+        glMultiTexCoord1i, glMultiTexCoord1fv, glMultiTexCoord1f,
+        glMultiTexCoord1dv, glMultiTexCoord1d, glMultTransposeMatrixf,
+        glMultTransposeMatrixd, glLoadTransposeMatrixf,
+        glLoadTransposeMatrixd, glClientActiveTexture,
         gl_TRANSPOSE_TEXTURE_MATRIX, gl_TRANSPOSE_PROJECTION_MATRIX,
-        gl_TRANSPOSE_MODELVIEW_MATRIX, gl_MAX_TEXTURE_UNITS,
-        gl_CLIENT_ACTIVE_TEXTURE)
+        gl_TRANSPOSE_MODELVIEW_MATRIX, gl_TRANSPOSE_COLOR_MATRIX,
+        gl_SUBTRACT, gl_SOURCE2_RGB, gl_SOURCE2_ALPHA, gl_SOURCE1_RGB,
+        gl_SOURCE1_ALPHA, gl_SOURCE0_RGB, gl_SOURCE0_ALPHA, gl_RGB_SCALE,
+        gl_REFLECTION_MAP, gl_PRIMARY_COLOR, gl_PREVIOUS, gl_OPERAND2_RGB,
+        gl_OPERAND2_ALPHA, gl_OPERAND1_RGB, gl_OPERAND1_ALPHA,
+        gl_OPERAND0_RGB, gl_OPERAND0_ALPHA, gl_NORMAL_MAP,
+        gl_MULTISAMPLE_BIT, gl_MAX_TEXTURE_UNITS, gl_INTERPOLATE,
+        gl_DOT3_RGBA, gl_DOT3_RGB, gl_CONSTANT,
+        gl_COMPRESSED_LUMINANCE_ALPHA, gl_COMPRESSED_LUMINANCE,
+        gl_COMPRESSED_INTENSITY, gl_COMPRESSED_ALPHA, gl_COMBINE_RGB,
+        gl_COMBINE_ALPHA, gl_COMBINE, gl_CLIENT_ACTIVE_TEXTURE,
+        gl_ADD_SIGNED)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
- 
-{-# NOINLINE ptr_glMultTransposeMatrixd #-}
- 
-ptr_glMultTransposeMatrixd :: FunPtr a
-ptr_glMultTransposeMatrixd
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_3_DEPRECATED"
-        "glMultTransposeMatrixd"
- 
-glMultTransposeMatrixd :: Ptr GLdouble -> IO ()
-glMultTransposeMatrixd
-  = dyn_glMultTransposeMatrixd ptr_glMultTransposeMatrixd
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glMultTransposeMatrixd
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glMultTransposeMatrixf #-}
- 
-ptr_glMultTransposeMatrixf :: FunPtr a
-ptr_glMultTransposeMatrixf
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_3_DEPRECATED"
-        "glMultTransposeMatrixf"
- 
-glMultTransposeMatrixf :: Ptr GLfloat -> IO ()
-glMultTransposeMatrixf
-  = dyn_glMultTransposeMatrixf ptr_glMultTransposeMatrixf
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glMultTransposeMatrixf
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLfloat -> IO ())
- 
-{-# NOINLINE ptr_glLoadTransposeMatrixd #-}
- 
-ptr_glLoadTransposeMatrixd :: FunPtr a
-ptr_glLoadTransposeMatrixd
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_3_DEPRECATED"
-        "glLoadTransposeMatrixd"
- 
-glLoadTransposeMatrixd :: Ptr GLdouble -> IO ()
-glLoadTransposeMatrixd
-  = dyn_glLoadTransposeMatrixd ptr_glLoadTransposeMatrixd
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glLoadTransposeMatrixd
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLdouble -> IO ())
- 
-{-# NOINLINE ptr_glLoadTransposeMatrixf #-}
- 
-ptr_glLoadTransposeMatrixf :: FunPtr a
-ptr_glLoadTransposeMatrixf
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_VERSION_1_3_DEPRECATED"
-        "glLoadTransposeMatrixf"
- 
-glLoadTransposeMatrixf :: Ptr GLfloat -> IO ()
-glLoadTransposeMatrixf
-  = dyn_glLoadTransposeMatrixf ptr_glLoadTransposeMatrixf
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glLoadTransposeMatrixf
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (Ptr GLfloat -> IO ())
  
 {-# NOINLINE ptr_glMultiTexCoord4sv #-}
  
@@ -623,6 +551,78 @@ foreign import CALLCONV unsafe "dynamic" dyn_glMultiTexCoord1d ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLdouble -> IO ())
  
+{-# NOINLINE ptr_glMultTransposeMatrixf #-}
+ 
+ptr_glMultTransposeMatrixf :: FunPtr a
+ptr_glMultTransposeMatrixf
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_3_DEPRECATED"
+        "glMultTransposeMatrixf"
+ 
+glMultTransposeMatrixf :: Ptr GLfloat -> IO ()
+glMultTransposeMatrixf
+  = dyn_glMultTransposeMatrixf ptr_glMultTransposeMatrixf
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glMultTransposeMatrixf
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glMultTransposeMatrixd #-}
+ 
+ptr_glMultTransposeMatrixd :: FunPtr a
+ptr_glMultTransposeMatrixd
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_3_DEPRECATED"
+        "glMultTransposeMatrixd"
+ 
+glMultTransposeMatrixd :: Ptr GLdouble -> IO ()
+glMultTransposeMatrixd
+  = dyn_glMultTransposeMatrixd ptr_glMultTransposeMatrixd
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glMultTransposeMatrixd
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLdouble -> IO ())
+ 
+{-# NOINLINE ptr_glLoadTransposeMatrixf #-}
+ 
+ptr_glLoadTransposeMatrixf :: FunPtr a
+ptr_glLoadTransposeMatrixf
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_3_DEPRECATED"
+        "glLoadTransposeMatrixf"
+ 
+glLoadTransposeMatrixf :: Ptr GLfloat -> IO ()
+glLoadTransposeMatrixf
+  = dyn_glLoadTransposeMatrixf ptr_glLoadTransposeMatrixf
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glLoadTransposeMatrixf
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLfloat -> IO ())
+ 
+{-# NOINLINE ptr_glLoadTransposeMatrixd #-}
+ 
+ptr_glLoadTransposeMatrixd :: FunPtr a
+ptr_glLoadTransposeMatrixd
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_VERSION_1_3_DEPRECATED"
+        "glLoadTransposeMatrixd"
+ 
+glLoadTransposeMatrixd :: Ptr GLdouble -> IO ()
+glLoadTransposeMatrixd
+  = dyn_glLoadTransposeMatrixd ptr_glLoadTransposeMatrixd
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glLoadTransposeMatrixd
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (Ptr GLdouble -> IO ())
+ 
 {-# NOINLINE ptr_glClientActiveTexture #-}
  
 ptr_glClientActiveTexture :: FunPtr a
@@ -641,102 +641,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glClientActiveTexture
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
-gl_DOT3_RGBA :: GLenum
-gl_DOT3_RGBA = 34479
- 
-gl_DOT3_RGB :: GLenum
-gl_DOT3_RGB = 34478
- 
-gl_PREVIOUS :: GLenum
-gl_PREVIOUS = 34168
- 
-gl_PRIMARY_COLOR :: GLenum
-gl_PRIMARY_COLOR = 34167
- 
-gl_CONSTANT :: GLenum
-gl_CONSTANT = 34166
- 
-gl_SUBTRACT :: GLenum
-gl_SUBTRACT = 34023
- 
-gl_INTERPOLATE :: GLenum
-gl_INTERPOLATE = 34165
- 
-gl_ADD_SIGNED :: GLenum
-gl_ADD_SIGNED = 34164
- 
-gl_RGB_SCALE :: GLenum
-gl_RGB_SCALE = 34163
- 
-gl_OPERAND2_ALPHA :: GLenum
-gl_OPERAND2_ALPHA = 34202
- 
-gl_OPERAND1_ALPHA :: GLenum
-gl_OPERAND1_ALPHA = 34201
- 
-gl_OPERAND0_ALPHA :: GLenum
-gl_OPERAND0_ALPHA = 34200
- 
-gl_OPERAND2_RGB :: GLenum
-gl_OPERAND2_RGB = 34194
- 
-gl_OPERAND1_RGB :: GLenum
-gl_OPERAND1_RGB = 34193
- 
-gl_OPERAND0_RGB :: GLenum
-gl_OPERAND0_RGB = 34192
- 
-gl_SOURCE2_ALPHA :: GLenum
-gl_SOURCE2_ALPHA = 34186
- 
-gl_SOURCE1_ALPHA :: GLenum
-gl_SOURCE1_ALPHA = 34185
- 
-gl_SOURCE0_ALPHA :: GLenum
-gl_SOURCE0_ALPHA = 34184
- 
-gl_SOURCE2_RGB :: GLenum
-gl_SOURCE2_RGB = 34178
- 
-gl_SOURCE1_RGB :: GLenum
-gl_SOURCE1_RGB = 34177
- 
-gl_SOURCE0_RGB :: GLenum
-gl_SOURCE0_RGB = 34176
- 
-gl_COMBINE_ALPHA :: GLenum
-gl_COMBINE_ALPHA = 34162
- 
-gl_COMBINE_RGB :: GLenum
-gl_COMBINE_RGB = 34161
- 
-gl_COMBINE :: GLenum
-gl_COMBINE = 34160
- 
-gl_COMPRESSED_INTENSITY :: GLenum
-gl_COMPRESSED_INTENSITY = 34028
- 
-gl_COMPRESSED_LUMINANCE_ALPHA :: GLenum
-gl_COMPRESSED_LUMINANCE_ALPHA = 34027
- 
-gl_COMPRESSED_LUMINANCE :: GLenum
-gl_COMPRESSED_LUMINANCE = 34026
- 
-gl_COMPRESSED_ALPHA :: GLenum
-gl_COMPRESSED_ALPHA = 34025
- 
-gl_REFLECTION_MAP :: GLenum
-gl_REFLECTION_MAP = 34066
- 
-gl_NORMAL_MAP :: GLenum
-gl_NORMAL_MAP = 34065
- 
-gl_MULTISAMPLE_BIT :: GLbitfield
-gl_MULTISAMPLE_BIT = 536870912
- 
-gl_TRANSPOSE_COLOR_MATRIX :: GLenum
-gl_TRANSPOSE_COLOR_MATRIX = 34022
- 
 gl_TRANSPOSE_TEXTURE_MATRIX :: GLenum
 gl_TRANSPOSE_TEXTURE_MATRIX = 34021
  
@@ -746,8 +650,104 @@ gl_TRANSPOSE_PROJECTION_MATRIX = 34020
 gl_TRANSPOSE_MODELVIEW_MATRIX :: GLenum
 gl_TRANSPOSE_MODELVIEW_MATRIX = 34019
  
+gl_TRANSPOSE_COLOR_MATRIX :: GLenum
+gl_TRANSPOSE_COLOR_MATRIX = 34022
+ 
+gl_SUBTRACT :: GLenum
+gl_SUBTRACT = 34023
+ 
+gl_SOURCE2_RGB :: GLenum
+gl_SOURCE2_RGB = 34178
+ 
+gl_SOURCE2_ALPHA :: GLenum
+gl_SOURCE2_ALPHA = 34186
+ 
+gl_SOURCE1_RGB :: GLenum
+gl_SOURCE1_RGB = 34177
+ 
+gl_SOURCE1_ALPHA :: GLenum
+gl_SOURCE1_ALPHA = 34185
+ 
+gl_SOURCE0_RGB :: GLenum
+gl_SOURCE0_RGB = 34176
+ 
+gl_SOURCE0_ALPHA :: GLenum
+gl_SOURCE0_ALPHA = 34184
+ 
+gl_RGB_SCALE :: GLenum
+gl_RGB_SCALE = 34163
+ 
+gl_REFLECTION_MAP :: GLenum
+gl_REFLECTION_MAP = 34066
+ 
+gl_PRIMARY_COLOR :: GLenum
+gl_PRIMARY_COLOR = 34167
+ 
+gl_PREVIOUS :: GLenum
+gl_PREVIOUS = 34168
+ 
+gl_OPERAND2_RGB :: GLenum
+gl_OPERAND2_RGB = 34194
+ 
+gl_OPERAND2_ALPHA :: GLenum
+gl_OPERAND2_ALPHA = 34202
+ 
+gl_OPERAND1_RGB :: GLenum
+gl_OPERAND1_RGB = 34193
+ 
+gl_OPERAND1_ALPHA :: GLenum
+gl_OPERAND1_ALPHA = 34201
+ 
+gl_OPERAND0_RGB :: GLenum
+gl_OPERAND0_RGB = 34192
+ 
+gl_OPERAND0_ALPHA :: GLenum
+gl_OPERAND0_ALPHA = 34200
+ 
+gl_NORMAL_MAP :: GLenum
+gl_NORMAL_MAP = 34065
+ 
+gl_MULTISAMPLE_BIT :: GLbitfield
+gl_MULTISAMPLE_BIT = 536870912
+ 
 gl_MAX_TEXTURE_UNITS :: GLenum
 gl_MAX_TEXTURE_UNITS = 34018
  
+gl_INTERPOLATE :: GLenum
+gl_INTERPOLATE = 34165
+ 
+gl_DOT3_RGBA :: GLenum
+gl_DOT3_RGBA = 34479
+ 
+gl_DOT3_RGB :: GLenum
+gl_DOT3_RGB = 34478
+ 
+gl_CONSTANT :: GLenum
+gl_CONSTANT = 34166
+ 
+gl_COMPRESSED_LUMINANCE_ALPHA :: GLenum
+gl_COMPRESSED_LUMINANCE_ALPHA = 34027
+ 
+gl_COMPRESSED_LUMINANCE :: GLenum
+gl_COMPRESSED_LUMINANCE = 34026
+ 
+gl_COMPRESSED_INTENSITY :: GLenum
+gl_COMPRESSED_INTENSITY = 34028
+ 
+gl_COMPRESSED_ALPHA :: GLenum
+gl_COMPRESSED_ALPHA = 34025
+ 
+gl_COMBINE_RGB :: GLenum
+gl_COMBINE_RGB = 34161
+ 
+gl_COMBINE_ALPHA :: GLenum
+gl_COMBINE_ALPHA = 34162
+ 
+gl_COMBINE :: GLenum
+gl_COMBINE = 34160
+ 
 gl_CLIENT_ACTIVE_TEXTURE :: GLenum
 gl_CLIENT_ACTIVE_TEXTURE = 34017
+ 
+gl_ADD_SIGNED :: GLenum
+gl_ADD_SIGNED = 34164

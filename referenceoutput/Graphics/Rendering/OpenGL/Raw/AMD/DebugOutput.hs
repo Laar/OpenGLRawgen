@@ -1,17 +1,17 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.AMD.DebugOutput
-       (glGetDebugMessageLogAMD, glDebugMessageCallbackAMD,
-        glDebugMessageInsertAMD, glDebugMessageEnableAMD,
-        gl_DEBUG_CATEGORY_OTHER_AMD, gl_DEBUG_CATEGORY_APPLICATION_AMD,
-        gl_DEBUG_CATEGORY_SHADER_COMPILER_AMD,
-        gl_DEBUG_CATEGORY_PERFORMANCE_AMD,
-        gl_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD,
-        gl_DEBUG_CATEGORY_DEPRECATION_AMD,
+       (glGetDebugMessageLogAMD, glDebugMessageInsertAMD,
+        glDebugMessageEnableAMD, glDebugMessageCallbackAMD,
+        gl_MAX_DEBUG_MESSAGE_LENGTH_AMD, gl_MAX_DEBUG_LOGGED_MESSAGES_AMD,
+        gl_DEBUG_SEVERITY_MEDIUM_AMD, gl_DEBUG_SEVERITY_LOW_AMD,
+        gl_DEBUG_SEVERITY_HIGH_AMD, gl_DEBUG_LOGGED_MESSAGES_AMD,
         gl_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD,
-        gl_DEBUG_CATEGORY_API_ERROR_AMD, gl_DEBUG_SEVERITY_LOW_AMD,
-        gl_DEBUG_SEVERITY_MEDIUM_AMD, gl_DEBUG_SEVERITY_HIGH_AMD,
-        gl_DEBUG_LOGGED_MESSAGES_AMD, gl_MAX_DEBUG_LOGGED_MESSAGES_AMD)
+        gl_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD,
+        gl_DEBUG_CATEGORY_SHADER_COMPILER_AMD,
+        gl_DEBUG_CATEGORY_PERFORMANCE_AMD, gl_DEBUG_CATEGORY_OTHER_AMD,
+        gl_DEBUG_CATEGORY_DEPRECATION_AMD,
+        gl_DEBUG_CATEGORY_APPLICATION_AMD, gl_DEBUG_CATEGORY_API_ERROR_AMD)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -41,24 +41,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetDebugMessageLogAMD
                     GLsizei ->
                       Ptr GLenum ->
                         Ptr GLuint -> Ptr GLuint -> Ptr GLsizei -> Ptr GLchar -> IO GLuint)
- 
-{-# NOINLINE ptr_glDebugMessageCallbackAMD #-}
- 
-ptr_glDebugMessageCallbackAMD :: FunPtr a
-ptr_glDebugMessageCallbackAMD
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_AMD_debug_output"
-        "glDebugMessageCallbackAMD"
- 
-glDebugMessageCallbackAMD :: GLdebugprocAMD -> Ptr a -> IO ()
-glDebugMessageCallbackAMD
-  = dyn_glDebugMessageCallbackAMD ptr_glDebugMessageCallbackAMD
- 
-foreign import CALLCONV unsafe "dynamic"
-               dyn_glDebugMessageCallbackAMD ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLdebugprocAMD -> Ptr a -> IO ())
  
 {-# NOINLINE ptr_glDebugMessageInsertAMD #-}
  
@@ -98,35 +80,35 @@ foreign import CALLCONV unsafe "dynamic" dyn_glDebugMessageEnableAMD
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLenum -> GLsizei -> Ptr GLuint -> GLboolean -> IO ())
  
-gl_DEBUG_CATEGORY_OTHER_AMD :: GLenum
-gl_DEBUG_CATEGORY_OTHER_AMD = 37200
+{-# NOINLINE ptr_glDebugMessageCallbackAMD #-}
  
-gl_DEBUG_CATEGORY_APPLICATION_AMD :: GLenum
-gl_DEBUG_CATEGORY_APPLICATION_AMD = 37199
+ptr_glDebugMessageCallbackAMD :: FunPtr a
+ptr_glDebugMessageCallbackAMD
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_AMD_debug_output"
+        "glDebugMessageCallbackAMD"
  
-gl_DEBUG_CATEGORY_SHADER_COMPILER_AMD :: GLenum
-gl_DEBUG_CATEGORY_SHADER_COMPILER_AMD = 37198
+glDebugMessageCallbackAMD :: GLdebugprocAMD -> Ptr a -> IO ()
+glDebugMessageCallbackAMD
+  = dyn_glDebugMessageCallbackAMD ptr_glDebugMessageCallbackAMD
  
-gl_DEBUG_CATEGORY_PERFORMANCE_AMD :: GLenum
-gl_DEBUG_CATEGORY_PERFORMANCE_AMD = 37197
+foreign import CALLCONV unsafe "dynamic"
+               dyn_glDebugMessageCallbackAMD ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLdebugprocAMD -> Ptr a -> IO ())
  
-gl_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD :: GLenum
-gl_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD = 37196
+gl_MAX_DEBUG_MESSAGE_LENGTH_AMD :: GLenum
+gl_MAX_DEBUG_MESSAGE_LENGTH_AMD = 37187
  
-gl_DEBUG_CATEGORY_DEPRECATION_AMD :: GLenum
-gl_DEBUG_CATEGORY_DEPRECATION_AMD = 37195
- 
-gl_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD :: GLenum
-gl_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD = 37194
- 
-gl_DEBUG_CATEGORY_API_ERROR_AMD :: GLenum
-gl_DEBUG_CATEGORY_API_ERROR_AMD = 37193
- 
-gl_DEBUG_SEVERITY_LOW_AMD :: GLenum
-gl_DEBUG_SEVERITY_LOW_AMD = 37192
+gl_MAX_DEBUG_LOGGED_MESSAGES_AMD :: GLenum
+gl_MAX_DEBUG_LOGGED_MESSAGES_AMD = 37188
  
 gl_DEBUG_SEVERITY_MEDIUM_AMD :: GLenum
 gl_DEBUG_SEVERITY_MEDIUM_AMD = 37191
+ 
+gl_DEBUG_SEVERITY_LOW_AMD :: GLenum
+gl_DEBUG_SEVERITY_LOW_AMD = 37192
  
 gl_DEBUG_SEVERITY_HIGH_AMD :: GLenum
 gl_DEBUG_SEVERITY_HIGH_AMD = 37190
@@ -134,5 +116,26 @@ gl_DEBUG_SEVERITY_HIGH_AMD = 37190
 gl_DEBUG_LOGGED_MESSAGES_AMD :: GLenum
 gl_DEBUG_LOGGED_MESSAGES_AMD = 37189
  
-gl_MAX_DEBUG_LOGGED_MESSAGES_AMD :: GLenum
-gl_MAX_DEBUG_LOGGED_MESSAGES_AMD = 37188
+gl_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD :: GLenum
+gl_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD = 37194
+ 
+gl_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD :: GLenum
+gl_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD = 37196
+ 
+gl_DEBUG_CATEGORY_SHADER_COMPILER_AMD :: GLenum
+gl_DEBUG_CATEGORY_SHADER_COMPILER_AMD = 37198
+ 
+gl_DEBUG_CATEGORY_PERFORMANCE_AMD :: GLenum
+gl_DEBUG_CATEGORY_PERFORMANCE_AMD = 37197
+ 
+gl_DEBUG_CATEGORY_OTHER_AMD :: GLenum
+gl_DEBUG_CATEGORY_OTHER_AMD = 37200
+ 
+gl_DEBUG_CATEGORY_DEPRECATION_AMD :: GLenum
+gl_DEBUG_CATEGORY_DEPRECATION_AMD = 37195
+ 
+gl_DEBUG_CATEGORY_APPLICATION_AMD :: GLenum
+gl_DEBUG_CATEGORY_APPLICATION_AMD = 37199
+ 
+gl_DEBUG_CATEGORY_API_ERROR_AMD :: GLenum
+gl_DEBUG_CATEGORY_API_ERROR_AMD = 37193

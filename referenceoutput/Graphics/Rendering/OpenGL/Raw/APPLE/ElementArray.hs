@@ -2,9 +2,9 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.APPLE.ElementArray
        (glMultiDrawRangeElementArrayAPPLE, glMultiDrawElementArrayAPPLE,
-        glDrawRangeElementArrayAPPLE, glDrawElementArrayAPPLE,
-        glElementPointerAPPLE, gl_ELEMENT_ARRAY_POINTER_APPLE,
-        gl_ELEMENT_ARRAY_TYPE_APPLE, gl_ELEMENT_ARRAY_APPLE)
+        glElementPointerAPPLE, glDrawRangeElementArrayAPPLE,
+        glDrawElementArrayAPPLE, gl_ELEMENT_ARRAY_TYPE_APPLE,
+        gl_ELEMENT_ARRAY_POINTER_APPLE, gl_ELEMENT_ARRAY_APPLE)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -51,6 +51,24 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> Ptr GLint -> Ptr GLsizei -> GLsizei -> IO ())
  
+{-# NOINLINE ptr_glElementPointerAPPLE #-}
+ 
+ptr_glElementPointerAPPLE :: FunPtr a
+ptr_glElementPointerAPPLE
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_APPLE_element_array"
+        "glElementPointerAPPLE"
+ 
+glElementPointerAPPLE :: GLenum -> Ptr a -> IO ()
+glElementPointerAPPLE
+  = dyn_glElementPointerAPPLE ptr_glElementPointerAPPLE
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glElementPointerAPPLE
+               ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> Ptr a -> IO ())
+ 
 {-# NOINLINE ptr_glDrawRangeElementArrayAPPLE #-}
  
 ptr_glDrawRangeElementArrayAPPLE :: FunPtr a
@@ -88,29 +106,11 @@ foreign import CALLCONV unsafe "dynamic" dyn_glDrawElementArrayAPPLE
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLint -> GLsizei -> IO ())
  
-{-# NOINLINE ptr_glElementPointerAPPLE #-}
- 
-ptr_glElementPointerAPPLE :: FunPtr a
-ptr_glElementPointerAPPLE
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_APPLE_element_array"
-        "glElementPointerAPPLE"
- 
-glElementPointerAPPLE :: GLenum -> Ptr a -> IO ()
-glElementPointerAPPLE
-  = dyn_glElementPointerAPPLE ptr_glElementPointerAPPLE
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glElementPointerAPPLE
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> Ptr a -> IO ())
+gl_ELEMENT_ARRAY_TYPE_APPLE :: GLenum
+gl_ELEMENT_ARRAY_TYPE_APPLE = 35341
  
 gl_ELEMENT_ARRAY_POINTER_APPLE :: GLenum
 gl_ELEMENT_ARRAY_POINTER_APPLE = 35342
- 
-gl_ELEMENT_ARRAY_TYPE_APPLE :: GLenum
-gl_ELEMENT_ARRAY_TYPE_APPLE = 35341
  
 gl_ELEMENT_ARRAY_APPLE :: GLenum
 gl_ELEMENT_ARRAY_APPLE = 35340

@@ -1,14 +1,47 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.ARB.ShadingLanguageInclude
-       (glGetNamedStringivARB, glGetNamedStringARB, glIsNamedStringARB,
-        glCompileShaderIncludeARB, glDeleteNamedStringARB,
-        glNamedStringARB, gl_NAMED_STRING_TYPE_ARB,
-        gl_NAMED_STRING_LENGTH_ARB, gl_SHADER_INCLUDE_ARB)
+       (glNamedStringARB, glIsNamedStringARB, glGetNamedStringivARB,
+        glGetNamedStringARB, glDeleteNamedStringARB,
+        glCompileShaderIncludeARB, gl_SHADER_INCLUDE_ARB,
+        gl_NAMED_STRING_TYPE_ARB, gl_NAMED_STRING_LENGTH_ARB)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glNamedStringARB #-}
+ 
+ptr_glNamedStringARB :: FunPtr a
+ptr_glNamedStringARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_shading_language_include"
+        "glNamedStringARB"
+ 
+glNamedStringARB ::
+                 GLenum -> GLint -> Ptr GLchar -> GLint -> Ptr GLchar -> IO ()
+glNamedStringARB = dyn_glNamedStringARB ptr_glNamedStringARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glNamedStringARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLint -> Ptr GLchar -> GLint -> Ptr GLchar -> IO ())
+ 
+{-# NOINLINE ptr_glIsNamedStringARB #-}
+ 
+ptr_glIsNamedStringARB :: FunPtr a
+ptr_glIsNamedStringARB
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_ARB_shading_language_include"
+        "glIsNamedStringARB"
+ 
+glIsNamedStringARB :: GLint -> Ptr GLchar -> IO GLboolean
+glIsNamedStringARB = dyn_glIsNamedStringARB ptr_glIsNamedStringARB
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glIsNamedStringARB ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLint -> Ptr GLchar -> IO GLboolean)
  
 {-# NOINLINE ptr_glGetNamedStringivARB #-}
  
@@ -48,21 +81,23 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetNamedStringARB ::
                  (GLint ->
                     Ptr GLchar -> GLsizei -> Ptr GLint -> Ptr GLchar -> IO ())
  
-{-# NOINLINE ptr_glIsNamedStringARB #-}
+{-# NOINLINE ptr_glDeleteNamedStringARB #-}
  
-ptr_glIsNamedStringARB :: FunPtr a
-ptr_glIsNamedStringARB
+ptr_glDeleteNamedStringARB :: FunPtr a
+ptr_glDeleteNamedStringARB
   = unsafePerformIO $
       Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
         "GL_ARB_shading_language_include"
-        "glIsNamedStringARB"
+        "glDeleteNamedStringARB"
  
-glIsNamedStringARB :: GLint -> Ptr GLchar -> IO GLboolean
-glIsNamedStringARB = dyn_glIsNamedStringARB ptr_glIsNamedStringARB
+glDeleteNamedStringARB :: GLint -> Ptr GLchar -> IO ()
+glDeleteNamedStringARB
+  = dyn_glDeleteNamedStringARB ptr_glDeleteNamedStringARB
  
-foreign import CALLCONV unsafe "dynamic" dyn_glIsNamedStringARB ::
+foreign import CALLCONV unsafe "dynamic" dyn_glDeleteNamedStringARB
+               ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> Ptr GLchar -> IO GLboolean)
+                 (GLint -> Ptr GLchar -> IO ())
  
 {-# NOINLINE ptr_glCompileShaderIncludeARB #-}
  
@@ -83,46 +118,11 @@ foreign import CALLCONV unsafe "dynamic"
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> GLsizei -> Ptr (Ptr GLchar) -> Ptr GLint -> IO ())
  
-{-# NOINLINE ptr_glDeleteNamedStringARB #-}
- 
-ptr_glDeleteNamedStringARB :: FunPtr a
-ptr_glDeleteNamedStringARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_shading_language_include"
-        "glDeleteNamedStringARB"
- 
-glDeleteNamedStringARB :: GLint -> Ptr GLchar -> IO ()
-glDeleteNamedStringARB
-  = dyn_glDeleteNamedStringARB ptr_glDeleteNamedStringARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDeleteNamedStringARB
-               ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLint -> Ptr GLchar -> IO ())
- 
-{-# NOINLINE ptr_glNamedStringARB #-}
- 
-ptr_glNamedStringARB :: FunPtr a
-ptr_glNamedStringARB
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_ARB_shading_language_include"
-        "glNamedStringARB"
- 
-glNamedStringARB ::
-                 GLenum -> GLint -> Ptr GLchar -> GLint -> Ptr GLchar -> IO ()
-glNamedStringARB = dyn_glNamedStringARB ptr_glNamedStringARB
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glNamedStringARB ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLint -> Ptr GLchar -> GLint -> Ptr GLchar -> IO ())
+gl_SHADER_INCLUDE_ARB :: GLenum
+gl_SHADER_INCLUDE_ARB = 36270
  
 gl_NAMED_STRING_TYPE_ARB :: GLenum
 gl_NAMED_STRING_TYPE_ARB = 36330
  
 gl_NAMED_STRING_LENGTH_ARB :: GLenum
 gl_NAMED_STRING_LENGTH_ARB = 36329
- 
-gl_SHADER_INCLUDE_ARB :: GLenum
-gl_SHADER_INCLUDE_ARB = 36270

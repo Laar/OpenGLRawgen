@@ -1,61 +1,13 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.Fence
-       (glSetFenceNV, glFinishFenceNV, glGetFenceivNV, glTestFenceNV,
-        glIsFenceNV, glGenFencesNV, glDeleteFencesNV,
-        gl_FENCE_CONDITION_NV, gl_FENCE_STATUS_NV, gl_ALL_COMPLETED_NV)
+       (glTestFenceNV, glSetFenceNV, glIsFenceNV, glGetFenceivNV,
+        glGenFencesNV, glFinishFenceNV, glDeleteFencesNV,
+        gl_FENCE_STATUS_NV, gl_FENCE_CONDITION_NV, gl_ALL_COMPLETED_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
 import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
- 
-{-# NOINLINE ptr_glSetFenceNV #-}
- 
-ptr_glSetFenceNV :: FunPtr a
-ptr_glSetFenceNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_fence"
-        "glSetFenceNV"
- 
-glSetFenceNV :: GLuint -> GLenum -> IO ()
-glSetFenceNV = dyn_glSetFenceNV ptr_glSetFenceNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glSetFenceNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> IO ())
- 
-{-# NOINLINE ptr_glFinishFenceNV #-}
- 
-ptr_glFinishFenceNV :: FunPtr a
-ptr_glFinishFenceNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_fence"
-        "glFinishFenceNV"
- 
-glFinishFenceNV :: GLuint -> IO ()
-glFinishFenceNV = dyn_glFinishFenceNV ptr_glFinishFenceNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glFinishFenceNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> IO ())
- 
-{-# NOINLINE ptr_glGetFenceivNV #-}
- 
-ptr_glGetFenceivNV :: FunPtr a
-ptr_glGetFenceivNV
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_NV_fence"
-        "glGetFenceivNV"
- 
-glGetFenceivNV :: GLuint -> GLenum -> Ptr GLint -> IO ()
-glGetFenceivNV = dyn_glGetFenceivNV ptr_glGetFenceivNV
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glGetFenceivNV ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLuint -> GLenum -> Ptr GLint -> IO ())
  
 {-# NOINLINE ptr_glTestFenceNV #-}
  
@@ -73,6 +25,22 @@ foreign import CALLCONV unsafe "dynamic" dyn_glTestFenceNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO GLboolean)
  
+{-# NOINLINE ptr_glSetFenceNV #-}
+ 
+ptr_glSetFenceNV :: FunPtr a
+ptr_glSetFenceNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_fence"
+        "glSetFenceNV"
+ 
+glSetFenceNV :: GLuint -> GLenum -> IO ()
+glSetFenceNV = dyn_glSetFenceNV ptr_glSetFenceNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glSetFenceNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> IO ())
+ 
 {-# NOINLINE ptr_glIsFenceNV #-}
  
 ptr_glIsFenceNV :: FunPtr a
@@ -88,6 +56,22 @@ glIsFenceNV = dyn_glIsFenceNV ptr_glIsFenceNV
 foreign import CALLCONV unsafe "dynamic" dyn_glIsFenceNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLuint -> IO GLboolean)
+ 
+{-# NOINLINE ptr_glGetFenceivNV #-}
+ 
+ptr_glGetFenceivNV :: FunPtr a
+ptr_glGetFenceivNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_fence"
+        "glGetFenceivNV"
+ 
+glGetFenceivNV :: GLuint -> GLenum -> Ptr GLint -> IO ()
+glGetFenceivNV = dyn_glGetFenceivNV ptr_glGetFenceivNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glGetFenceivNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> GLenum -> Ptr GLint -> IO ())
  
 {-# NOINLINE ptr_glGenFencesNV #-}
  
@@ -105,6 +89,22 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGenFencesNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr GLuint -> IO ())
  
+{-# NOINLINE ptr_glFinishFenceNV #-}
+ 
+ptr_glFinishFenceNV :: FunPtr a
+ptr_glFinishFenceNV
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_NV_fence"
+        "glFinishFenceNV"
+ 
+glFinishFenceNV :: GLuint -> IO ()
+glFinishFenceNV = dyn_glFinishFenceNV ptr_glFinishFenceNV
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glFinishFenceNV ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint -> IO ())
+ 
 {-# NOINLINE ptr_glDeleteFencesNV #-}
  
 ptr_glDeleteFencesNV :: FunPtr a
@@ -121,11 +121,11 @@ foreign import CALLCONV unsafe "dynamic" dyn_glDeleteFencesNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLsizei -> Ptr GLuint -> IO ())
  
-gl_FENCE_CONDITION_NV :: GLenum
-gl_FENCE_CONDITION_NV = 34036
- 
 gl_FENCE_STATUS_NV :: GLenum
 gl_FENCE_STATUS_NV = 34035
+ 
+gl_FENCE_CONDITION_NV :: GLenum
+gl_FENCE_CONDITION_NV = 34036
  
 gl_ALL_COMPLETED_NV :: GLenum
 gl_ALL_COMPLETED_NV = 34034

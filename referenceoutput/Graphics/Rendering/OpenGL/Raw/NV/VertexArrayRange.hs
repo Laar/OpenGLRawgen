@@ -2,10 +2,9 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.VertexArrayRange
        (glVertexArrayRangeNV, glFlushVertexArrayRangeNV,
-        gl_VERTEX_ARRAY_RANGE_POINTER_NV,
-        gl_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV,
-        gl_VERTEX_ARRAY_RANGE_VALID_NV, gl_VERTEX_ARRAY_RANGE_LENGTH_NV,
-        gl_VERTEX_ARRAY_RANGE_NV)
+        gl_VERTEX_ARRAY_RANGE_VALID_NV, gl_VERTEX_ARRAY_RANGE_POINTER_NV,
+        gl_VERTEX_ARRAY_RANGE_NV, gl_VERTEX_ARRAY_RANGE_LENGTH_NV,
+        gl_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -45,17 +44,17 @@ foreign import CALLCONV unsafe "dynamic"
                dyn_glFlushVertexArrayRangeNV ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker (IO ())
  
+gl_VERTEX_ARRAY_RANGE_VALID_NV :: GLenum
+gl_VERTEX_ARRAY_RANGE_VALID_NV = 34079
+ 
 gl_VERTEX_ARRAY_RANGE_POINTER_NV :: GLenum
 gl_VERTEX_ARRAY_RANGE_POINTER_NV = 34081
  
-gl_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV :: GLenum
-gl_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV = 34080
- 
-gl_VERTEX_ARRAY_RANGE_VALID_NV :: GLenum
-gl_VERTEX_ARRAY_RANGE_VALID_NV = 34079
+gl_VERTEX_ARRAY_RANGE_NV :: GLenum
+gl_VERTEX_ARRAY_RANGE_NV = 34077
  
 gl_VERTEX_ARRAY_RANGE_LENGTH_NV :: GLenum
 gl_VERTEX_ARRAY_RANGE_LENGTH_NV = 34078
  
-gl_VERTEX_ARRAY_RANGE_NV :: GLenum
-gl_VERTEX_ARRAY_RANGE_NV = 34077
+gl_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV :: GLenum
+gl_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV = 34080

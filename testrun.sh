@@ -5,7 +5,7 @@ TESTDIR="testoutput"
 echo "---------------------------"
 echo "-- Generating new output --"
 echo "---------------------------"
-time ./OpenGLRawgen --no-vendorf=novendor -o "$TESTDIR" -c -d . +RTS -sstderr &&
+time ./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR" -c -d input +RTS -sstderr &&
 echo  "---------------"
 echo  "-- Comparing --"
 echo  "---------------"

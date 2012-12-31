@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.NV.PointSprite
        (glPointParameterivNV, glPointParameteriNV,
-        gl_POINT_SPRITE_R_MODE_NV, gl_COORD_REPLACE_NV, gl_POINT_SPRITE_NV)
+        gl_POINT_SPRITE_R_MODE_NV, gl_POINT_SPRITE_NV, gl_COORD_REPLACE_NV)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -45,8 +45,8 @@ foreign import CALLCONV unsafe "dynamic" dyn_glPointParameteriNV ::
 gl_POINT_SPRITE_R_MODE_NV :: GLenum
 gl_POINT_SPRITE_R_MODE_NV = 34915
  
-gl_COORD_REPLACE_NV :: GLenum
-gl_COORD_REPLACE_NV = 34914
- 
 gl_POINT_SPRITE_NV :: GLenum
 gl_POINT_SPRITE_NV = 34913
+ 
+gl_COORD_REPLACE_NV :: GLenum
+gl_COORD_REPLACE_NV = 34914

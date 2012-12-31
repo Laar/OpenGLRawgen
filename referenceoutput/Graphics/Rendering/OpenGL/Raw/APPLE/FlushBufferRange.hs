@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.APPLE.FlushBufferRange
        (glFlushMappedBufferRangeAPPLE, glBufferParameteriAPPLE,
-        gl_BUFFER_FLUSHING_UNMAP_APPLE, gl_BUFFER_SERIALIZED_MODIFY_APPLE)
+        gl_BUFFER_SERIALIZED_MODIFY_APPLE, gl_BUFFER_FLUSHING_UNMAP_APPLE)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -46,8 +46,8 @@ foreign import CALLCONV unsafe "dynamic" dyn_glBufferParameteriAPPLE
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLenum -> GLint -> IO ())
  
-gl_BUFFER_FLUSHING_UNMAP_APPLE :: GLenum
-gl_BUFFER_FLUSHING_UNMAP_APPLE = 35347
- 
 gl_BUFFER_SERIALIZED_MODIFY_APPLE :: GLenum
 gl_BUFFER_SERIALIZED_MODIFY_APPLE = 35346
+ 
+gl_BUFFER_FLUSHING_UNMAP_APPLE :: GLenum
+gl_BUFFER_FLUSHING_UNMAP_APPLE = 35347

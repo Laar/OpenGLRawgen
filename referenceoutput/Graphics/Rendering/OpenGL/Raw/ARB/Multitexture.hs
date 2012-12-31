@@ -12,19 +12,19 @@ module Graphics.Rendering.OpenGL.Raw.ARB.Multitexture
         glMultiTexCoord2dARB, glMultiTexCoord1svARB, glMultiTexCoord1sARB,
         glMultiTexCoord1ivARB, glMultiTexCoord1iARB, glMultiTexCoord1fvARB,
         glMultiTexCoord1fARB, glMultiTexCoord1dvARB, glMultiTexCoord1dARB,
-        glClientActiveTextureARB, glActiveTextureARB,
-        gl_MAX_TEXTURE_UNITS_ARB, gl_CLIENT_ACTIVE_TEXTURE_ARB,
-        gl_ACTIVE_TEXTURE_ARB, gl_TEXTURE31_ARB, gl_TEXTURE30_ARB,
-        gl_TEXTURE29_ARB, gl_TEXTURE28_ARB, gl_TEXTURE27_ARB,
-        gl_TEXTURE26_ARB, gl_TEXTURE25_ARB, gl_TEXTURE24_ARB,
-        gl_TEXTURE23_ARB, gl_TEXTURE22_ARB, gl_TEXTURE21_ARB,
-        gl_TEXTURE20_ARB, gl_TEXTURE19_ARB, gl_TEXTURE18_ARB,
+        glClientActiveTextureARB, glActiveTextureARB, gl_TEXTURE9_ARB,
+        gl_TEXTURE8_ARB, gl_TEXTURE7_ARB, gl_TEXTURE6_ARB, gl_TEXTURE5_ARB,
+        gl_TEXTURE4_ARB, gl_TEXTURE3_ARB, gl_TEXTURE31_ARB,
+        gl_TEXTURE30_ARB, gl_TEXTURE2_ARB, gl_TEXTURE29_ARB,
+        gl_TEXTURE28_ARB, gl_TEXTURE27_ARB, gl_TEXTURE26_ARB,
+        gl_TEXTURE25_ARB, gl_TEXTURE24_ARB, gl_TEXTURE23_ARB,
+        gl_TEXTURE22_ARB, gl_TEXTURE21_ARB, gl_TEXTURE20_ARB,
+        gl_TEXTURE1_ARB, gl_TEXTURE19_ARB, gl_TEXTURE18_ARB,
         gl_TEXTURE17_ARB, gl_TEXTURE16_ARB, gl_TEXTURE15_ARB,
         gl_TEXTURE14_ARB, gl_TEXTURE13_ARB, gl_TEXTURE12_ARB,
-        gl_TEXTURE11_ARB, gl_TEXTURE10_ARB, gl_TEXTURE9_ARB,
-        gl_TEXTURE8_ARB, gl_TEXTURE7_ARB, gl_TEXTURE6_ARB, gl_TEXTURE5_ARB,
-        gl_TEXTURE4_ARB, gl_TEXTURE3_ARB, gl_TEXTURE2_ARB, gl_TEXTURE1_ARB,
-        gl_TEXTURE0_ARB)
+        gl_TEXTURE11_ARB, gl_TEXTURE10_ARB, gl_TEXTURE0_ARB,
+        gl_MAX_TEXTURE_UNITS_ARB, gl_CLIENT_ACTIVE_TEXTURE_ARB,
+        gl_ACTIVE_TEXTURE_ARB)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
 import Foreign.Ptr
@@ -631,20 +631,35 @@ foreign import CALLCONV unsafe "dynamic" dyn_glActiveTextureARB ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> IO ())
  
-gl_MAX_TEXTURE_UNITS_ARB :: GLenum
-gl_MAX_TEXTURE_UNITS_ARB = 34018
+gl_TEXTURE9_ARB :: GLenum
+gl_TEXTURE9_ARB = 33993
  
-gl_CLIENT_ACTIVE_TEXTURE_ARB :: GLenum
-gl_CLIENT_ACTIVE_TEXTURE_ARB = 34017
+gl_TEXTURE8_ARB :: GLenum
+gl_TEXTURE8_ARB = 33992
  
-gl_ACTIVE_TEXTURE_ARB :: GLenum
-gl_ACTIVE_TEXTURE_ARB = 34016
+gl_TEXTURE7_ARB :: GLenum
+gl_TEXTURE7_ARB = 33991
+ 
+gl_TEXTURE6_ARB :: GLenum
+gl_TEXTURE6_ARB = 33990
+ 
+gl_TEXTURE5_ARB :: GLenum
+gl_TEXTURE5_ARB = 33989
+ 
+gl_TEXTURE4_ARB :: GLenum
+gl_TEXTURE4_ARB = 33988
+ 
+gl_TEXTURE3_ARB :: GLenum
+gl_TEXTURE3_ARB = 33987
  
 gl_TEXTURE31_ARB :: GLenum
 gl_TEXTURE31_ARB = 34015
  
 gl_TEXTURE30_ARB :: GLenum
 gl_TEXTURE30_ARB = 34014
+ 
+gl_TEXTURE2_ARB :: GLenum
+gl_TEXTURE2_ARB = 33986
  
 gl_TEXTURE29_ARB :: GLenum
 gl_TEXTURE29_ARB = 34013
@@ -676,6 +691,9 @@ gl_TEXTURE21_ARB = 34005
 gl_TEXTURE20_ARB :: GLenum
 gl_TEXTURE20_ARB = 34004
  
+gl_TEXTURE1_ARB :: GLenum
+gl_TEXTURE1_ARB = 33985
+ 
 gl_TEXTURE19_ARB :: GLenum
 gl_TEXTURE19_ARB = 34003
  
@@ -706,32 +724,14 @@ gl_TEXTURE11_ARB = 33995
 gl_TEXTURE10_ARB :: GLenum
 gl_TEXTURE10_ARB = 33994
  
-gl_TEXTURE9_ARB :: GLenum
-gl_TEXTURE9_ARB = 33993
- 
-gl_TEXTURE8_ARB :: GLenum
-gl_TEXTURE8_ARB = 33992
- 
-gl_TEXTURE7_ARB :: GLenum
-gl_TEXTURE7_ARB = 33991
- 
-gl_TEXTURE6_ARB :: GLenum
-gl_TEXTURE6_ARB = 33990
- 
-gl_TEXTURE5_ARB :: GLenum
-gl_TEXTURE5_ARB = 33989
- 
-gl_TEXTURE4_ARB :: GLenum
-gl_TEXTURE4_ARB = 33988
- 
-gl_TEXTURE3_ARB :: GLenum
-gl_TEXTURE3_ARB = 33987
- 
-gl_TEXTURE2_ARB :: GLenum
-gl_TEXTURE2_ARB = 33986
- 
-gl_TEXTURE1_ARB :: GLenum
-gl_TEXTURE1_ARB = 33985
- 
 gl_TEXTURE0_ARB :: GLenum
 gl_TEXTURE0_ARB = 33984
+ 
+gl_MAX_TEXTURE_UNITS_ARB :: GLenum
+gl_MAX_TEXTURE_UNITS_ARB = 34018
+ 
+gl_CLIENT_ACTIVE_TEXTURE_ARB :: GLenum
+gl_CLIENT_ACTIVE_TEXTURE_ARB = 34017
+ 
+gl_ACTIVE_TEXTURE_ARB :: GLenum
+gl_ACTIVE_TEXTURE_ARB = 34016

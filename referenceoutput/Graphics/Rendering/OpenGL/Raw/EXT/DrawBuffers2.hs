@@ -1,8 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE CPP #-}
 module Graphics.Rendering.OpenGL.Raw.EXT.DrawBuffers2
-       (glIsEnabledIndexedEXT, glDisableIndexedEXT, glEnableIndexedEXT,
-        glGetIntegerIndexedvEXT, glGetBooleanIndexedvEXT,
+       (glIsEnabledIndexedEXT, glGetIntegerIndexedvEXT,
+        glGetBooleanIndexedvEXT, glEnableIndexedEXT, glDisableIndexedEXT,
         glColorMaskIndexedEXT)
        where
 import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
@@ -26,39 +26,6 @@ foreign import CALLCONV unsafe "dynamic" dyn_glIsEnabledIndexedEXT
                ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLuint -> IO GLboolean)
- 
-{-# NOINLINE ptr_glDisableIndexedEXT #-}
- 
-ptr_glDisableIndexedEXT :: FunPtr a
-ptr_glDisableIndexedEXT
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_EXT_draw_buffers2"
-        "glDisableIndexedEXT"
- 
-glDisableIndexedEXT :: GLenum -> GLuint -> IO ()
-glDisableIndexedEXT
-  = dyn_glDisableIndexedEXT ptr_glDisableIndexedEXT
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glDisableIndexedEXT ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> IO ())
- 
-{-# NOINLINE ptr_glEnableIndexedEXT #-}
- 
-ptr_glEnableIndexedEXT :: FunPtr a
-ptr_glEnableIndexedEXT
-  = unsafePerformIO $
-      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
-        "GL_EXT_draw_buffers2"
-        "glEnableIndexedEXT"
- 
-glEnableIndexedEXT :: GLenum -> GLuint -> IO ()
-glEnableIndexedEXT = dyn_glEnableIndexedEXT ptr_glEnableIndexedEXT
- 
-foreign import CALLCONV unsafe "dynamic" dyn_glEnableIndexedEXT ::
-               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
-                 (GLenum -> GLuint -> IO ())
  
 {-# NOINLINE ptr_glGetIntegerIndexedvEXT #-}
  
@@ -96,6 +63,39 @@ foreign import CALLCONV unsafe "dynamic" dyn_glGetBooleanIndexedvEXT
                ::
                Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
                  (GLenum -> GLuint -> Ptr GLboolean -> IO ())
+ 
+{-# NOINLINE ptr_glEnableIndexedEXT #-}
+ 
+ptr_glEnableIndexedEXT :: FunPtr a
+ptr_glEnableIndexedEXT
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_EXT_draw_buffers2"
+        "glEnableIndexedEXT"
+ 
+glEnableIndexedEXT :: GLenum -> GLuint -> IO ()
+glEnableIndexedEXT = dyn_glEnableIndexedEXT ptr_glEnableIndexedEXT
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glEnableIndexedEXT ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> IO ())
+ 
+{-# NOINLINE ptr_glDisableIndexedEXT #-}
+ 
+ptr_glDisableIndexedEXT :: FunPtr a
+ptr_glDisableIndexedEXT
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_EXT_draw_buffers2"
+        "glDisableIndexedEXT"
+ 
+glDisableIndexedEXT :: GLenum -> GLuint -> IO ()
+glDisableIndexedEXT
+  = dyn_glDisableIndexedEXT ptr_glDisableIndexedEXT
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glDisableIndexedEXT ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLenum -> GLuint -> IO ())
  
 {-# NOINLINE ptr_glColorMaskIndexedEXT #-}
  
