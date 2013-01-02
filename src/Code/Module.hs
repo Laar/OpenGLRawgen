@@ -23,7 +23,6 @@ module Code.Module (
 -----------------------------------------------------------------------------
 
 import Control.Monad
-import Data.Maybe(fromMaybe)
 import qualified Data.Set as S
 
 import Text.OpenGL.Spec(showCategory)
@@ -79,7 +78,7 @@ addEnum c n = do
         -- | Adds an import for a specific enum
         addImport' :: EnumName -> Name -> Builder ()
         addImport' ename iname = do
-            ic <- getDefineLoc ename >>= return . fromMaybe (error $ "Couldn't find " ++ show iname)
+            ic <- getDefineLoc ename >>= liftRawGen . liftMaybe ("Couldn't find " ++ show iname)
             when (ic /= c) $ askCategoryPImport ic [IVar iname] 
                            >>= addImport
 

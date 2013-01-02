@@ -20,7 +20,8 @@ module Code.Builder (
     RawPBuilder,
     GBuilder,
 
-    RawGen,
+    module Main.Monad,
+    liftRawGen,
     -- * Miscellaneous functions for the builders
     emptyBuilder,
     addCategoryAndActivate,
@@ -101,11 +102,14 @@ execRawPBuilder (lMap, vMap) mods builder =
     flip evalStateT emptyDefineMap $
     execStateT builder mods
 
+liftRawGen :: RawGen a -> GBuilder bm a
+liftRawGen = lift . lift . lift . lift
+
 -----------------------------------------------------------------------------
 
 -- | Retrieves an option from the builder.
 asksOption :: (RawGenOptions -> a) -> GBuilder bm a
-asksOption = lift . lift . lift . lift . M.asksOptions
+asksOption = liftRawGen . M.asksOptions
 
 -- | Lifted version of `when`, to conditionally execute a builder
 whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()

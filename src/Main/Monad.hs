@@ -6,6 +6,7 @@ module Main.Monad (
     askOptions,
     asksOptions,
     liftEither, liftEitherMsg, liftEitherPrepend,
+    liftMaybe,
     logMessage,
 
     throwError, catchError,
@@ -57,3 +58,6 @@ liftEitherMsg f a = case a of
 
 liftEitherPrepend :: Show e => String -> Either e a -> RawGen a
 liftEitherPrepend s = liftEitherMsg (\e -> s ++ show e)
+
+liftMaybe :: String -> Maybe a -> RawGen a
+liftMaybe m = maybe (throwError m) return
