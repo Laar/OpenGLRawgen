@@ -23,6 +23,7 @@ import System.Directory
 import System.Exit(exitSuccess)
 import System.FilePath((</>))
 
+import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
 import Code.Generating.Package
@@ -30,6 +31,7 @@ import Code.Generating.Package
 import Code.Raw
 import Code.Module(replaceCallConv)
 import Main.Options
+import Main.Monad
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
@@ -48,50 +50,53 @@ procNew = do
     when (hasFlag Help opts)        $ putStrLn usage >> exitSuccess
     when (hasFlag VersionThis opts) $ printVersion >> exitSuccess
 
-    let especP  = enumextFile   opts
-        fspecP  = glFile        opts
-        tmspecP = tmFile        opts
-    erawSpec <- parseSpecs especP fspecP tmspecP
-    case erawSpec of
-        Left e -> print e
-        Right (lMap, vMap) -> do
-            lMap' <- processReuses opts lMap
-            let oDir = outputDir opts
-                lMap'' = cleanupSpec opts lMap'
-                modules = makeRaw opts (lMap'', vMap)
-                -- | Post processes a module and writes it to file
-                pmodule mn m =
-                    let msc = replaceCallConv "CALLCONV" $ prettyPrint m
-                    in  safeWriteFile (oDir </> moduleNameToPath mn ++ ".hs") msc
-            -- write out the modules
-            processModules' pmodule modules
-            -- and a list of exposed and internal modules.
-                >> safeWriteFile (oDir </> "modulesE.txt") (unlines .
-                    map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules)
-                >> safeWriteFile (oDir </> "modulesI.txt") (unlines .
-                    map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules)
+    runRawGen $ do
+        (lMap, vMap) <- parseSpecs
+        lMap' <- processReuses lMap
+        oDir <- asksOptions outputDir
+        let lMap'' = cleanupSpec opts lMap'
+            modules = makeRaw opts (lMap'', vMap)
+        -- write out the modules
+        logMessage $ "Writing modules"
+        processModules' outputModule modules
+        logMessage $ "Writing module names"
+        -- and a list of exposed and internal modules.
+        liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
+                    map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
+        liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
+                    map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse
-processReuses :: RawGenOptions -> LocationMap -> IO LocationMap
-processReuses o lMap = do
+processReuses :: LocationMap -> RawGen LocationMap
+processReuses lMap = do
+    o <- askOptions
     let freuseP = freuseFile o
         ereuseP = ereuseFile o
     freuses <- getReuses freuseP
     ereuses <- getReuses ereuseP
     return $ addReuses freuses ereuses lMap
     where
-        getReuses :: FilePath -> IO [(Category, [Category])]
-        getReuses fp = doesFileExist fp >>= \exists ->
+        getReuses :: FilePath -> RawGen [(Category, [Category])]
+        getReuses fp = liftIO (doesFileExist fp) >>= \exists ->
             case exists of
                 False -> return []
-                True -> readFile fp >>= \reuses ->
-                    return
-                        -- unwraping the error layer
-                        . either (\ e-> error $ "Parsing the reuses faild with" ++ show e) id
+                True -> liftIO (readFile fp) >>= \reuses ->
+                    liftEitherMsg 
+                        (\e -> "Parsing reuses failed with: " ++ show e)
                         . parseReuses $ reuses
 
 printVersion :: IO ()
 printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version
+
+-----------------------------------------------------------------------------
+
+outputModule :: ModuleName -> Module -> RawGen ()
+outputModule mname modu = do
+    oDir <- asksOptions outputDir
+    let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
+        path = oDir </> moduleNameToPath mname ++ ".hs"
+    logMessage $ "Writing: " ++ moduleNameToName mname
+    liftIO $ safeWriteFile path modu'
 
 -----------------------------------------------------------------------------

@@ -41,27 +41,23 @@ import Text.OpenGL.Api as A
 import Text.OpenGL.Spec as S hiding (Value)
 import qualified Text.OpenGL.Spec as S
 
+import Main.Options
+import Main.Monad
 import Spec.RawSpec
 
 -----------------------------------------------------------------------------
 
 -- | Parse the needed OpenGL spec files and generate a 'RawSpec' based on
 -- them.
-parseSpecs
-    :: FilePath         -- ^ The path to \"enumext.spec\"
-    -> FilePath         -- ^ The path to \"gl.spec\"
-    -> FilePath         -- ^ The path to \"gl.tm\"
-    -> IO (Either ParseError (LocationMap, ValueMap))
-parseSpecs esf gsf tmf = do
-    especf <- readFile esf
-    fspecf <- readFile gsf
-    tymapf <- readFile tmf
-    return $ do -- (Either ParseError) monad
-        espec  <- enumLines especf >>= return . parseEnumSpec
-        tymap  <- tmLines tymapf >>= return . mkTypeMap
-        fspec  <- funLines fspecf >>= return . extractFunctions
-        let fspec' = parseFSpec fspec tymap
-        return $ mappend espec fspec' --mkRawSpec espec fspec'
+parseSpecs :: RawGen (LocationMap, ValueMap)
+parseSpecs = do
+    especf <- asksOptions enumextFile >>= liftIO . readFile
+    fspecf <- asksOptions glFile >>= liftIO . readFile
+    tymapf <- asksOptions tmFile >>= liftIO . readFile
+    espec <- liftEither $ parseEnumSpec <$> enumLines especf
+    tymap <- liftEither $ mkTypeMap <$> tmLines tymapf
+    fspec <- liftEither $ extractFunctions <$> funLines fspecf
+    return . mappend espec $ parseFSpec fspec tymap
 
 -----------------------------------------------------------------------------
 
