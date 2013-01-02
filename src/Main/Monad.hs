@@ -8,6 +8,7 @@ module Main.Monad (
     liftEither, liftEitherMsg, liftEitherPrepend,
     logMessage,
 
+    throwError, catchError,
     liftIO,
 
 ) where
@@ -20,11 +21,11 @@ import System.IO
 
 import Main.Options
 
-newtype RawGen a 
+newtype RawGen a
     = RawGen
-    { _runRawGen :: ErrorT String 
-        (ReaderT RawGenOptions IO ) a 
-    } deriving (Functor, Applicative, Monad, MonadIO)
+    { _runRawGen :: ErrorT String
+        (ReaderT RawGenOptions IO ) a
+    } deriving (Functor, Applicative, Monad, MonadIO, MonadError String)
 
 runRawGen :: RawGen a -> IO a
 runRawGen rg = do
@@ -50,9 +51,9 @@ liftEither :: Show e => Either e a -> RawGen a
 liftEither = liftEitherMsg show
 
 liftEitherMsg :: (e -> String) -> Either e a -> RawGen a
-liftEitherMsg f a = RawGen . ErrorT . return $ case a of
-    Left e   -> Left $ f e
-    Right a' -> Right a'
+liftEitherMsg f a = case a of
+    Left e -> throwError $ f e
+    Right a' -> return a'
 
 liftEitherPrepend :: Show e => String -> Either e a -> RawGen a
 liftEitherPrepend s = liftEitherMsg (\e -> s ++ show e)

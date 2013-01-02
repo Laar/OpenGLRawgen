@@ -55,7 +55,7 @@ procNew = do
         lMap' <- processReuses lMap
         oDir <- asksOptions outputDir
         let lMap'' = cleanupSpec opts lMap'
-            modules = makeRaw opts (lMap'', vMap)
+        modules <- makeRaw (lMap'', vMap)
         -- write out the modules
         logMessage $ "Writing modules"
         processModules' outputModule modules
