@@ -78,7 +78,7 @@ addEnum c n = do
         -- | Adds an import for a specific enum
         addImport' :: EnumName -> Name -> Builder ()
         addImport' ename iname = do
-            ic <- getDefineLoc ename >>= liftRawGen . liftMaybe ("Couldn't find " ++ show iname)
+            ic <- getDefineLoc ename >>= liftMaybe ("Couldn't find " ++ show iname)
             when (ic /= c) $ askCategoryPImport ic [IVar iname] 
                            >>= addImport
 

@@ -21,7 +21,6 @@ module Code.Builder (
     GBuilder,
 
     module Main.Monad,
-    liftRawGen,
     -- * Miscellaneous functions for the builders
     emptyBuilder,
     addCategoryAndActivate,
@@ -29,7 +28,7 @@ module Code.Builder (
     execRawPBuilder,
 
     -- * Options related helpers
-    asksOption, whenOption, unlessOption, unwrapNameBuilder,
+    whenOption, unlessOption, unwrapNameBuilder,
 
     -- * Ask-ers for module locations
     askBaseModule,
@@ -74,8 +73,7 @@ import Code.Generating.Builder
 import Text.OpenGL.Spec as S
 import Spec
 import Main.Options
-import Main.Monad hiding (asksOptions)
-import qualified Main.Monad as M (asksOptions)
+import Main.Monad
 
 -----------------------------------------------------------------------------
 
@@ -102,25 +100,21 @@ execRawPBuilder (lMap, vMap) mods builder =
     flip evalStateT emptyDefineMap $
     execStateT builder mods
 
-liftRawGen :: RawGen a -> GBuilder bm a
-liftRawGen = lift . lift . lift . lift
+--liftRawGen :: RawGen a -> GBuilder bm a
+--liftRawGen = lift . lift . lift . lift
 
 -----------------------------------------------------------------------------
 
--- | Retrieves an option from the builder.
-asksOption :: (RawGenOptions -> a) -> GBuilder bm a
-asksOption = liftRawGen . M.asksOptions
-
 -- | Lifted version of `when`, to conditionally execute a builder
 whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
-whenOption f b = asksOption f >>= \p -> when p b
+whenOption f b = asksOptions f >>= \p -> when p b
 
 -- | Lifted version of `unless`, to conditionally execute a builder
 unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
-unlessOption f b = asksOption f >>= \p -> unless p b
+unlessOption f b = asksOptions f >>= \p -> unless p b
 
 unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
-unwrapNameBuilder = asksOption . unwrapName
+unwrapNameBuilder = asksOptions . unwrapName
 
 -----------------------------------------------------------------------------
 
