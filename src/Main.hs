@@ -42,29 +42,30 @@ import Paths_OpenGLRawgen(version)
 -----------------------------------------------------------------------------
 
 main :: IO ()
-main = procNew
-
-procNew :: IO ()
-procNew = do
+main = do
     opts <- getOptions
     when (hasFlag Help opts)        $ putStrLn usage >> exitSuccess
     when (hasFlag VersionThis opts) $ printVersion >> exitSuccess
+    runRawGen rmain
 
-    runRawGen $ do
-        (lMap, vMap) <- parseSpecs
-        lMap' <- processReuses lMap
-        oDir <- asksOptions outputDir
-        let lMap'' = cleanupSpec opts lMap'
-        modules <- makeRaw (lMap'', vMap)
-        -- write out the modules
-        logMessage $ "Writing modules"
-        processModules' outputModule modules
-        logMessage $ "Writing module names"
-        -- and a list of exposed and internal modules.
-        liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
-                    map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
-        liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
-                    map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
+-- | The 'real' main function, the generator.
+rmain :: RawGen ()
+rmain = do
+    (lMap, vMap) <- parseSpecs
+    lMap' <- processReuses lMap
+    oDir <- asksOptions outputDir
+    opts <- askOptions
+    let lMap'' = cleanupSpec opts lMap'
+    modules <- makeRaw (lMap'', vMap)
+    -- write out the modules
+    logMessage $ "Writing modules"
+    processModules' outputModule modules
+    logMessage $ "Writing module names"
+    -- and a list of exposed and internal modules.
+    liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
+        map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
+    liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
+        map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse
