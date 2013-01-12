@@ -1,9 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Main.Monad (
-    RawGen(),
+    RawGenT(),
+    RawGenMonad(..), RawGen,
 
     runRawGen,
-    askOptions,
     asksOptions,
     liftEither, liftEitherMsg, liftEitherPrepend,
     liftMaybe,
@@ -22,11 +22,22 @@ import System.IO
 
 import Main.Options
 
-newtype RawGen a
+
+class (Applicative m, Monad m) => RawGenMonad m where
+    askOptions :: m RawGenOptions
+    throwRawError :: String -> m a
+
+type RawGen = RawGenT IO
+
+newtype RawGenT m a
     = RawGen
     { _runRawGen :: ErrorT String
-        (ReaderT RawGenOptions IO ) a
-    } deriving (Functor, Applicative, Monad, MonadIO, MonadError String)
+        (ReaderT RawGenOptions m) a
+    } deriving (Functor, Applicative, Monad, MonadIO, MonadError String, MonadReader RawGenOptions)
+
+instance (Applicative m, Monad m) => RawGenMonad (RawGenT m) where
+    askOptions = ask
+    throwRawError = throwError
 
 runRawGen :: RawGen a -> IO a
 runRawGen rg = do
@@ -36,28 +47,25 @@ runRawGen rg = do
     case e of
         Right a -> return a
         Left errMsg -> do
-            hPutStr stderr errMsg 
+            hPutStr stderr errMsg
             exitWith $ ExitFailure 1
 
-askOptions :: RawGen RawGenOptions
-askOptions = RawGen $ ask
-
-asksOptions :: (RawGenOptions -> a) -> RawGen a
-asksOptions = RawGen . asks
+asksOptions :: RawGenMonad rm => (RawGenOptions -> a) -> rm a
+asksOptions f = f <$> askOptions
 
 logMessage :: String -> RawGen ()
 logMessage m = liftIO $ putStrLn m
 
-liftEither :: Show e => Either e a -> RawGen a
+liftEither :: (RawGenMonad rm, Show e) => Either e a -> rm a
 liftEither = liftEitherMsg show
 
-liftEitherMsg :: (e -> String) -> Either e a -> RawGen a
+liftEitherMsg :: RawGenMonad rm => (e -> String) -> Either e a -> rm a
 liftEitherMsg f a = case a of
-    Left e -> throwError $ f e
+    Left e -> throwRawError $ f e
     Right a' -> return a'
 
-liftEitherPrepend :: Show e => String -> Either e a -> RawGen a
+liftEitherPrepend :: (RawGenMonad rm, Show e) => String -> Either e a -> rm a
 liftEitherPrepend s = liftEitherMsg (\e -> s ++ show e)
 
-liftMaybe :: String -> Maybe a -> RawGen a
-liftMaybe m = maybe (throwError m) return
+liftMaybe :: RawGenMonad rm => String -> Maybe a -> rm a
+liftMaybe m = maybe (throwRawError m) return
