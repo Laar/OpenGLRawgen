@@ -20,6 +20,8 @@ module Code.Builder (
     RawPBuilder,
     GBuilder,
 
+    module Main.Monad,
+    liftRawGen,
     -- * Miscellaneous functions for the builders
     emptyBuilder,
     addCategoryAndActivate,
@@ -58,6 +60,7 @@ module Code.Builder (
 
 -----------------------------------------------------------------------------
 
+import Control.Applicative
 import Control.Monad.Reader
 import Control.Monad.State
 import Data.Char
@@ -71,10 +74,12 @@ import Code.Generating.Builder
 import Text.OpenGL.Spec as S
 import Spec
 import Main.Options
+import Main.Monad hiding (asksOptions)
+import qualified Main.Monad as M (asksOptions)
 
 -----------------------------------------------------------------------------
 
-type BuilderBase = StateT DefineMap (StateT ValueMap (ReaderT LocationMap (Reader RawGenOptions)))
+type BuilderBase = StateT DefineMap (StateT ValueMap (ReaderT LocationMap RawGen))
 
 -- | Builder for building modules from the spec.
 type Builder = SModuleBuilder Module BuilderBase
@@ -89,20 +94,22 @@ type GBuilder bm a = StateT bm BuilderBase a
 emptyBuilder :: PackageBuild Module
 emptyBuilder = singlePackage . emptyMod $ baseModule
 
-execRawPBuilder :: RawGenOptions -> (LocationMap, ValueMap)
-    -> PackageBuild Module -> RawPBuilder a -> (PackageBuild Module)
-execRawPBuilder opts (lMap, vMap) mods builder =
-    flip runReader opts $
+execRawPBuilder :: (LocationMap, ValueMap)
+    -> PackageBuild Module -> RawPBuilder a -> RawGen (PackageBuild Module)
+execRawPBuilder (lMap, vMap) mods builder =
     flip runReaderT lMap $
     flip evalStateT vMap $
     flip evalStateT emptyDefineMap $
     execStateT builder mods
 
+liftRawGen :: RawGen a -> GBuilder bm a
+liftRawGen = lift . lift . lift . lift
+
 -----------------------------------------------------------------------------
 
 -- | Retrieves an option from the builder.
 asksOption :: (RawGenOptions -> a) -> GBuilder bm a
-asksOption = lift . lift . lift . lift . asks
+asksOption = liftRawGen . M.asksOptions
 
 -- | Lifted version of `when`, to conditionally execute a builder
 whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
@@ -137,12 +144,12 @@ askExtensionImport      = return . importAll $ extensionModule
 -- | Ask the module in which the functions and enums will be defined for
 -- that category
 askCategoryModule :: Category -> GBuilder bm ModuleName
-askCategoryModule c = return . categoryModule $ c
+askCategoryModule c = categoryModule $ c
 
 -- | Asks an importDecl to import the ImportSpec from the module of the
 -- category.
 askCategoryPImport :: Category -> [ImportSpec] -> Builder ImportDecl
-askCategoryPImport c i = return $ partialImport (categoryModule c) i
+askCategoryPImport c i = flip partialImport i <$> categoryModule c
 
 -- | Asks the categories defined by the Spec files.
 asksCategories :: ([Category] -> a) -> GBuilder bm a
@@ -221,13 +228,15 @@ askCorePath :: GBuilder bm String
 askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
-categoryModule :: Category -> ModuleName
-categoryModule (Version ma mi d) =
+categoryModule :: Category -> GBuilder bm ModuleName
+categoryModule (Version ma mi d) = return .
     ModuleName $ corePath <.> "Internal"
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
-categoryModule (Extension ex n _) =
+categoryModule (Extension ex n _) = return .
     ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName n
-categoryModule (S.Name n) = error $ "categoryModule: Category with only a name " ++ upperFirst (show n)
+categoryModule (S.Name n) = throwError
+    $ "categoryModule: Category with only a name "
+    ++ upperFirst (show n)
 
 -- | query whether or not the module of a certain category is an exposed
 -- module.

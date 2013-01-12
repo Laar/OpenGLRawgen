@@ -23,6 +23,7 @@ executable OpenGLRawgen
     Spec.Parsing
     Spec.RawSpec
     Main.Options
+    Main.Monad
     Code.GroupModule
     Code.Module
     Code.Compatibility

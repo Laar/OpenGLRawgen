@@ -39,10 +39,10 @@ import Code.Module
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the specification.
-makeRaw :: RawGenOptions -> (LocationMap, ValueMap) -> Package Module
-makeRaw opts spec =
-    let packbuild = execRawPBuilder opts spec emptyBuilder buildRaw
-    in packages packbuild
+makeRaw :: (LocationMap, ValueMap) -> RawGen (Package Module)
+makeRaw spec =
+    let packbuild = execRawPBuilder spec emptyBuilder buildRaw
+    in fmap packages packbuild
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
