@@ -49,7 +49,7 @@ import Spec.RawSpec
 
 -- | Parse the needed OpenGL spec files and generate a 'RawSpec' based on
 -- them.
-parseSpecs :: RawGen (LocationMap, ValueMap)
+parseSpecs :: RawGenIO (LocationMap, ValueMap)
 parseSpecs = do
     especf <- asksOptions enumextFile >>= liftIO . readFile
     fspecf <- asksOptions glFile >>= liftIO . readFile

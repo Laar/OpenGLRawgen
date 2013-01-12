@@ -46,17 +46,17 @@ main = do
     opts <- getOptions
     when (hasFlag Help opts)        $ putStrLn usage >> exitSuccess
     when (hasFlag VersionThis opts) $ printVersion >> exitSuccess
-    runRawGen rmain
+    runRawGenIO rmain
 
 -- | The 'real' main function, the generator.
-rmain :: RawGen ()
+rmain :: RawGenIO ()
 rmain = do
     (lMap, vMap) <- parseSpecs
     lMap' <- processReuses lMap
     oDir <- asksOptions outputDir
     opts <- askOptions
     let lMap'' = cleanupSpec opts lMap'
-    modules <- makeRaw (lMap'', vMap)
+    modules <- liftRawGen $ makeRaw (lMap'', vMap)
     -- write out the modules
     logMessage $ "Writing modules"
     processModules' outputModule modules
@@ -69,7 +69,7 @@ rmain = do
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse
-processReuses :: LocationMap -> RawGen LocationMap
+processReuses :: LocationMap -> RawGenIO LocationMap
 processReuses lMap = do
     o <- askOptions
     let freuseP = freuseFile o
@@ -78,7 +78,7 @@ processReuses lMap = do
     ereuses <- getReuses ereuseP
     return $ addReuses freuses ereuses lMap
     where
-        getReuses :: FilePath -> RawGen [(Category, [Category])]
+        getReuses :: FilePath -> RawGenIO [(Category, [Category])]
         getReuses fp = liftIO (doesFileExist fp) >>= \exists ->
             case exists of
                 False -> return []
@@ -92,7 +92,7 @@ printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version
 
 -----------------------------------------------------------------------------
 
-outputModule :: ModuleName -> Module -> RawGen ()
+outputModule :: ModuleName -> Module -> RawGenIO ()
 outputModule mname modu = do
     oDir <- asksOptions outputDir
     let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
