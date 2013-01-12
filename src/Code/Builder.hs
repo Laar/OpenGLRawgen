@@ -301,7 +301,7 @@ recapUnderscores (      x : xs) =         x : recapUnderscores xs
 
 -- | List of legal `Char`s in a module name
 legalChars :: [Char]
-legalChars = ['A'..'z'] ++ "'_"
+legalChars = ['A'..'Z'] ++ ['a'..'z'] ++ "'_"
 
 -- | Spells illegal `Char`s as words, starting with a capital letter.
 spellout :: Char -> String
