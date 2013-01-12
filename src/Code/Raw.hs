@@ -55,7 +55,7 @@ buildRaw = do
     whenOption mkExtensionGroups addVendorModules
     addLatestProfileToRaw
 
-    whenOption (hasFlag RawCompatibility) addCompatibilityModules
+    whenFlag RawCompatibility addCompatibilityModules
 
 -----------------------------------------------------------------------------
 

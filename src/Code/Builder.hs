@@ -28,7 +28,7 @@ module Code.Builder (
     execRawPBuilder,
 
     -- * Options related helpers
-    whenOption, unlessOption, unwrapNameBuilder,
+    unwrapNameBuilder,
 
     -- * Ask-ers for other (spec related) information
     asksCategories,
@@ -52,7 +52,6 @@ import Code.Generating.Builder
 
 import Text.OpenGL.Spec as S
 import Spec
-import Main.Options
 import Main.Monad
 import Code.ModuleNames
 
@@ -85,14 +84,6 @@ execRawPBuilder (lMap, vMap) mods builder =
 --liftRawGen = lift . lift . lift . lift
 
 -----------------------------------------------------------------------------
-
--- | Lifted version of `when`, to conditionally execute a builder
-whenOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
-whenOption f b = asksOptions f >>= \p -> when p b
-
--- | Lifted version of `unless`, to conditionally execute a builder
-unlessOption :: (RawGenOptions -> Bool) -> GBuilder bm () -> GBuilder bm ()
-unlessOption f b = asksOptions f >>= \p -> unless p b
 
 unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
 unwrapNameBuilder = asksOptions . unwrapName

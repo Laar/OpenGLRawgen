@@ -7,7 +7,7 @@ module Main.Monad (
 
     runRawGenIO,
     liftRawGen,
-    asksOptions,
+    asksOptions, unlessOption, whenOption, whenFlag,
     liftEither, liftEitherMsg, liftEitherPrepend,
     liftMaybe,
     logMessage,
@@ -81,6 +81,20 @@ liftRawGen rg = do
 
 asksOptions :: RawGenMonad rm => (RawGenOptions -> a) -> rm a
 asksOptions f = f <$> askOptions
+
+
+-- | Executes the action only when the predicate holds (lifted `when`).
+whenOption :: RawGenMonad m => (RawGenOptions -> Bool) -> m () -> m ()
+whenOption f b = asksOptions f >>= \p -> when p b
+
+-- | Executes an action only when the specific flag is present.
+whenFlag :: RawGenMonad m => RawGenFlag -> m () -> m ()
+whenFlag = whenOption . hasFlag
+
+-- | Execute the action only when the predicate fails (lifted `unless`).
+unlessOption :: RawGenMonad m => (RawGenOptions -> Bool) -> m () -> m ()
+unlessOption f b = asksOptions f >>= \p -> unless p b
+
 
 logMessage :: (MonadIO m, RawGenMonad m) => String -> m ()
 logMessage m = liftIO $ putStrLn m
