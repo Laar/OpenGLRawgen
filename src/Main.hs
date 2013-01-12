@@ -8,7 +8,7 @@
 -- Stability   :
 -- Portability :
 --
--- |
+-- | The main file for the OpenGLRaw-generator.
 --
 -----------------------------------------------------------------------------
 

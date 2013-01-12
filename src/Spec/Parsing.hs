@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.Parsing
--- Copyright   :  (c) 2011-12 Lars Corbijn
+-- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
 -- Maintainer  :

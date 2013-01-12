@@ -4,7 +4,7 @@ cabal-version: >= 1.8
 build-type: Simple
 license: BSD3
 license-file: LICENSE
-copyright: Lars Corbijn (2011-2012)
+copyright: Lars Corbijn 2011-2013
 maintainer: Lars Corbijn
 stability:
 homepage:
