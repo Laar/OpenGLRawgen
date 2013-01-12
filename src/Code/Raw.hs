@@ -19,6 +19,7 @@ module Code.Raw (
 
 -----------------------------------------------------------------------------
 
+import Control.Applicative ((<$>),(<*>), pure)
 import Data.Function(on)
 import Data.List(sortBy)
 
@@ -35,14 +36,15 @@ import Code.Builder
 import Code.Compatibility
 import Code.GroupModule
 import Code.Module
+import Code.ModuleNames
 
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the specification.
 makeRaw :: (LocationMap, ValueMap) -> RawGen (Package Module)
-makeRaw spec =
-    let packbuild = execRawPBuilder spec emptyBuilder buildRaw
-    in fmap packages packbuild
+makeRaw spec = do
+    packbuild <- execRawPBuilder spec <$> emptyBuilder <*> pure buildRaw
+    packages <$> packbuild
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
@@ -53,7 +55,7 @@ buildRaw = do
     whenOption mkExtensionGroups addVendorModules
     addLatestProfileToRaw
 
-    whenOption (hasFlag RawCompatibility) addCompatibilityModules
+    whenFlag RawCompatibility addCompatibilityModules
 
 -----------------------------------------------------------------------------
 

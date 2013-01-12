@@ -33,6 +33,7 @@ import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 import Code.Generating.Builder
 import Code.Builder
+import Code.ModuleNames
 
 -----------------------------------------------------------------------------
 

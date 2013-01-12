@@ -30,8 +30,10 @@ import Spec
 
 import Code.Generating.Utils
 import Language.Haskell.Exts.Syntax
-import Code.Builder
 import Code.Generating.Builder
+
+import Code.Builder
+import Code.ModuleNames
 
 -----------------------------------------------------------------------------
 
