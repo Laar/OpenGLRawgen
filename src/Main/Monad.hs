@@ -1,21 +1,48 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
 -- needed for the instances of the other mtl typeclasses
+-----------------------------------------------------------------------------
+--
+-- Module      :  Main.Monad
+-- Copyright   :  (c) 2013 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
+--
+-- Maintainer  :
+-- Stability   :
+-- Portability :
+--
+-- | The general MonadTransformer `RawGenMonad` and its basic implementation
+-- are defined here.
+--
+-----------------------------------------------------------------------------
 module Main.Monad (
+    -- MonadTransformer and implementing types.
+    RawGenMonad(..),
     RawGenT(),
-    RawGenMonad(..), RawGen, RawGenIO,
+    RawGen, RawGenIO,
 
     runRawGenIO,
     liftRawGen,
-    asksOptions, unlessOption, whenOption, whenFlag,
-    liftEither, liftEitherMsg, liftEitherPrepend,
+    -- * `RawGenOptions` related functions
+    asksOptions,
+    unlessOption,
+    whenOption,
+    whenFlag,
+    -- * Error handling functions
+    liftEither,
+    liftEitherMsg, 
+    liftEitherPrepend,
     liftMaybe,
+    
+    -- * Other functions and reexports
     logMessage,
 
     throwError, catchError,
     liftIO,
 
 ) where
+
+-----------------------------------------------------------------------------
 
 import Control.Applicative
 import Control.Monad.Error
@@ -28,6 +55,7 @@ import System.IO
 
 import Main.Options
 
+-----------------------------------------------------------------------------
 
 -- MonadTransformer class for the Generator providing options and
 -- exception handling.
@@ -56,6 +84,8 @@ instance (Applicative m, Monad m) => RawGenMonad (RawGenT m) where
 instance MonadTrans RawGenT where
     lift    = RawGen . lift . lift
 
+-----------------------------------------------------------------------------
+
 -- | Runs a `RawGenIO`.
 runRawGenIO :: RawGenIO a -> IO a
 runRawGenIO rg = do
@@ -79,6 +109,9 @@ liftRawGen rg = do
         Right a -> return a
         Left em -> throwRawError em
 
+-----------------------------------------------------------------------------
+-- option related
+
 asksOptions :: RawGenMonad rm => (RawGenOptions -> a) -> rm a
 asksOptions f = f <$> askOptions
 
@@ -95,9 +128,13 @@ whenFlag = whenOption . hasFlag
 unlessOption :: RawGenMonad m => (RawGenOptions -> Bool) -> m () -> m ()
 unlessOption f b = asksOptions f >>= \p -> unless p b
 
+-----------------------------------------------------------------------------
 
 logMessage :: (MonadIO m, RawGenMonad m) => String -> m ()
 logMessage m = liftIO $ putStrLn m
+
+-----------------------------------------------------------------------------
+-- error handling
 
 -- | Specialization of `liftEitherMsg` using show.
 liftEither :: (RawGenMonad rm, Show e) => Either e a -> rm a
@@ -120,9 +157,8 @@ liftEitherPrepend s = liftEitherMsg (\e -> s ++ show e)
 liftMaybe :: RawGenMonad rm => String -> Maybe a -> rm a
 liftMaybe m = maybe (throwRawError m) return
 
---
+-----------------------------------------------------------------------------
 -- Instances for mtl
---
 
 -- need UndecidableInstances as the Coverage Condition fails.
 instance MonadState s m => MonadState s (RawGenT m) where
@@ -145,3 +181,5 @@ instance RawGenMonad m => RawGenMonad (StateT s m) where
 instance (RawGenMonad m, Monoid w) => RawGenMonad (WriterT w m) where
     askOptions = lift askOptions
     throwRawError = lift . throwRawError
+
+-----------------------------------------------------------------------------
