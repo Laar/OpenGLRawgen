@@ -2,6 +2,14 @@
 REFERENCEDIR="referenceoutput"
 TESTDIR="testoutput"
 
+if [ ! -d  "$REFERENCEDIR" ] ;
+then
+    echo "-------------------------"
+    echo "-- Unpacking reference --"
+    echo "-------------------------"
+    tar -z -xf "$REFERENCEDIR.tar.gz"
+fi
+
 rm -r "$TESTDIR"
 mkdir "$TESTDIR"
 echo "---------------------------"
