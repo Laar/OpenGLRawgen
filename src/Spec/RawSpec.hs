@@ -264,6 +264,7 @@ extensions =
     , "GREMEDY"
     , "HP"
     , "IBM", "INGR", "INTEL"
+    , "KHR"
     , "MESAX", "MESA"
     , "NV"
     , "OES", "OML"
