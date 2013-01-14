@@ -69,7 +69,7 @@ options =
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     , Option ['e'] ["enumext"]
         (ReqArg (\f r -> return r{rgEnum = Just f}) "FILE") "The enumext.spec file to use"
-    , Option ['g'] ["gl"]
+    , Option ['f'] ["gl"]
         (ReqArg (\f r -> return r{rgGL = Just f}) "FILE") "The gl.spec file to use"
     , Option ['t'] ["tm"]
         (ReqArg (\f r -> return r{rgTM = Just f}) "FILE") "The gl.tm file to use"
