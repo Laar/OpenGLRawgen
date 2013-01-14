@@ -1,0 +1,54 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE CPP #-}
+module Graphics.Rendering.OpenGL.Raw.APPLE.FloatPixels
+       (gl_RGB_FLOAT32, gl_RGB_FLOAT16, gl_RGBA_FLOAT32, gl_RGBA_FLOAT16,
+        gl_LUMINANCE_FLOAT32, gl_LUMINANCE_FLOAT16,
+        gl_LUMINANCE_ALPHA_FLOAT32, gl_LUMINANCE_ALPHA_FLOAT16,
+        gl_INTENSITY_FLOAT32, gl_INTENSITY_FLOAT16, gl_HALF,
+        gl_COLOR_FLOAT, gl_ALPHA_FLOAT32, gl_ALPHA_FLOAT16)
+       where
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Foreign.Ptr
+import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+gl_RGB_FLOAT32 :: GLenum
+gl_RGB_FLOAT32 = 34837
+ 
+gl_RGB_FLOAT16 :: GLenum
+gl_RGB_FLOAT16 = 34843
+ 
+gl_RGBA_FLOAT32 :: GLenum
+gl_RGBA_FLOAT32 = 34836
+ 
+gl_RGBA_FLOAT16 :: GLenum
+gl_RGBA_FLOAT16 = 34842
+ 
+gl_LUMINANCE_FLOAT32 :: GLenum
+gl_LUMINANCE_FLOAT32 = 34840
+ 
+gl_LUMINANCE_FLOAT16 :: GLenum
+gl_LUMINANCE_FLOAT16 = 34846
+ 
+gl_LUMINANCE_ALPHA_FLOAT32 :: GLenum
+gl_LUMINANCE_ALPHA_FLOAT32 = 34841
+ 
+gl_LUMINANCE_ALPHA_FLOAT16 :: GLenum
+gl_LUMINANCE_ALPHA_FLOAT16 = 34847
+ 
+gl_INTENSITY_FLOAT32 :: GLenum
+gl_INTENSITY_FLOAT32 = 34839
+ 
+gl_INTENSITY_FLOAT16 :: GLenum
+gl_INTENSITY_FLOAT16 = 34845
+ 
+gl_HALF :: GLenum
+gl_HALF = 5131
+ 
+gl_COLOR_FLOAT :: GLenum
+gl_COLOR_FLOAT = 35343
+ 
+gl_ALPHA_FLOAT32 :: GLenum
+gl_ALPHA_FLOAT32 = 34838
+ 
+gl_ALPHA_FLOAT16 :: GLenum
+gl_ALPHA_FLOAT16 = 34844

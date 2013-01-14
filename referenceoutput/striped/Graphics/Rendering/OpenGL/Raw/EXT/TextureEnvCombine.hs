@@ -1,0 +1,76 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE CPP #-}
+module Graphics.Rendering.OpenGL.Raw.EXT.TextureEnvCombine
+       (gl_SOURCE2_RGB, gl_SOURCE2_ALPHA, gl_SOURCE1_RGB,
+        gl_SOURCE1_ALPHA, gl_SOURCE0_RGB, gl_SOURCE0_ALPHA, gl_RGB_SCALE,
+        gl_PRIMARY_COLOR, gl_PREVIOUS, gl_OPERAND2_RGB, gl_OPERAND2_ALPHA,
+        gl_OPERAND1_RGB, gl_OPERAND1_ALPHA, gl_OPERAND0_RGB,
+        gl_OPERAND0_ALPHA, gl_INTERPOLATE, gl_CONSTANT, gl_COMBINE_RGB,
+        gl_COMBINE, gl_COMBINE_ALPHA, gl_ADD_SIGNED)
+       where
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Foreign.Ptr
+import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+gl_SOURCE2_RGB :: GLenum
+gl_SOURCE2_RGB = 34178
+ 
+gl_SOURCE2_ALPHA :: GLenum
+gl_SOURCE2_ALPHA = 34186
+ 
+gl_SOURCE1_RGB :: GLenum
+gl_SOURCE1_RGB = 34177
+ 
+gl_SOURCE1_ALPHA :: GLenum
+gl_SOURCE1_ALPHA = 34185
+ 
+gl_SOURCE0_RGB :: GLenum
+gl_SOURCE0_RGB = 34176
+ 
+gl_SOURCE0_ALPHA :: GLenum
+gl_SOURCE0_ALPHA = 34184
+ 
+gl_RGB_SCALE :: GLenum
+gl_RGB_SCALE = 34163
+ 
+gl_PRIMARY_COLOR :: GLenum
+gl_PRIMARY_COLOR = 34167
+ 
+gl_PREVIOUS :: GLenum
+gl_PREVIOUS = 34168
+ 
+gl_OPERAND2_RGB :: GLenum
+gl_OPERAND2_RGB = 34194
+ 
+gl_OPERAND2_ALPHA :: GLenum
+gl_OPERAND2_ALPHA = 34202
+ 
+gl_OPERAND1_RGB :: GLenum
+gl_OPERAND1_RGB = 34193
+ 
+gl_OPERAND1_ALPHA :: GLenum
+gl_OPERAND1_ALPHA = 34201
+ 
+gl_OPERAND0_RGB :: GLenum
+gl_OPERAND0_RGB = 34192
+ 
+gl_OPERAND0_ALPHA :: GLenum
+gl_OPERAND0_ALPHA = 34200
+ 
+gl_INTERPOLATE :: GLenum
+gl_INTERPOLATE = 34165
+ 
+gl_CONSTANT :: GLenum
+gl_CONSTANT = 34166
+ 
+gl_COMBINE_RGB :: GLenum
+gl_COMBINE_RGB = 34161
+ 
+gl_COMBINE :: GLenum
+gl_COMBINE = 34160
+ 
+gl_COMBINE_ALPHA :: GLenum
+gl_COMBINE_ALPHA = 34162
+ 
+gl_ADD_SIGNED :: GLenum
+gl_ADD_SIGNED = 34164

@@ -1,0 +1,22 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE CPP #-}
+module Graphics.Rendering.OpenGL.Raw.ARB.TextureCompressionBptc
+       (gl_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+        gl_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+        gl_COMPRESSED_RGB_BPTC_SIGNED_FLOAT, gl_COMPRESSED_RGBA_BPTC_UNORM)
+       where
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Foreign.Ptr
+import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+gl_COMPRESSED_SRGB_ALPHA_BPTC_UNORM :: GLenum
+gl_COMPRESSED_SRGB_ALPHA_BPTC_UNORM = 36493
+ 
+gl_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT :: GLenum
+gl_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT = 36495
+ 
+gl_COMPRESSED_RGB_BPTC_SIGNED_FLOAT :: GLenum
+gl_COMPRESSED_RGB_BPTC_SIGNED_FLOAT = 36494
+ 
+gl_COMPRESSED_RGBA_BPTC_UNORM :: GLenum
+gl_COMPRESSED_RGBA_BPTC_UNORM = 36492

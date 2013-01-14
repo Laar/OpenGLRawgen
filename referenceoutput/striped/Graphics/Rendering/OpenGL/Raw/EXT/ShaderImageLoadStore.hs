@@ -1,0 +1,235 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE CPP #-}
+module Graphics.Rendering.OpenGL.Raw.EXT.ShaderImageLoadStore
+       (glMemoryBarrier, glBindImageTexture,
+        gl_VERTEX_ATTRIB_ARRAY_BARRIER_BIT,
+        gl_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY, gl_UNSIGNED_INT_IMAGE_CUBE,
+        gl_UNSIGNED_INT_IMAGE_BUFFER, gl_UNSIGNED_INT_IMAGE_3D,
+        gl_UNSIGNED_INT_IMAGE_2D_RECT,
+        gl_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE,
+        gl_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
+        gl_UNSIGNED_INT_IMAGE_2D, gl_UNSIGNED_INT_IMAGE_2D_ARRAY,
+        gl_UNSIGNED_INT_IMAGE_1D, gl_UNSIGNED_INT_IMAGE_1D_ARRAY,
+        gl_UNIFORM_BARRIER_BIT, gl_TRANSFORM_FEEDBACK_BARRIER_BIT,
+        gl_TEXTURE_UPDATE_BARRIER_BIT, gl_TEXTURE_FETCH_BARRIER_BIT,
+        gl_SHADER_IMAGE_ACCESS_BARRIER_BIT, gl_PIXEL_BUFFER_BARRIER_BIT,
+        gl_MAX_IMAGE_UNITS, gl_MAX_IMAGE_SAMPLES,
+        gl_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS,
+        gl_INT_IMAGE_CUBE_MAP_ARRAY, gl_INT_IMAGE_CUBE,
+        gl_INT_IMAGE_BUFFER, gl_INT_IMAGE_3D, gl_INT_IMAGE_2D_RECT,
+        gl_INT_IMAGE_2D_MULTISAMPLE, gl_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
+        gl_INT_IMAGE_2D, gl_INT_IMAGE_2D_ARRAY, gl_INT_IMAGE_1D,
+        gl_INT_IMAGE_1D_ARRAY, gl_IMAGE_CUBE_MAP_ARRAY, gl_IMAGE_CUBE,
+        gl_IMAGE_BUFFER, gl_IMAGE_BINDING_NAME, gl_IMAGE_BINDING_LEVEL,
+        gl_IMAGE_BINDING_LAYER, gl_IMAGE_BINDING_LAYERED,
+        gl_IMAGE_BINDING_FORMAT, gl_IMAGE_BINDING_ACCESS, gl_IMAGE_3D,
+        gl_IMAGE_2D_RECT, gl_IMAGE_2D_MULTISAMPLE,
+        gl_IMAGE_2D_MULTISAMPLE_ARRAY, gl_IMAGE_2D, gl_IMAGE_2D_ARRAY,
+        gl_IMAGE_1D, gl_IMAGE_1D_ARRAY, gl_FRAMEBUFFER_BARRIER_BIT,
+        gl_ELEMENT_ARRAY_BARRIER_BIT, gl_COMMAND_BARRIER_BIT,
+        gl_BUFFER_UPDATE_BARRIER_BIT, gl_ATOMIC_COUNTER_BARRIER_BIT,
+        gl_ALL_BARRIER_BITS)
+       where
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Foreign.Ptr
+import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+{-# NOINLINE ptr_glMemoryBarrier #-}
+ 
+ptr_glMemoryBarrier :: FunPtr a
+ptr_glMemoryBarrier
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_EXT_shader_image_load_store"
+        "glMemoryBarrierEXT"
+ 
+glMemoryBarrier :: GLbitfield -> IO ()
+glMemoryBarrier = dyn_glMemoryBarrier ptr_glMemoryBarrier
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glMemoryBarrier ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLbitfield -> IO ())
+ 
+{-# NOINLINE ptr_glBindImageTexture #-}
+ 
+ptr_glBindImageTexture :: FunPtr a
+ptr_glBindImageTexture
+  = unsafePerformIO $
+      Graphics.Rendering.OpenGL.Raw.Internal.Extensions.getExtensionEntry
+        "GL_EXT_shader_image_load_store"
+        "glBindImageTextureEXT"
+ 
+glBindImageTexture ::
+                   GLuint ->
+                     GLuint -> GLint -> GLboolean -> GLint -> GLenum -> GLint -> IO ()
+glBindImageTexture = dyn_glBindImageTexture ptr_glBindImageTexture
+ 
+foreign import CALLCONV unsafe "dynamic" dyn_glBindImageTexture ::
+               Graphics.Rendering.OpenGL.Raw.Internal.Extensions.Invoker
+                 (GLuint ->
+                    GLuint -> GLint -> GLboolean -> GLint -> GLenum -> GLint -> IO ())
+ 
+gl_VERTEX_ATTRIB_ARRAY_BARRIER_BIT :: GLbitfield
+gl_VERTEX_ATTRIB_ARRAY_BARRIER_BIT = 1
+ 
+gl_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY :: GLenum
+gl_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY = 36970
+ 
+gl_UNSIGNED_INT_IMAGE_CUBE :: GLenum
+gl_UNSIGNED_INT_IMAGE_CUBE = 36966
+ 
+gl_UNSIGNED_INT_IMAGE_BUFFER :: GLenum
+gl_UNSIGNED_INT_IMAGE_BUFFER = 36967
+ 
+gl_UNSIGNED_INT_IMAGE_3D :: GLenum
+gl_UNSIGNED_INT_IMAGE_3D = 36964
+ 
+gl_UNSIGNED_INT_IMAGE_2D_RECT :: GLenum
+gl_UNSIGNED_INT_IMAGE_2D_RECT = 36965
+ 
+gl_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE :: GLenum
+gl_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE = 36971
+ 
+gl_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY :: GLenum
+gl_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY = 36972
+ 
+gl_UNSIGNED_INT_IMAGE_2D :: GLenum
+gl_UNSIGNED_INT_IMAGE_2D = 36963
+ 
+gl_UNSIGNED_INT_IMAGE_2D_ARRAY :: GLenum
+gl_UNSIGNED_INT_IMAGE_2D_ARRAY = 36969
+ 
+gl_UNSIGNED_INT_IMAGE_1D :: GLenum
+gl_UNSIGNED_INT_IMAGE_1D = 36962
+ 
+gl_UNSIGNED_INT_IMAGE_1D_ARRAY :: GLenum
+gl_UNSIGNED_INT_IMAGE_1D_ARRAY = 36968
+ 
+gl_UNIFORM_BARRIER_BIT :: GLbitfield
+gl_UNIFORM_BARRIER_BIT = 4
+ 
+gl_TRANSFORM_FEEDBACK_BARRIER_BIT :: GLbitfield
+gl_TRANSFORM_FEEDBACK_BARRIER_BIT = 2048
+ 
+gl_TEXTURE_UPDATE_BARRIER_BIT :: GLbitfield
+gl_TEXTURE_UPDATE_BARRIER_BIT = 256
+ 
+gl_TEXTURE_FETCH_BARRIER_BIT :: GLbitfield
+gl_TEXTURE_FETCH_BARRIER_BIT = 8
+ 
+gl_SHADER_IMAGE_ACCESS_BARRIER_BIT :: GLbitfield
+gl_SHADER_IMAGE_ACCESS_BARRIER_BIT = 32
+ 
+gl_PIXEL_BUFFER_BARRIER_BIT :: GLbitfield
+gl_PIXEL_BUFFER_BARRIER_BIT = 128
+ 
+gl_MAX_IMAGE_UNITS :: GLenum
+gl_MAX_IMAGE_UNITS = 36664
+ 
+gl_MAX_IMAGE_SAMPLES :: GLenum
+gl_MAX_IMAGE_SAMPLES = 36973
+ 
+gl_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS :: GLenum
+gl_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS = 36665
+ 
+gl_INT_IMAGE_CUBE_MAP_ARRAY :: GLenum
+gl_INT_IMAGE_CUBE_MAP_ARRAY = 36959
+ 
+gl_INT_IMAGE_CUBE :: GLenum
+gl_INT_IMAGE_CUBE = 36955
+ 
+gl_INT_IMAGE_BUFFER :: GLenum
+gl_INT_IMAGE_BUFFER = 36956
+ 
+gl_INT_IMAGE_3D :: GLenum
+gl_INT_IMAGE_3D = 36953
+ 
+gl_INT_IMAGE_2D_RECT :: GLenum
+gl_INT_IMAGE_2D_RECT = 36954
+ 
+gl_INT_IMAGE_2D_MULTISAMPLE :: GLenum
+gl_INT_IMAGE_2D_MULTISAMPLE = 36960
+ 
+gl_INT_IMAGE_2D_MULTISAMPLE_ARRAY :: GLenum
+gl_INT_IMAGE_2D_MULTISAMPLE_ARRAY = 36961
+ 
+gl_INT_IMAGE_2D :: GLenum
+gl_INT_IMAGE_2D = 36952
+ 
+gl_INT_IMAGE_2D_ARRAY :: GLenum
+gl_INT_IMAGE_2D_ARRAY = 36958
+ 
+gl_INT_IMAGE_1D :: GLenum
+gl_INT_IMAGE_1D = 36951
+ 
+gl_INT_IMAGE_1D_ARRAY :: GLenum
+gl_INT_IMAGE_1D_ARRAY = 36957
+ 
+gl_IMAGE_CUBE_MAP_ARRAY :: GLenum
+gl_IMAGE_CUBE_MAP_ARRAY = 36948
+ 
+gl_IMAGE_CUBE :: GLenum
+gl_IMAGE_CUBE = 36944
+ 
+gl_IMAGE_BUFFER :: GLenum
+gl_IMAGE_BUFFER = 36945
+ 
+gl_IMAGE_BINDING_NAME :: GLenum
+gl_IMAGE_BINDING_NAME = 36666
+ 
+gl_IMAGE_BINDING_LEVEL :: GLenum
+gl_IMAGE_BINDING_LEVEL = 36667
+ 
+gl_IMAGE_BINDING_LAYER :: GLenum
+gl_IMAGE_BINDING_LAYER = 36669
+ 
+gl_IMAGE_BINDING_LAYERED :: GLenum
+gl_IMAGE_BINDING_LAYERED = 36668
+ 
+gl_IMAGE_BINDING_FORMAT :: GLenum
+gl_IMAGE_BINDING_FORMAT = 36974
+ 
+gl_IMAGE_BINDING_ACCESS :: GLenum
+gl_IMAGE_BINDING_ACCESS = 36670
+ 
+gl_IMAGE_3D :: GLenum
+gl_IMAGE_3D = 36942
+ 
+gl_IMAGE_2D_RECT :: GLenum
+gl_IMAGE_2D_RECT = 36943
+ 
+gl_IMAGE_2D_MULTISAMPLE :: GLenum
+gl_IMAGE_2D_MULTISAMPLE = 36949
+ 
+gl_IMAGE_2D_MULTISAMPLE_ARRAY :: GLenum
+gl_IMAGE_2D_MULTISAMPLE_ARRAY = 36950
+ 
+gl_IMAGE_2D :: GLenum
+gl_IMAGE_2D = 36941
+ 
+gl_IMAGE_2D_ARRAY :: GLenum
+gl_IMAGE_2D_ARRAY = 36947
+ 
+gl_IMAGE_1D :: GLenum
+gl_IMAGE_1D = 36940
+ 
+gl_IMAGE_1D_ARRAY :: GLenum
+gl_IMAGE_1D_ARRAY = 36946
+ 
+gl_FRAMEBUFFER_BARRIER_BIT :: GLbitfield
+gl_FRAMEBUFFER_BARRIER_BIT = 1024
+ 
+gl_ELEMENT_ARRAY_BARRIER_BIT :: GLbitfield
+gl_ELEMENT_ARRAY_BARRIER_BIT = 2
+ 
+gl_COMMAND_BARRIER_BIT :: GLbitfield
+gl_COMMAND_BARRIER_BIT = 64
+ 
+gl_BUFFER_UPDATE_BARRIER_BIT :: GLbitfield
+gl_BUFFER_UPDATE_BARRIER_BIT = 512
+ 
+gl_ATOMIC_COUNTER_BARRIER_BIT :: GLbitfield
+gl_ATOMIC_COUNTER_BARRIER_BIT = 4096
+ 
+gl_ALL_BARRIER_BITS :: GLbitfield
+gl_ALL_BARRIER_BITS = 4294967295

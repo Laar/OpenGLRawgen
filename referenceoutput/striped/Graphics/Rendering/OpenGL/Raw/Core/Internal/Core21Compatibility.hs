@@ -1,0 +1,31 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE CPP #-}
+module Graphics.Rendering.OpenGL.Raw.Core.Internal.Core21Compatibility
+       (gl_SLUMINANCE_ALPHA, gl_SLUMINANCE8_ALPHA8, gl_SLUMINANCE8,
+        gl_SLUMINANCE, gl_CURRENT_RASTER_SECONDARY_COLOR,
+        gl_COMPRESSED_SLUMINANCE_ALPHA, gl_COMPRESSED_SLUMINANCE)
+       where
+import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Foreign.Ptr
+import Graphics.Rendering.OpenGL.Raw.Internal.Extensions
+ 
+gl_SLUMINANCE_ALPHA :: GLenum
+gl_SLUMINANCE_ALPHA = 35908
+ 
+gl_SLUMINANCE8_ALPHA8 :: GLenum
+gl_SLUMINANCE8_ALPHA8 = 35909
+ 
+gl_SLUMINANCE8 :: GLenum
+gl_SLUMINANCE8 = 35911
+ 
+gl_SLUMINANCE :: GLenum
+gl_SLUMINANCE = 35910
+ 
+gl_CURRENT_RASTER_SECONDARY_COLOR :: GLenum
+gl_CURRENT_RASTER_SECONDARY_COLOR = 33887
+ 
+gl_COMPRESSED_SLUMINANCE_ALPHA :: GLenum
+gl_COMPRESSED_SLUMINANCE_ALPHA = 35915
+ 
+gl_COMPRESSED_SLUMINANCE :: GLenum
+gl_COMPRESSED_SLUMINANCE = 35914

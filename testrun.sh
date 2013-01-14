@@ -7,7 +7,8 @@ mkdir "$TESTDIR"
 echo "---------------------------"
 echo "-- Generating new output --"
 echo "---------------------------"
-time ./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR" -c -d input +RTS -sstderr &&
+time ./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR/normal/" -c --groups -d input +RTS -sstderr &&
+./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR/striped/" -c -s -d input
 
 if [[ $? == 0 ]] ;
 then
