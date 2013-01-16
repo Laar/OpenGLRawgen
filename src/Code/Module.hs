@@ -177,8 +177,10 @@ replaceCallConv r = go
 addFunctionConditionals :: Builder ()
 addFunctionConditionals = do
     askTypesModule >>= ensureImport
-    let forPtr = ModuleName "Foreign.Ptr"
-    ensureImport forPtr
+    let foreignPtr    = ModuleName "Foreign.Ptr"
+        foreignCTypes = ModuleName "Foreign.C.Types"
+    ensureImport foreignPtr
+    ensureImport foreignCTypes
     askExtensionModule >>= ensureImport
     let cppPragma = LanguageP $ Ident "CPP"
         ffiPragma = LanguageP $ Ident "ForeignFunctionInterface"
