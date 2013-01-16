@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 -----------------------------------------------------------------------------
 --
 -- Module      :  Code.Builder
@@ -17,13 +18,16 @@ module Code.Builder (
 
     -- * The builders
     Builder,
-    RawPBuilder,
-    GBuilder,
+    MBuilder,
+
+    -- * The generated module
+    External, RawModule(..), rawModuleName,
+
 
     module Main.Monad,
     -- * Miscellaneous functions for the builders
-    emptyBuilder,
-    addCategoryAndActivate,
+    addCategoryModule,  addCategoryModule',
+    addModule, addModule',
     ensureImport,
     execRawPBuilder,
 
@@ -37,6 +41,8 @@ module Code.Builder (
     asksLocationMap,
     getsValueMap,modifyValueMap,
     enumLookup,
+
+    lift,
 ) where
 
 -----------------------------------------------------------------------------
@@ -44,11 +50,11 @@ module Code.Builder (
 import Control.Applicative
 import Control.Monad.Reader
 import Control.Monad.State
+import Control.Monad.RWS
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
-import Code.Generating.Package
-import Code.Generating.Builder
+import Code.Generating.Builder hiding (addModule)
 
 import Text.OpenGL.Spec as S
 import Spec
@@ -57,47 +63,93 @@ import Code.ModuleNames
 
 -----------------------------------------------------------------------------
 
-type BuilderBase = StateT DefineMap (StateT ValueMap (ReaderT LocationMap RawGen))
 
--- | Builder for building modules from the spec.
-type Builder = SModuleBuilder Module BuilderBase
--- | Builder to build the package from the spec.
-type RawPBuilder a = PackageBuilder Module BuilderBase a
 
--- | Generic Builder, by leavin bm only constraint to `BuildableModule bm`
--- a function can be used in both `Builder` and `RawPBuilder`.
-type GBuilder bm a = StateT bm BuilderBase a
+execRawPBuilder :: (LocationMap, ValueMap) -> Builder a -> RawGen (a,[RawModule])
+execRawPBuilder (lMap, vMap) builder =
+    evalRWST (runBuilder builder) lMap (emptyDefineMap, vMap)
 
--- | The empty Package builder, with only the baseModule.
-emptyBuilder :: RawGenMonad m => m (PackageBuild Module)
-emptyBuilder = singlePackage . emptyMod <$> askBaseModule
-
-execRawPBuilder :: (LocationMap, ValueMap)
-    -> PackageBuild Module -> RawPBuilder a -> RawGen (PackageBuild Module)
-execRawPBuilder (lMap, vMap) mods builder =
-    flip runReaderT lMap $
-    flip evalStateT vMap $
-    flip evalStateT emptyDefineMap $
-    execStateT builder mods
+type MBuilder = SModuleBuilder Module Builder
 
 --liftRawGen :: RawGen a -> GBuilder bm a
 --liftRawGen = lift . lift . lift . lift
 
+type BuilderRWST m = RWST LocationMap [RawModule] (DefineMap, ValueMap) m
+
+newtype Builder a
+    = Builder
+    { runBuilder
+        :: BuilderRWST RawGen a
+    } deriving (Functor, Applicative, Monad, RawGenMonad)
+
+-- | Smart constructor
+gbuilder :: BuilderRWST RawGen a -> Builder a
+gbuilder = Builder
+
+-- | Lifted smart constructor
+lgbuilder :: MonadTrans m => BuilderRWST RawGen a -> m Builder a
+lgbuilder = lift . gbuilder
+
 -----------------------------------------------------------------------------
 
-unwrapNameBuilder :: SpecValue sv => ValueName sv -> Builder Name
+-- | Adds a new module
+newModule :: Module -> External -> Builder ()
+newModule m e = Builder . tell . pure $ RawModule m e
+
+-- | Type indicating if a module is exposed to the outside world or
+-- purely for internal use
+type External = Bool
+
+-- | A generated module
+data RawModule
+    = RawModule
+    { rawModule       :: Module
+    , externalRModule :: External
+    } deriving (Eq, Ord, Show)
+
+-- | Utility function for extracting the name of a `RawModule`.
+rawModuleName :: RawModule -> ModuleName
+rawModuleName = moduleToModuleName . rawModule
+
+-----------------------------------------------------------------------------
+
+-- | Outputs a module for a specific category
+addCategoryModule :: Category -> (Category -> MBuilder a) -> Builder a
+addCategoryModule cat buildFunc = do
+    modName <- askCategoryModule cat
+    isExternal <- isExposedCategory cat
+    (a,modul) <- runStateT (buildFunc cat) (emptyModule modName)
+    newModule modul isExternal
+    return a
+
+addCategoryModule' :: Category -> MBuilder a -> Builder a
+addCategoryModule' c = addCategoryModule c . const
+
+-- | Adds a module with a specific name.
+addModule :: ModuleName -> External -> (ModuleName -> MBuilder a) -> Builder a
+addModule modName isExternal buildFunc = do
+    (a,modul) <- runStateT (buildFunc modName) (emptyModule modName)
+    newModule modul isExternal
+    return a
+
+addModule' :: ModuleName -> External -> MBuilder a -> Builder a
+addModule' modulName isExternal = addModule modulName isExternal . const
+
+-----------------------------------------------------------------------------
+
+unwrapNameBuilder :: (RawGenMonad m, SpecValue sv) => ValueName sv -> m Name
 unwrapNameBuilder = asksOptions . unwrapName
 
 -----------------------------------------------------------------------------
 
 -- | Asks the categories defined by the Spec files.
-asksCategories :: ([Category] -> a) -> GBuilder bm a
+asksCategories :: ([Category] -> a) -> Builder a
 asksCategories f = asksLocationMap (f . allCategories)
 
 -----------------------------------------------------------------------------
 
 -- | Ensure a certain module is fully imported.
-ensureImport :: ModuleName -> Builder ()
+ensureImport :: ModuleName -> MBuilder ()
 ensureImport m = do
     imp <- getImport m
     when (null imp) $ addImport (importAll m)
@@ -106,24 +158,24 @@ ensureImport m = do
 
 -- | Gets the category where a certain `ValueName` is defined, if it's not
 -- defined the result will be Nothing
-getDefineLoc :: SpecValue sv => ValueName sv -> GBuilder a  (Maybe Category)
-getDefineLoc = lift . gets . getDefLocation
+getDefineLoc :: SpecValue sv => ValueName sv -> MBuilder (Maybe Category)
+getDefineLoc vn = lgbuilder $ gets (getDefLocation vn . fst)
 
 -- | Adds the location of a value.
-addDefineLoc :: SpecValue sv => ValueName sv -> Category -> Builder ()
-addDefineLoc vn cat = lift $ modify (addDefLocation vn cat)
+addDefineLoc :: SpecValue sv => ValueName sv -> Category -> MBuilder ()
+addDefineLoc vn cat = lgbuilder $ modify (\(dm,vm) -> (addDefLocation vn cat dm, vm))
 
 -- | Gets the `ValueMap`.
-getsValueMap :: (ValueMap -> a) -> GBuilder m a
-getsValueMap = lift . lift . gets
+getsValueMap :: (ValueMap -> a) -> MBuilder a
+getsValueMap f = lgbuilder $ gets (f . snd)
 
-modifyValueMap :: (ValueMap -> ValueMap) -> GBuilder m ()
-modifyValueMap = lift . lift . modify
+modifyValueMap :: (ValueMap -> ValueMap) -> MBuilder ()
+modifyValueMap f = lgbuilder $ modify (\(dm,vm) -> (dm, f vm))
 
-asksLocationMap :: (LocationMap -> a) -> GBuilder m a
-asksLocationMap = lift . lift . lift . asks
+asksLocationMap :: (LocationMap -> a) -> Builder a
+asksLocationMap = gbuilder . asks
 
-enumLookup :: EnumName -> GBuilder m (Maybe EnumValue)
+enumLookup :: EnumName -> MBuilder (Maybe EnumValue)
 enumLookup en = do
     val <- getsValueMap $ lookupValue en
     case val of
@@ -135,15 +187,5 @@ enumLookup en = do
                     modifyValueMap $ swapEnumValue en
                     enumLookup en
         _ -> return val
-
------------------------------------------------------------------------------
-
--- | Adds the module for a certain category if it doesn't exist, and
--- activates it.
-addCategoryAndActivate :: Category -> RawPBuilder ()
-addCategoryAndActivate c = do
-    cm <- askCategoryModule c
-    isExt <- isExposedCategory c
-    addModule cm isExt
 
 -----------------------------------------------------------------------------

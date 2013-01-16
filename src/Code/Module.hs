@@ -39,10 +39,10 @@ import Code.ModuleNames
 
 -- | Builds a single module by adding the nessacery FFI imports and
 -- enumeration values for the category
-buildModule :: Category -> Builder ()
+buildModule :: Category -> MBuilder ()
 buildModule c = do
-    funcs <- asksLocationMap $ categoryValues c
-    enums <- asksLocationMap $ categoryValues c
+    funcs <- lift . asksLocationMap $ categoryValues c
+    enums <- lift . asksLocationMap $ categoryValues c
 
     enumDefs <- fmap or . sequence . map (addEnum c) $ S.toList enums
     funcDefs <- fmap or . sequence . map (addFunc c) $ S.toList funcs
@@ -54,7 +54,7 @@ buildModule c = do
 
 -- | Adds the enum value pair to the current module, the category is the
 -- current category. This information is needed to prevent import loops.
-addEnum :: Category -> EnumName -> Builder Bool
+addEnum :: Category -> EnumName -> MBuilder Bool
 addEnum c n = do
     name <- unwrapNameBuilder n
     addExport $ (EVar . UnQual) name
@@ -78,7 +78,7 @@ addEnum c n = do
             addDefineLoc n c
             return True
         -- | Adds an import for a specific enum
-        addImport' :: EnumName -> Name -> Builder ()
+        addImport' :: EnumName -> Name -> MBuilder ()
         addImport' ename iname = do
             ic <- getDefineLoc ename >>= liftMaybe ("Couldn't find " ++ show iname)
             when (ic /= c) $ askCategoryPImport ic [IVar iname] 
@@ -95,14 +95,14 @@ enumDecl name valExp vtype =
 -- | Adds the imports needed when there is at least a single enumvalue
 -- defined in this module, the 'EnumValue's are needed to check if this
 -- is nessacery
-addCondEImports :: Builder ()
+addCondEImports :: MBuilder ()
 addCondEImports = askTypesModule >>= ensureImport
 
 -----------------------------------------------------------------------------
 
 -- Adds the function to the module. The category is needed to prevent an
 -- import of the local category.
-addFunc :: Category -> FuncName -> Builder Bool
+addFunc :: Category -> FuncName -> MBuilder Bool
 addFunc c n = do
     Just (RawFunc gln ty _) <- getsValueMap $ lookupValue n
     name <- unwrapNameBuilder n
@@ -174,7 +174,7 @@ replaceCallConv r = go
 
 -- | Adds the imports, etc. needed when there is a FFI function import. The
 -- 'FuncValue's are needed to check if there is any such function.
-addFunctionConditionals :: Builder ()
+addFunctionConditionals :: MBuilder ()
 addFunctionConditionals = do
     askTypesModule >>= ensureImport
     let foreignPtr    = ModuleName "Foreign.Ptr"

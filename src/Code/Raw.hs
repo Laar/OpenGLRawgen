@@ -19,14 +19,13 @@ module Code.Raw (
 
 -----------------------------------------------------------------------------
 
-import Control.Applicative ((<$>),(<*>), pure)
+import Control.Applicative ((<$>))
 import Data.Function(on)
 import Data.List(sortBy)
 
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Builder
-import Code.Generating.Package
 
 import Main.Options
 import Spec
@@ -41,14 +40,12 @@ import Code.ModuleNames
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the specification.
-makeRaw :: (LocationMap, ValueMap) -> RawGen (Package Module)
-makeRaw spec = do
-    packbuild <- execRawPBuilder spec <$> emptyBuilder <*> pure buildRaw
-    packages <$> packbuild
+makeRaw :: (LocationMap, ValueMap) -> RawGen [RawModule]
+makeRaw spec = snd <$> execRawPBuilder spec buildRaw
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
-buildRaw :: RawPBuilder ()
+buildRaw :: Builder ()
 buildRaw = do
     buildRawImports
     addCoreProfiles
@@ -60,26 +57,19 @@ buildRaw = do
 -----------------------------------------------------------------------------
 
 -- | Builder for the ffi import modules.
-buildRawImports :: RawPBuilder ()
+buildRawImports :: Builder ()
 buildRawImports = do
     cats <- asksLocationMap allCategories
-    sequence_ $ map defineRawImport cats
-
--- | Builds a single ffi import module, by executing 'buildModule'.
-defineRawImport :: Category -> RawPBuilder ()
-defineRawImport c = do
-    mn <- askCategoryModule c
-    ex <- isExposedCategory c
-    defineModule mn ex $ buildModule c
+    sequence_ $ map (flip addCategoryModule buildModule) cats
 
 -- | Adds the latest CoreProfile to the base (...Raw) package
-addLatestProfileToRaw :: RawPBuilder ()
+addLatestProfileToRaw :: Builder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
     Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
-    _ <- liftModBuilder bm $ do
+    addModule' bm True $ do
         ensureImport latestProf
         addExport $ EModuleContents latestProf
     return ()
