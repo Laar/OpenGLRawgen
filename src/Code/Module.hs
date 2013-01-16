@@ -44,8 +44,8 @@ buildModule c = do
     funcs <- asksLocationMap $ categoryValues c
     enums <- asksLocationMap $ categoryValues c
 
-    enumDefs <- fmap and . sequence . map (addEnum c) $ S.toList enums
-    funcDefs <- fmap and . sequence . map (addFunc c) $ S.toList funcs
+    enumDefs <- fmap or . sequence . map (addEnum c) $ S.toList enums
+    funcDefs <- fmap or . sequence . map (addFunc c) $ S.toList funcs
     
     when funcDefs addFunctionConditionals
     when enumDefs addCondEImports
