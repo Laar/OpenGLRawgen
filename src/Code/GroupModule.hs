@@ -77,7 +77,7 @@ addCoreProfile ma mi comp = do
      defineModule mn True $ do
         mkGroupModule cats
         -- let the core modules also expose the types
-        tyMod <- askTypesExposedModule
+        tyMod <- askTypesModule
         ensureImport tyMod
         addExport $ EModuleContents tyMod
 

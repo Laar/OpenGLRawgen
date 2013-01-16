@@ -96,7 +96,7 @@ enumDecl name valExp vtype =
 -- defined in this module, the 'EnumValue's are needed to check if this
 -- is nessacery
 addCondEImports :: Builder ()
-addCondEImports = askTypesInternalModule >>= ensureImport
+addCondEImports = askTypesModule >>= ensureImport
 
 -----------------------------------------------------------------------------
 
@@ -176,7 +176,7 @@ replaceCallConv r = go
 -- 'FuncValue's are needed to check if there is any such function.
 addFunctionConditionals :: Builder ()
 addFunctionConditionals = do
-    askTypesInternalModule >>= ensureImport
+    askTypesModule >>= ensureImport
     let forPtr = ModuleName "Foreign.Ptr"
     ensureImport forPtr
     askExtensionModule >>= ensureImport

@@ -17,8 +17,7 @@ module Code.ModuleNames (
 
     -- * Ask-ers for module locations
     askBaseModule,
-    askTypesInternalModule,
-    askTypesExposedModule,
+    askTypesModule,
     askExtensionModule,
     askCategoryModule,
     askProfileModule,
@@ -26,8 +25,7 @@ module Code.ModuleNames (
 
     -- * Ask-ers for module imports
     askBaseImport,
-    askTypesInternalImport,
-    askTypesExposedImport,
+    askTypesImport,
     askExtensionImport,
     askCategoryPImport,
 
@@ -52,19 +50,17 @@ import Main.Monad
 -----------------------------------------------------------------------------
 
 -- | Asks the location of several basic modules
-askBaseModule, askTypesInternalModule, askTypesExposedModule, askExtensionModule
+askBaseModule, askTypesModule, askExtensionModule
     :: RawGenMonad m => m ModuleName
 askBaseModule = return baseModule
-askTypesInternalModule = return typesInternalModule
-askTypesExposedModule = return typesExposedModule
+askTypesModule = return typesModule
 askExtensionModule = return extensionModule
 
 -- | Asks the full import of several basic modules
-askBaseImport, askTypesInternalImport, askTypesExposedImport, askExtensionImport
+askBaseImport, askTypesImport, askExtensionImport
     :: RawGenMonad m => m ImportDecl
 askBaseImport           = return . importAll $ baseModule
-askTypesInternalImport  = return . importAll $ typesInternalModule
-askTypesExposedImport   = return . importAll $ typesExposedModule
+askTypesImport   = return . importAll $ typesModule
 askExtensionImport      = return . importAll $ extensionModule
 
 
@@ -87,13 +83,9 @@ moduleBase = "Graphics.Rendering.OpenGL.Raw"
 baseModule :: ModuleName
 baseModule = ModuleName $ moduleBase
 
--- (Temporary) TypesInternal modulepath
-typesInternalModule :: ModuleName
-typesInternalModule = ModuleName $ moduleBase <.> "Internal" <.> "TypesInternal"
-
--- (Temporary) TypesExposed modulePath
-typesExposedModule :: ModuleName
-typesExposedModule = ModuleName $ moduleBase <.> "Types"
+-- (Temporary) Types modulePath
+typesModule :: ModuleName
+typesModule = ModuleName $ moduleBase <.> "Types"
 
 -- (Temporary) Extensions modulepath
 extensionModule :: ModuleName

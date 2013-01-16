@@ -1,7 +1,9 @@
+{-# LANGUAGE CPP #-}
+
 -- #hide
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Graphics.Rendering.OpenGL.Raw.Core31.Types
+-- Module      :  Graphics.Rendering.OpenGL.Raw.Core31.TypesInternal
 -- Copyright   :  (c) Sven Panne 2009
 -- License     :  BSD-style (see the file LICENSE)
 --
@@ -13,35 +15,42 @@
 --
 --------------------------------------------------------------------------------
 
-module Graphics.Rendering.OpenGL.Raw.Types (
-   GLbitfield,
-   GLboolean,
-   GLbyte,
-   GLchar,
-   GLclampd,
-   GLclampf,
-   GLdouble,
-   GLenum,
-   GLfloat,
-   GLhalf,
-   GLint,
-   GLintptr,
-   GLshort,
-   GLsizei,
-   GLsizeiptr,
-   GLubyte,
-   GLuint,
-   GLushort,
-   GLint64,
-   GLuint64,
-   GLsync,
-   CLevent,
-   CLcontext,
-   GLdebugprocARB,
-   GLdebugprocAMD,
-   GLhandle
-) where
+module Graphics.Rendering.OpenGL.Raw.Types where
 
--- Just re-export the types in an opaque way, without introducing any warnings
--- about unused constructors.
-import Graphics.Rendering.OpenGL.Raw.Internal.TypesInternal
+import Data.Int
+import Data.Word
+import Foreign.C.Types
+import Foreign.Ptr
+
+
+type GLboolean  = CUChar
+type GLubyte    = CUChar
+type GLbyte     = CSChar
+type GLchar     = CChar
+type GLclampd   = CDouble
+type GLdouble   = CDouble
+type GLclampf   = CFloat
+type GLfloat    = CFloat
+type GLbitfield = CUInt
+type GLenum     = CUInt
+type GLuint     = CUInt
+type GLint      = CInt
+type GLsizei    = CInt
+type GLhalf     = CUShort
+type GLushort   = CUShort
+type GLshort    = CShort
+type GLintptr   = CPtrdiff
+type GLsizeiptr = CPtrdiff
+type GLint64    = Int64
+type GLuint64   = Word64
+
+-- Not part of the core, but it is very handy to define this here
+type GLhandle = CUInt
+type GLsync   = Ptr ()
+
+newtype CLevent = CLEvent (Ptr CLevent)
+newtype CLcontext = CLContext (Ptr CLcontext)
+-- both are actually function pointers
+newtype GLdebugprocARB =  GLdebugprocARB (Ptr GLdebugprocARB)
+newtype GLdebugprocAMD =  GLdebugprocAMD (Ptr GLdebugprocAMD)
+newtype GLdebugproc =  GLdebugproc (Ptr GLdebugproc)
