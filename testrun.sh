@@ -10,7 +10,10 @@ then
     tar -z -xf "$REFERENCEDIR.tar.gz"
 fi
 
-rm -r "$TESTDIR"
+if [ -d "$TESTDIR" ]
+then
+    rm -r "$TESTDIR"
+fi
 mkdir "$TESTDIR"
 echo "---------------------------"
 echo "-- Generating new output --"
