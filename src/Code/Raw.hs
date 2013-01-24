@@ -23,10 +23,6 @@ import Control.Applicative ((<$>))
 import Data.Function(on)
 import Data.List(sortBy)
 
-
-import Language.Haskell.Exts.Syntax
-import Code.Generating.Builder
-
 import Main.Options
 import Spec
 import Text.OpenGL.Spec(Category(..))
@@ -69,9 +65,7 @@ addLatestProfileToRaw = do
     Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
-    addModule' bm True $ do
-        ensureImport latestProf
-        addExport $ EModuleContents latestProf
+    addModule' bm True . tellPart $ ReExportModule latestProf
     return ()
     where
         catRanking (Version ma mi False) = (-ma, -mi)

@@ -29,9 +29,6 @@ import Data.List(nub)
 
 import Text.OpenGL.Spec(Category(..), Extension)
 
-import Language.Haskell.Exts.Syntax
-import Code.Generating.Utils
-import Code.Generating.Builder hiding (addModule)
 import Code.Builder
 import Code.ModuleNames
 
@@ -45,8 +42,7 @@ mkGroupModule cats = do
     where
         addCat c = do
             cm <- askCategoryModule c
-            addImport $ importAll cm
-            addExport $ EModuleContents cm
+            tellPart $ ReExportModule cm
 
 -----------------------------------------------------------------------------
 
@@ -78,8 +74,7 @@ addCoreProfile ma mi comp = do
         mkGroupModule cats
         -- let the core modules also expose the types
         tyMod <- askTypesModule
-        ensureImport tyMod
-        addExport $ EModuleContents tyMod
+        tellPart $ ReExportModule tyMod
 
 -----------------------------------------------------------------------------
 

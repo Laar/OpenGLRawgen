@@ -21,8 +21,6 @@ module Code.Compatibility (
 import Text.OpenGL.Spec(Category(Version))
 
 import Language.Haskell.Exts.Syntax
-import Code.Generating.Builder
-import Code.Generating.Utils
 
 import Code.Builder
 import Code.GroupModule
@@ -41,8 +39,7 @@ addOldCoreProfile ma mi =
     let modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.Core" ++ show ma ++ show mi
     in do cp <- askProfileModule ma mi False
           addModule' modName True $ do
-                addImport $ importAll cp
-                addExport $ EModuleContents cp
+                tellPart $ ReExportModule cp
 
 addARBCompatibility :: Builder ()
 addARBCompatibility = do

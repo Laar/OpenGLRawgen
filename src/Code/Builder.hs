@@ -28,11 +28,12 @@ module Code.Builder (
     -- * Miscellaneous functions for the builders
     addCategoryModule,  addCategoryModule',
     addModule, addModule',
-    ensureImport,
     execRawPBuilder,
 
-    -- * Options related helpers
+    -- * ModuleBuilding related
     unwrapNameBuilder,
+    tellPart,
+    ModulePart(..),
 
     -- * Ask-ers for other (spec related) information
     asksCategories,
@@ -51,31 +52,32 @@ import Control.Applicative
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.RWS
+import Control.Monad.Writer
 
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
-import Code.Generating.Builder hiding (addModule)
 
 import Text.OpenGL.Spec as S
 import Spec
 import Main.Monad
+import Code.ModuleCode
 import Code.ModuleNames
 
 -----------------------------------------------------------------------------
 
 
-
+-- | Executes the Builder producing the `Module`s.
 execRawPBuilder :: (LocationMap, ValueMap) -> Builder a -> RawGen (a,[RawModule])
 execRawPBuilder (lMap, vMap) builder =
     evalRWST (runBuilder builder) lMap (emptyDefineMap, vMap)
 
-type MBuilder = SModuleBuilder Module Builder
+-- | Extended version of `Builder` used to build the contents of modules.
+type MBuilder = WriterT [ModulePart] Builder
 
---liftRawGen :: RawGen a -> GBuilder bm a
---liftRawGen = lift . lift . lift . lift
-
+-- | The an inner part of `Builder` used for clarity.
 type BuilderRWST m = RWST LocationMap [RawModule] (DefineMap, ValueMap) m
 
+-- | Monad that builds the modules for OpenGLRaw.
 newtype Builder a
     = Builder
     { runBuilder
@@ -113,46 +115,52 @@ rawModuleName = moduleToModuleName . rawModule
 
 -----------------------------------------------------------------------------
 
--- | Outputs a module for a specific category
+-- | Runs a `MBuilder` to create the module.
+runMBuilder :: MBuilder a -> ModuleName -> Builder (a,Module)
+runMBuilder builder modName = do
+    (a,modParts) <- runWriterT builder
+    modu <- toModule modParts modName
+    return (a,modu)
+
+-- | Outputs a module for a specific category.
 addCategoryModule :: Category -> (Category -> MBuilder a) -> Builder a
 addCategoryModule cat buildFunc = do
     modName <- askCategoryModule cat
     isExternal <- isExposedCategory cat
-    (a,modul) <- runStateT (buildFunc cat) (emptyModule modName)
+    (a,modul) <- runMBuilder (buildFunc cat) modName
     newModule modul isExternal
     return a
 
+-- | See `addCategoryModule`.
 addCategoryModule' :: Category -> MBuilder a -> Builder a
 addCategoryModule' c = addCategoryModule c . const
 
 -- | Adds a module with a specific name.
 addModule :: ModuleName -> External -> (ModuleName -> MBuilder a) -> Builder a
 addModule modName isExternal buildFunc = do
-    (a,modul) <- runStateT (buildFunc modName) (emptyModule modName)
+    (a,modul) <- runMBuilder (buildFunc modName) modName
     newModule modul isExternal
     return a
 
+-- | See `addModule`.
 addModule' :: ModuleName -> External -> MBuilder a -> Builder a
 addModule' modulName isExternal = addModule modulName isExternal . const
 
 -----------------------------------------------------------------------------
 
+-- | Lifted version of `unwrapName` supplying the needed options.
 unwrapNameBuilder :: (RawGenMonad m, SpecValue sv) => ValueName sv -> m Name
 unwrapNameBuilder = asksOptions . unwrapName
+
+-- | Adds a `ModulePart` to the module being build.
+tellPart :: ModulePart -> MBuilder ()
+tellPart = tell . (\x -> [x])
 
 -----------------------------------------------------------------------------
 
 -- | Asks the categories defined by the Spec files.
 asksCategories :: ([Category] -> a) -> Builder a
 asksCategories f = asksLocationMap (f . allCategories)
-
------------------------------------------------------------------------------
-
--- | Ensure a certain module is fully imported.
-ensureImport :: ModuleName -> MBuilder ()
-ensureImport m = do
-    imp <- getImport m
-    when (null imp) $ addImport (importAll m)
 
 -----------------------------------------------------------------------------
 
@@ -175,6 +183,8 @@ modifyValueMap f = lgbuilder $ modify (\(dm,vm) -> (dm, f vm))
 asksLocationMap :: (LocationMap -> a) -> Builder a
 asksLocationMap = gbuilder . asks
 
+-- | Looks up the the `EnumValue` associated with a given `EnumName`. It
+-- ensures that in case of a `ReUse`, the reused value is defined.
 enumLookup :: EnumName -> MBuilder (Maybe EnumValue)
 enumLookup en = do
     val <- getsValueMap $ lookupValue en

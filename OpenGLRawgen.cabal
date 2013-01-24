@@ -26,6 +26,7 @@ executable OpenGLRawgen
     Main.Monad
     Code.GroupModule
     Code.Module
+    Code.ModuleCode
     Code.ModuleNames
     Code.Compatibility
     Code.Builder
