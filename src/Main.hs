@@ -19,19 +19,20 @@ module Main (
 -----------------------------------------------------------------------------
 
 import Control.Monad(when)
+import qualified Data.Foldable as F
+import Data.List(partition, sort)
 import System.Directory
 import System.Exit(exitSuccess)
-import System.FilePath((</>))
+import System.FilePath((</>), dropFileName)
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
-import Code.Generating.Package
 
+import Code.Builder
 import Code.Raw
 import Code.Module(replaceCallConv)
 import Main.Options
-import Main.Monad
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
@@ -53,19 +54,19 @@ rmain :: RawGenIO ()
 rmain = do
     (lMap, vMap) <- parseSpecs
     lMap' <- processReuses lMap
-    oDir <- asksOptions outputDir
     opts <- askOptions
     let lMap'' = cleanupSpec opts lMap'
     modules <- liftRawGen $ makeRaw (lMap'', vMap)
+    outputModules modules
     -- write out the modules
-    logMessage $ "Writing modules"
-    processModules' outputModule modules
-    logMessage $ "Writing module names"
+--    logMessage $ "Writing modules"
+--    processModules' outputModule modules
+--    logMessage $ "Writing module names"
     -- and a list of exposed and internal modules.
-    liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
-        map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
-    liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
-        map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
+--    liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
+--        map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
+--    liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
+--        map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse
@@ -91,13 +92,34 @@ printVersion :: IO ()
 printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version
 
 -----------------------------------------------------------------------------
+-- module writing
+outputModules :: [RawModule] -> RawGenIO ()
+outputModules modules = do
+    logMessage $ "Writing " ++ show (length modules) ++ " modules"
+    F.for_ modules $ outputModule . rawModule
+    let (exts, ints) = partition externalRModule modules
+    oDir <- asksOptions outputDir
+    logMessage "Writing modulelistings"
+    writeModuleListing (oDir </> "modulesE.txt") $ map rawModule exts
+    writeModuleListing (oDir </> "modulesI.txt") $ map rawModule ints
 
-outputModule :: ModuleName -> Module -> RawGenIO ()
-outputModule mname modu = do
+outputModule :: Module -> RawGenIO ()
+outputModule modu = do
+    let mname = moduleToModuleName modu
     oDir <- asksOptions outputDir
     let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
         path = oDir </> moduleNameToPath mname ++ ".hs"
-    logMessage $ "Writing: " ++ moduleNameToName mname
+--    logMessage $ "Writing: " ++ moduleNameToName mname
     liftIO $ safeWriteFile path modu'
+
+writeModuleListing :: FilePath -> [Module] -> RawGenIO ()
+writeModuleListing fp mods = do
+    let transform modu = "      " ++ moduleToName modu ++ ","
+    liftIO $ safeWriteFile fp (unlines . sort . map transform $ mods)
+    
+
+safeWriteFile :: FilePath -> String -> IO ()
+safeWriteFile fp fc = createDirectoryIfMissing True (dropFileName fp)
+    >> writeFile fp fc
 
 -----------------------------------------------------------------------------

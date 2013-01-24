@@ -48,8 +48,9 @@ import Control.Applicative
 import Control.Monad.Error
 import Control.Monad.Identity
 import Control.Monad.Reader
-import Control.Monad.State
-import Control.Monad.Writer
+import Control.Monad.RWS(RWST)
+import Control.Monad.State(MonadState(..), StateT)
+import Control.Monad.Writer(MonadWriter(..), WriterT, Monoid)
 import System.Exit
 import System.IO
 
@@ -173,6 +174,9 @@ instance MonadWriter w m => MonadWriter w (RawGenT m) where
 
 -- instances for specific transformers
 instance RawGenMonad m => RawGenMonad (ReaderT r m) where
+    askOptions = lift askOptions
+    throwRawError = lift . throwRawError
+instance (RawGenMonad m, Monoid w) => RawGenMonad (RWST r w s m) where
     askOptions = lift askOptions
     throwRawError = lift . throwRawError
 instance RawGenMonad m => RawGenMonad (StateT s m) where

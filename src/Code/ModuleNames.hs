@@ -105,8 +105,9 @@ categoryModule :: RawGenMonad m => Category -> m ModuleName
 categoryModule (Version ma mi d) = return .
     ModuleName $ corePath <.> "Internal"
                     <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
-categoryModule (Extension ex n _) = return .
+categoryModule (Extension ex n d) = return .
     ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName n
+        ++ (if d then "Compatibility" else "")
 categoryModule (S.Name n) = throwRawError
     $ "categoryModule: Category with only a name "
     ++ upperFirst (show n)
