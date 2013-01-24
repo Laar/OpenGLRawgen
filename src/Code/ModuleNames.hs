@@ -153,12 +153,9 @@ correctName [] = []
 correctName (n:ns)
     | isAlpha n = toUpper n : recapUnderscores ns
     | otherwise =
-         let (start, rest) = partition (\c -> not $ c `elem` legalChars || c == '_') ns
+         let (start, rest) = partition (\c -> not $ c `elem` legalChars) ns
              nameStart = concatMap spellout (n:start)
-             legalize c | c `elem` legalChars = [c]
-                        | otherwise           = spellout c
-             nameEnd = concatMap legalize $ recapUnderscores rest
-         in nameStart ++ nameEnd
+         in nameStart ++ recapUnderscores rest
 
 -- | Removes underscores and capitalizes the letter following an underscore
 recapUnderscores :: String -> String
