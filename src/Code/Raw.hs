@@ -37,7 +37,7 @@ import Code.ModuleNames
 
 -- | Build the OpenGLRaw Package from the specification.
 makeRaw :: (LocationMap, ValueMap) -> RawGen [RawModule]
-makeRaw spec = snd <$> execRawPBuilder spec buildRaw
+makeRaw spec = snd <$> runBuilder spec buildRaw
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.

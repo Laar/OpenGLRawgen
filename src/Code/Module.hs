@@ -48,7 +48,7 @@ buildModule c = do
 -- current category. Needed to determine if it can be redefined locally.
 addEnum :: Category -> EnumName -> MBuilder ()
 addEnum c n = do
-    name <- unwrapNameBuilder n
+    name <- unwrapNameM n
     loc <- getDefineLoc n
     case loc of
         Just c' -> do c'Module <- askCategoryModule c'
@@ -60,7 +60,7 @@ addEnum c n = do
             case x of
                 Value val ty -> tellPart $ DefineEnum name ty val
                 ReUse reuseName ty -> do
-                    reuseName' <- unwrapNameBuilder reuseName
+                    reuseName' <- unwrapNameM reuseName
                     ic <- getDefineLoc reuseName
                         >>= liftMaybe ("Couldn't find " ++ show reuseName)
                     if ic == c
@@ -75,7 +75,7 @@ addEnum c n = do
 addFunc :: Category -> FuncName -> MBuilder ()
 addFunc c n = do
     Just (RawFunc gln ty _) <- getsValueMap $ lookupValue n
-    name <- unwrapNameBuilder n
+    name <- unwrapNameM n
     loc <- getDefineLoc n
     case loc of
         Nothing -> do

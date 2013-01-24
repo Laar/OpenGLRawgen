@@ -28,10 +28,10 @@ module Code.Builder (
     -- * Miscellaneous functions for the builders
     addCategoryModule,  addCategoryModule',
     addModule, addModule',
-    execRawPBuilder,
+    runBuilder,
 
     -- * ModuleBuilding related
-    unwrapNameBuilder,
+    unwrapNameM,
     tellPart,
     ModulePart(..),
 
@@ -67,9 +67,9 @@ import Code.ModuleNames
 
 
 -- | Executes the Builder producing the `Module`s.
-execRawPBuilder :: (LocationMap, ValueMap) -> Builder a -> RawGen (a,[RawModule])
-execRawPBuilder (lMap, vMap) builder =
-    evalRWST (runBuilder builder) lMap (emptyDefineMap, vMap)
+runBuilder :: (LocationMap, ValueMap) -> Builder a -> RawGen (a,[RawModule])
+runBuilder (lMap, vMap) builder =
+    evalRWST (_runBuilder builder) lMap (emptyDefineMap, vMap)
 
 -- | Extended version of `Builder` used to build the contents of modules.
 type MBuilder = WriterT [ModulePart] Builder
@@ -80,7 +80,7 @@ type BuilderRWST m = RWST LocationMap [RawModule] (DefineMap, ValueMap) m
 -- | Monad that builds the modules for OpenGLRaw.
 newtype Builder a
     = Builder
-    { runBuilder
+    { _runBuilder
         :: BuilderRWST RawGen a
     } deriving (Functor, Applicative, Monad, RawGenMonad)
 
@@ -149,8 +149,8 @@ addModule' modulName isExternal = addModule modulName isExternal . const
 -----------------------------------------------------------------------------
 
 -- | Lifted version of `unwrapName` supplying the needed options.
-unwrapNameBuilder :: (RawGenMonad m, SpecValue sv) => ValueName sv -> m Name
-unwrapNameBuilder = asksOptions . unwrapName
+unwrapNameM :: (RawGenMonad m, SpecValue sv) => ValueName sv -> m Name
+unwrapNameM = asksOptions . unwrapName
 
 -- | Adds a `ModulePart` to the module being build.
 tellPart :: ModulePart -> MBuilder ()
