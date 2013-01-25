@@ -20,6 +20,7 @@ module Code.Raw (
 -----------------------------------------------------------------------------
 
 import Control.Applicative ((<$>))
+import Control.Monad
 import Data.Function(on)
 import Data.List(sortBy)
 
@@ -45,9 +46,9 @@ buildRaw :: Builder ()
 buildRaw = do
     buildRawImports
     addCoreProfiles
-    whenOption mkExtensionGroups addVendorModules
     addLatestProfileToRaw
-
+    
+    whenOption mkExtensionGroups addVendorModules
     whenFlag RawCompatibility addCompatibilityModules
 
 -----------------------------------------------------------------------------
@@ -56,7 +57,7 @@ buildRaw = do
 buildRawImports :: Builder ()
 buildRawImports = do
     cats <- asksLocationMap allCategories
-    sequence_ $ map (flip addCategoryModule buildModule) cats
+    forM_ cats $ flip addCategoryModule buildModule
 
 -- | Adds the latest CoreProfile to the base (...Raw) package
 addLatestProfileToRaw :: Builder ()
@@ -65,8 +66,7 @@ addLatestProfileToRaw = do
     Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
-    addModule' bm True . tellPart $ ReExportModule latestProf
-    return ()
+    addModule' bm True $ tellReExportModule latestProf
     where
         catRanking (Version ma mi False) = (-ma, -mi)
         catRanking _                     = (1, 1)

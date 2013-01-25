@@ -59,9 +59,9 @@ askExtensionModule = return extensionModule
 -- | Asks the full import of several basic modules
 askBaseImport, askTypesImport, askExtensionImport
     :: RawGenMonad m => m ImportDecl
-askBaseImport           = return . importAll $ baseModule
-askTypesImport   = return . importAll $ typesModule
-askExtensionImport      = return . importAll $ extensionModule
+askBaseImport       = return . importAll $ baseModule
+askTypesImport      = return . importAll $ typesModule
+askExtensionImport  = return . importAll $ extensionModule
 
 
 -- | Ask the module in which the functions and enums will be defined for
@@ -103,10 +103,12 @@ askCorePath = return corePath
 -- (Temporary) category to modulename mapping
 categoryModule :: RawGenMonad m => Category -> m ModuleName
 categoryModule (Version ma mi d) = return .
-    ModuleName $ corePath <.> "Internal"
-                    <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
+    ModuleName
+        $ corePath <.> "Internal"
+        <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (Extension ex n d) = return .
-    ModuleName $ moduleBase <.> upperFirst (show ex) <.> correctName n
+    ModuleName
+        $ moduleBase <.> upperFirst (show ex) <.> correctName n
         ++ (if d then "Compatibility" else "")
 categoryModule (S.Name n) = throwRawError
     $ "categoryModule: Category with only a name "

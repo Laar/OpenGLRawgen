@@ -39,8 +39,8 @@ buildModule c = do
     funcs <- lift . asksLocationMap $ categoryValues c
     enums <- lift . asksLocationMap $ categoryValues c
 
-    sequence_ . map (addEnum c) $ S.toList enums
-    sequence_ . map (addFunc c) $ S.toList funcs
+    mapM_  (addEnum c) $ S.toList enums
+    mapM_ (addFunc c) $ S.toList funcs
     
 -----------------------------------------------------------------------------
 

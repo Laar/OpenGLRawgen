@@ -38,8 +38,7 @@ addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
     let modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.Core" ++ show ma ++ show mi
     in do cp <- askProfileModule ma mi False
-          addModule' modName True $ do
-                tellPart $ ReExportModule cp
+          addModule' modName True $ tellReExportModule cp
 
 addARBCompatibility :: Builder ()
 addARBCompatibility = do

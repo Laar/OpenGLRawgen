@@ -9,8 +9,9 @@
 -- Stability   :
 -- Portability :
 --
--- | This module defines the Builders used to generate the OpenGLRaw. This
--- includes all sorts of functions to ask the locations, imports, etc. .
+-- | This module defines two monads. The `Builder` is used as main monad for
+-- building several modules. The `MBuilder` is an extended version that is
+-- used to generate module contents.
 --
 -----------------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ module Code.Builder (
     -- * ModuleBuilding related
     unwrapNameM,
     tellPart,
+    tellReExportModule,
     ModulePart(..),
 
     -- * Ask-ers for other (spec related) information
@@ -77,7 +79,10 @@ type MBuilder = WriterT [ModulePart] Builder
 -- | The an inner part of `Builder` used for clarity.
 type BuilderRWST m = RWST LocationMap [RawModule] (DefineMap, ValueMap) m
 
--- | Monad that builds the modules for OpenGLRaw.
+-- | Monad that builds the modules for OpenGLRaw. It contains several parts
+-- used in generating. Apart from the `RawModule`s created it contains the
+-- `LocationMap`ping, the values associated in a `ValueMap` and a listing
+-- of defined values in a `DefineMap`.
 newtype Builder a
     = Builder
     { _runBuilder
@@ -155,6 +160,9 @@ unwrapNameM = asksOptions . unwrapName
 -- | Adds a `ModulePart` to the module being build.
 tellPart :: ModulePart -> MBuilder ()
 tellPart = tell . (\x -> [x])
+
+tellReExportModule :: ModuleName -> MBuilder ()
+tellReExportModule = tellPart . ReExportModule
 
 -----------------------------------------------------------------------------
 

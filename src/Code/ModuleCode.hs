@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------
+--
+-- Module      :  Code.ModuleCode
+-- Copyright   :  (c) 2013 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
+--
+-- Maintainer  :
+-- Stability   :
+-- Portability :
+--
+-- | The `ModulePart` data type used for representing the contents of a
+-- module. It also contains the translation to a full module.
+--
+-----------------------------------------------------------------------------
 module Code.ModuleCode (
     ModulePart(..), Imported,
     toModule, replaceCallConv

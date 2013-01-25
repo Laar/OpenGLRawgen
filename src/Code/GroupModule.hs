@@ -9,8 +9,8 @@
 -- Portability :
 --
 -- | This module defines several grouping modules that can be made. A
--- grouping is a module used to group the exports of a module by importing
--- them and then exporting the modules.
+-- grouping module is a module used to group the exports of a module by
+-- importing them and then exporting the modules.
 --
 -----------------------------------------------------------------------------
 
@@ -37,22 +37,20 @@ import Code.ModuleNames
 
 -- | Internal function which adds imports and exports for all the categories.
 mkGroupModule :: [Category] -> MBuilder ()
-mkGroupModule cats = do
-    sequence_ $ map addCat cats
-    where
-        addCat c = do
-            cm <- askCategoryModule c
-            tellPart $ ReExportModule cm
+mkGroupModule cats = forM_ cats $ askCategoryModule >=> tellReExportModule
 
 -----------------------------------------------------------------------------
 
 -- | Add all the core profiles. See also 'addCoreProfile'.
 addCoreProfiles :: Builder ()
 addCoreProfiles = do
-    let addCat (Version ma mi False) = Just $ addCoreProfile ma mi False
-                                          >> when (ma > 3 || (ma == 3 && not (mi == 0)))
-                                                    (addCoreProfile ma mi True)
-        addCat _                    = Nothing
+    let addCat (Version ma mi False)
+            = Just $ do
+                addCoreProfile ma mi False
+                let makeCompatibilityModule = ma > 3 || (ma == 3 && mi /= 0)
+                when makeCompatibilityModule $ addCoreProfile ma mi True
+        addCat _
+            = Nothing
     (asksCategories $ mapMaybe addCat) >>= sequence_
 
 -- | Adds a coreprofile for a certain version. This is a module which
@@ -73,8 +71,7 @@ addCoreProfile ma mi comp = do
      addModule' mn True $ do
         mkGroupModule cats
         -- let the core modules also expose the types
-        tyMod <- askTypesModule
-        tellPart $ ReExportModule tyMod
+        askTypesModule >>= tellReExportModule
 
 -----------------------------------------------------------------------------
 
@@ -89,8 +86,7 @@ askExtensionGroups =
 -- | Add all vendor modules. These are the modules for each vendor that
 -- reexport the content of all modules of the specific vendor.
 addVendorModules :: Builder ()
-addVendorModules = do
-    askExtensionGroups >>= sequence_ . map addVendorModule
+addVendorModules = askExtensionGroups >>= mapM_ addVendorModule
 
 -- | Adds a module for a certain vendor, specified by the 'Extension', which
 -- reexports all the extensions defined by that vendor
