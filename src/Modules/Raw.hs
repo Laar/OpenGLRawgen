@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.Raw
+-- Module      :  Modules.Raw
 -- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -13,7 +13,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.Raw (
+module Modules.Raw (
     makeRaw,
 ) where
 
@@ -28,11 +28,11 @@ import Main.Options
 import Spec
 import Text.OpenGL.Spec(Category(..))
 
-import Code.Builder
-import Code.Compatibility
-import Code.GroupModule
-import Code.Module
-import Code.ModuleNames
+import Modules.Builder
+import Modules.Compatibility
+import Modules.GroupModule
+import Modules.Module
+import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
 

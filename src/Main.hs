@@ -25,14 +25,16 @@ import System.Directory
 import System.Exit(exitSuccess)
 import System.FilePath((</>), dropFileName)
 
-import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
 
-import Code.Builder
-import Code.Raw
-import Code.Module(replaceCallConv)
+import Modules.Raw
+import Modules.Types
+import Code.ModuleCode
+
+import Main.Monad
 import Main.Options
+
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
@@ -96,25 +98,26 @@ printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version
 outputModules :: [RawModule] -> RawGenIO ()
 outputModules modules = do
     logMessage $ "Writing " ++ show (length modules) ++ " modules"
-    F.for_ modules $ outputModule . rawModule
-    let (exts, ints) = partition externalRModule modules
+    F.forM_ modules $ outputModule
+    let (exts, ints) = partition externalRawModule modules
     oDir <- asksOptions outputDir
     logMessage "Writing modulelistings"
-    writeModuleListing (oDir </> "modulesE.txt") $ map rawModule exts
-    writeModuleListing (oDir </> "modulesI.txt") $ map rawModule ints
+    writeModuleListing (oDir </> "modulesE.txt") exts
+    writeModuleListing (oDir </> "modulesI.txt") ints
 
-outputModule :: Module -> RawGenIO ()
-outputModule modu = do
-    let mname = moduleToModuleName modu
+outputModule :: RawModule -> RawGenIO ()
+outputModule rmodule = do
+    let mname = rawModuleName rmodule
+    modu <- toModule rmodule
     oDir <- asksOptions outputDir
     let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
         path = oDir </> moduleNameToPath mname ++ ".hs"
 --    logMessage $ "Writing: " ++ moduleNameToName mname
     liftIO $ safeWriteFile path modu'
 
-writeModuleListing :: FilePath -> [Module] -> RawGenIO ()
+writeModuleListing :: FilePath -> [RawModule] -> RawGenIO ()
 writeModuleListing fp mods = do
-    let transform modu = "      " ++ moduleToName modu ++ ","
+    let transform modu = "      " ++ moduleNameToName (rawModuleName modu) ++ ","
     liftIO $ safeWriteFile fp (unlines . sort . map transform $ mods)
     
 

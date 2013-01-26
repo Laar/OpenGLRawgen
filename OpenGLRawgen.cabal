@@ -24,13 +24,14 @@ executable OpenGLRawgen
     Spec.RawSpec
     Main.Options
     Main.Monad
-    Code.GroupModule
-    Code.Module
+    Modules.Builder
+    Modules.Compatibility
+    Modules.GroupModule
+    Modules.Module
+    Modules.ModuleNames
+    Modules.Raw
+    Modules.Types
     Code.ModuleCode
-    Code.ModuleNames
-    Code.Compatibility
-    Code.Builder
-    Code.Raw
   build-depends:
     CodeGenerating >=0.1.0 && <0.2.0,
     base >=4,

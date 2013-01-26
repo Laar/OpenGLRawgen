@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.GroupModule
+-- Module      :  Modules.GroupModule
 -- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -14,7 +14,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.GroupModule (
+module Modules.GroupModule (
     addCoreProfiles,
     askExtensionGroups,
     addVendorModules,
@@ -29,8 +29,8 @@ import Data.List(nub)
 
 import Text.OpenGL.Spec(Category(..), Extension)
 
-import Code.Builder
-import Code.ModuleNames
+import Modules.Builder
+import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.Module
+-- Module      :  Modules.Module
 -- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -15,9 +15,8 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.Module (
+module Modules.Module (
     buildModule,
-    replaceCallConv,
 ) where
 
 -----------------------------------------------------------------------------
@@ -26,9 +25,8 @@ import qualified Data.Set as S
 
 import Spec
 
-import Code.Builder
-import Code.ModuleNames
-import Code.ModuleCode
+import Modules.Builder
+import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
 

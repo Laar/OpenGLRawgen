@@ -13,7 +13,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.ModuleNames (
+module Modules.ModuleNames (
 
     -- * Ask-ers for module locations
     askBaseModule,
