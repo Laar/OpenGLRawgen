@@ -199,8 +199,8 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     modifyLocMap   :: (LocMap sv -> LocMap sv)
                                 -> LocationMap -> LocationMap
 
-    getDefLocation      :: (ValueName sv) -> DefineMap -> Maybe Category
-    addDefLocation      :: (ValueName sv) -> Category
+    getDefLocation      :: ValueName sv -> DefineMap -> Maybe Category
+    addDefLocation      :: ValueName sv -> Category
                                 -> DefineMap -> DefineMap
 
 type EnumName = ValueName EnumValue
@@ -252,8 +252,8 @@ removeExtension :: [String] -> String -> String
 removeExtension exts str =
     let strr = reverse str
         extensionsr = map reverse exts
-        stripsr = map (flip stripPrefix strr) extensionsr
-        str' = fromMaybe str . fmap reverse $ msum stripsr
+        stripsr = map (`stripPrefix` strr) extensionsr
+        str' = maybe str reverse $ msum stripsr
     in str'
 
 extensions :: [String]
@@ -278,9 +278,8 @@ extensions =
 isBitfieldName :: String -> Bool
 isBitfieldName name =
     let name' = removeEnumExtension name
-    in or
-        [ "_BIT" `isSuffixOf` name'
-        , ("_ALL_" `isInfixOf` name' || "ALL_" `isPrefixOf` name') && "_BITS" `isSuffixOf` name'
-        ]
+    in     "_BIT" `isSuffixOf` name'
+        || (("_ALL_" `isInfixOf` name' || "ALL_" `isPrefixOf` name') 
+                && "_BITS" `isSuffixOf` name')
 
 -----------------------------------------------------------------------------

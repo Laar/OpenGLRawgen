@@ -65,21 +65,20 @@ parseSpecs = do
 -- | Parse the enumeration spec.
 parseEnumSpec :: [EnumLine] -> (LocationMap, ValueMap)
 parseEnumSpec eLines =
-    let specWriter = evalStateT (parseEnumLines eLines)
-            (error $ "No category")
+    let specWriter = evalStateT (parseEnumLines eLines) $ error "No category"
         (endoLMap, endoVMap) = execWriter specWriter
     in (appEndo endoLMap mempty, appEndo endoVMap mempty)
 
 type EP = StateT Category (Writer (Endo LocationMap, Endo ValueMap))
 
 tellLoc :: (LocationMap -> LocationMap) -> EP ()
-tellLoc f = tell $ (Endo f, mempty)
+tellLoc f = tell (Endo f, mempty)
 
 tellVal :: (ValueMap -> ValueMap) -> EP ()
-tellVal f = tell $ (mempty, Endo f)
+tellVal f = tell (mempty, Endo f)
 
 parseEnumLines :: [EnumLine] -> EP ()
-parseEnumLines = sequence_ . map parseEnumLine
+parseEnumLines = mapM_ parseEnumLine
 
 parseEnumLine :: EnumLine -> EP ()
 parseEnumLine (Start cat _) = put cat
@@ -104,14 +103,14 @@ addEnumValue name v = addValue' $ case v of
         addValue' :: EnumValue -> EP ()
         addValue' enumVal = tellVal $ addValue (wrapName name) enumVal
         ty :: Type
-        ty = if isBitfieldName name then tyCon' "GLbitfield" else tyCon' "GLenum"
+        ty = tyCon' $ if isBitfieldName name then "GLbitfield" else "GLenum"
 
 -----------------------------------------------------------------------------
 
 -- | Parse (or process) the function as the are supplied by the openGL-api
 -- package.
 parseFSpec :: [Function] -> TypeMap -> (LocationMap, ValueMap)
-parseFSpec funcs tm = foldr add mempty $ map (convertFunc tm) funcs
+parseFSpec funcs tm = foldr (add . convertFunc tm) mempty funcs
     where
         add (c, (fn, fv)) (lMap, vMap)
             = (addLocation c fn lMap, addValue fn fv vMap)
@@ -143,7 +142,8 @@ eol :: CP ()
 eol = () <$ char '\n'
 
 pReuseLine :: CP (Category, [Category])
-pReuseLine = (,) <$> (pCategory <* blanks) <*> (sepBy pCategory (char ',' *> blanks)) <* eol
+pReuseLine = (,) <$> (pCategory <* blanks)
+    <*> sepBy pCategory (char ',' *> blanks) <* eol
 
 -----------------------------------------------------------------------------
 
@@ -222,7 +222,7 @@ lookupType t p tm = case M.lookup t tm of
             GLUquadric  -> error "Uquadric"
             GLushort    -> tyCon' "GLushort"
             GLUtesselator -> error  "tesselator"
-            GLvoid      -> (tyVar' "a")
+            GLvoid      -> tyVar' "a"
             GLvoidStarConst -> TyApp (tyCon' "Ptr") (tyVar' "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
             GLvdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
             GLdebugproc    -> tyCon' "GLdebugproc"

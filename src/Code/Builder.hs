@@ -50,6 +50,7 @@ module Code.Builder (
 
 -----------------------------------------------------------------------------
 
+import Control.Arrow
 import Control.Applicative
 import Control.Monad.Reader
 import Control.Monad.State
@@ -179,14 +180,14 @@ getDefineLoc vn = lgbuilder $ gets (getDefLocation vn . fst)
 
 -- | Adds the location of a value.
 addDefineLoc :: SpecValue sv => ValueName sv -> Category -> MBuilder ()
-addDefineLoc vn cat = lgbuilder $ modify (\(dm,vm) -> (addDefLocation vn cat dm, vm))
+addDefineLoc vn cat = lgbuilder $ modify (first $ addDefLocation vn cat)
 
 -- | Gets the `ValueMap`.
 getsValueMap :: (ValueMap -> a) -> MBuilder a
 getsValueMap f = lgbuilder $ gets (f . snd)
 
 modifyValueMap :: (ValueMap -> ValueMap) -> MBuilder ()
-modifyValueMap f = lgbuilder $ modify (\(dm,vm) -> (dm, f vm))
+modifyValueMap f = lgbuilder $ modify (second f)
 
 asksLocationMap :: (LocationMap -> a) -> Builder a
 asksLocationMap = gbuilder . asks

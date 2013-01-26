@@ -22,7 +22,7 @@ module Code.Raw (
 import Control.Applicative ((<$>))
 import Control.Monad
 import Data.Function(on)
-import Data.List(sortBy)
+import Data.List(minimumBy)
 
 import Main.Options
 import Spec
@@ -63,7 +63,7 @@ buildRawImports = do
 addLatestProfileToRaw :: Builder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
-    Version ma mi _ <- asksCategories id >>= return . head . sortBy (compare `on` catRanking)
+    Version ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
     addModule' bm True $ tellReExportModule latestProf

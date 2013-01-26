@@ -67,7 +67,7 @@ askExtensionImport  = return . importAll $ extensionModule
 -- | Ask the module in which the functions and enums will be defined for
 -- that category
 askCategoryModule :: RawGenMonad m => Category -> m ModuleName
-askCategoryModule c = categoryModule $ c
+askCategoryModule = categoryModule
 
 -- | Asks an importDecl to import the ImportSpec from the module of the
 -- category.
@@ -81,7 +81,7 @@ moduleBase = "Graphics.Rendering.OpenGL.Raw"
 
 -- (Temporary) Basemodule (...Raw) modulepath
 baseModule :: ModuleName
-baseModule = ModuleName $ moduleBase
+baseModule = ModuleName moduleBase
 
 -- (Temporary) Types modulePath
 typesModule :: ModuleName
@@ -155,7 +155,7 @@ correctName [] = []
 correctName (n:ns)
     | isAlpha n = toUpper n : recapUnderscores ns
     | otherwise =
-         let (start, rest) = partition (\c -> not $ c `elem` legalChars) ns
+         let (start, rest) = partition (`notElem` legalChars) ns
              nameStart = concatMap spellout (n:start)
          in nameStart ++ recapUnderscores rest
 

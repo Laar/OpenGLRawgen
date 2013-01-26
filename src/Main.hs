@@ -81,9 +81,9 @@ processReuses lMap = do
     where
         getReuses :: FilePath -> RawGenIO [(Category, [Category])]
         getReuses fp = liftIO (doesFileExist fp) >>= \exists ->
-            case exists of
-                False -> return []
-                True -> liftIO (readFile fp) >>= \reuses ->
+            if not exists
+             then return []
+             else liftIO (readFile fp) >>= \reuses ->
                     liftEitherMsg 
                         (\e -> "Parsing reuses failed with: " ++ show e)
                         . parseReuses $ reuses

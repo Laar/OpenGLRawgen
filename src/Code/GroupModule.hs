@@ -51,7 +51,7 @@ addCoreProfiles = do
                 when makeCompatibilityModule $ addCoreProfile ma mi True
         addCat _
             = Nothing
-    (asksCategories $ mapMaybe addCat) >>= sequence_
+    asksCategories (mapMaybe addCat) >>= sequence_
 
 -- | Adds a coreprofile for a certain version. This is a module which
 -- reexports all functions and enumeration values that are part of the
@@ -81,7 +81,7 @@ askExtensionGroups :: Builder [Extension]
 askExtensionGroups =
     let getExtension (Extension e _ _) = Just e
         getExtension _                 = Nothing
-    in asksCategories (mapMaybe getExtension) >>= return . nub
+    in fmap nub $ asksCategories (mapMaybe getExtension)
 
 -- | Add all vendor modules. These are the modules for each vendor that
 -- reexport the content of all modules of the specific vendor.

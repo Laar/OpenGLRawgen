@@ -64,15 +64,15 @@ type GLName = String
 -- | Build a `Module` out of parts and a name for it.
 toModule :: RawGenMonad m => [ModulePart] -> ModuleName -> m Module
 toModule parts name = do
-    fimports <- when' (any definesFunc parts) $ funcImports
-    eimports <- when' (any definesEnum parts) $ enumImports
+    fimports <- when' (any definesFunc parts) funcImports
+    eimports <- when' (any definesEnum parts) enumImports
     let exps    = map toExport parts
         -- The imports that are needed when functions/enums are defined
         -- overlap. The current solution probably needs improving. Untill that
         -- has been done addImportDecl is used to clear the duplicates.
         imports = mapMaybe toImport parts ++ foldr addImportDecl fimports eimports
-        prags =    if (any definesFunc parts) then funcPrags else []
-                ++ if (any definesEnum parts) then enumPrags else []
+        prags =    if any definesFunc parts then funcPrags else []
+                ++ if any definesEnum parts then enumPrags else []
     decls <- concat <$> traverse toDecls parts
     return $ Module noSrcLoc name prags Nothing (Just exps) imports decls
     where
@@ -113,7 +113,7 @@ funcImports :: RawGenMonad m => m [ImportDecl]
 funcImports = do
     typesModule <- askTypesModule
     extensionModule <- askExtensionModule
-    return  $
+    return
         [ importAll typesModule
         , importAll extensionModule
         , importAll $ ModuleName "Foreign.Ptr"
@@ -152,9 +152,9 @@ toDecls _                           = pure []
 -----------------------------------------------------------------------------
 
 enumTemplate :: RawGenMonad m => Name -> Type -> Exp -> m [Decl]
-enumTemplate name vType vExp = pure $
-    [ oneTypeSig name vType
-    , oneLiner name [] vExp]
+enumTemplate name vType vExp =
+    pure [ oneTypeSig name vType
+         , oneLiner name [] vExp]
 
 -----------------------------------------------------------------------------
 

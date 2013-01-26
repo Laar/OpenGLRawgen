@@ -88,7 +88,7 @@ import Spec.RawSpec
 -- | Clean the 'LocationMap' in order to make it useable for codegeneration.
 cleanupSpec :: RawGenOptions -> LocationMap -> LocationMap
 cleanupSpec opts =
-   filterExtensions (flip dropExtension opts)
+   filterExtensions (`dropExtension` opts)
 
 -----------------------------------------------------------------------------
 -- | Adds reuses for several `Category`s to the spec
@@ -110,7 +110,7 @@ addReuse
     => sv -> Category -> [Category]
     -> LocationMap -> LocationMap
 addReuse dummyValue cat addFrom rawSpec =
-    let vals = (mconcat $ map (flip categoryValues rawSpec) addFrom)
+    let vals = mconcat (map (`categoryValues` rawSpec) addFrom)
                     `asSetTypeOf` dummyValue
         asSetTypeOf :: SpecValue sv
             => S.Set (ValueName sv) -> sv -> S.Set (ValueName sv)

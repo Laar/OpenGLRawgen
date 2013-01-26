@@ -45,7 +45,7 @@ addARBCompatibility = do
     let modFilter (Version _ _ True) = True
         modFilter _                  = False
 
-        modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
+        modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
     addModule' modName True $ (lift . asksCategories $ filter modFilter) >>= mkGroupModule
 
 -----------------------------------------------------------------------------

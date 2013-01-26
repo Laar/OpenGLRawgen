@@ -93,7 +93,7 @@ options =
     where
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
         flag f = NoArg $ \rgo -> return rgo{rgFlags = f : rgFlags rgo }
-        extensionFile f = \r -> readFile f >>=
+        extensionFile f r = readFile f >>=
             (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map read . concatMap words . lines
 
 -- | Config flags used by the generator
