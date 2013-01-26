@@ -22,8 +22,7 @@ module Code.Builder (
     MBuilder,
 
     -- * The generated module
-    External, RawModule(..), rawModuleName,
-
+    External, RawModule(..),
 
     module Main.Monad,
     -- * Miscellaneous functions for the builders
@@ -58,13 +57,12 @@ import Control.Monad.RWS
 import Control.Monad.Writer
 
 import Language.Haskell.Exts.Syntax
-import Code.Generating.Utils
 
 import Text.OpenGL.Spec as S
 import Spec
 import Main.Monad
-import Code.ModuleCode
 import Code.ModuleNames
+import Code.Types
 
 -----------------------------------------------------------------------------
 
@@ -101,40 +99,22 @@ lgbuilder = lift . gbuilder
 -----------------------------------------------------------------------------
 
 -- | Adds a new module
-newModule :: Module -> External -> Builder ()
-newModule m e = Builder . tell . pure $ RawModule m e
-
--- | Type indicating if a module is exposed to the outside world or
--- purely for internal use
-type External = Bool
-
--- | A generated module
-data RawModule
-    = RawModule
-    { rawModule       :: Module
-    , externalRModule :: External
-    } deriving (Eq, Ord, Show)
-
--- | Utility function for extracting the name of a `RawModule`.
-rawModuleName :: RawModule -> ModuleName
-rawModuleName = moduleToModuleName . rawModule
+newModule :: ModuleName -> External -> [ModulePart] -> Builder ()
+newModule m e parts = Builder . tell . pure $ RawModule m e parts
 
 -----------------------------------------------------------------------------
 
 -- | Runs a `MBuilder` to create the module.
-runMBuilder :: MBuilder a -> ModuleName -> Builder (a,Module)
-runMBuilder builder modName = do
-    (a,modParts) <- runWriterT builder
-    modu <- toModule modParts modName
-    return (a,modu)
+runMBuilder :: MBuilder a -> Builder (a,[ModulePart])
+runMBuilder builder = runWriterT builder
 
 -- | Outputs a module for a specific category.
 addCategoryModule :: Category -> (Category -> MBuilder a) -> Builder a
 addCategoryModule cat buildFunc = do
     modName <- askCategoryModule cat
     isExternal <- isExposedCategory cat
-    (a,modul) <- runMBuilder (buildFunc cat) modName
-    newModule modul isExternal
+    (a,parts) <- runMBuilder (buildFunc cat)
+    newModule modName isExternal parts
     return a
 
 -- | See `addCategoryModule`.
@@ -144,8 +124,8 @@ addCategoryModule' c = addCategoryModule c . const
 -- | Adds a module with a specific name.
 addModule :: ModuleName -> External -> (ModuleName -> MBuilder a) -> Builder a
 addModule modName isExternal buildFunc = do
-    (a,modul) <- runMBuilder (buildFunc modName) modName
-    newModule modul isExternal
+    (a,parts) <- runMBuilder (buildFunc modName)
+    newModule modName isExternal parts
     return a
 
 -- | See `addModule`.

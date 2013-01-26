@@ -31,6 +31,7 @@ executable OpenGLRawgen
     Code.Compatibility
     Code.Builder
     Code.Raw
+    Code.Types
   build-depends:
     CodeGenerating >=0.1.0 && <0.2.0,
     base >=4,

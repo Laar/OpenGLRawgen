@@ -30,43 +30,20 @@ import Code.Generating.Utils
 
 import Main.Monad
 import Code.ModuleNames
-
+import Code.Types
 -----------------------------------------------------------------------------
 
--- | The parts in a module for OpenGLRaw.
-data ModulePart
-    -- | Define an enumeration value with a specific value
-    = DefineEnum        Name Type Integer
-    -- | Define an enumeration value as an alias for another value in the
-    -- same module.
-    | ReDefineLEnum     Name Type Name
-    -- | Define an enumeration value as an alias for another value, imported
-    -- from another module.
-    | ReDefineIEnum     Name Type Imported
-    -- | Reexport something (enum or function)
-    | ReExport          Imported
-    -- | Define a function.
-    | DefineFunc        Name Type
-        GLName    -- | The original name
-        Category  -- | The category this function was part of.
-    -- | Reexport a module
-    | ReExportModule    ModuleName
-    deriving (Show)
-
--- | An imported name with specific module.
-type Imported = (Name, ModuleName)
--- | The original name of something from OpenGL (thus the name as used in the
--- specification).
-type GLName = String
 
 -----------------------------------------------------------------------------
 
 -- | Build a `Module` out of parts and a name for it.
-toModule :: RawGenMonad m => [ModulePart] -> ModuleName -> m Module
-toModule parts name = do
+toModule :: RawGenMonad m => RawModule -> m Module
+toModule rmodule = do
+    let parts = rawModuleParts rmodule
     fimports <- when' (any definesFunc parts) funcImports
     eimports <- when' (any definesEnum parts) enumImports
-    let exps    = map toExport parts
+    let name = rawModuleName rmodule
+        exps    = map toExport parts
         -- The imports that are needed when functions/enums are defined
         -- overlap. The current solution probably needs improving. Untill that
         -- has been done addImportDecl is used to clear the duplicates.
