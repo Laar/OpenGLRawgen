@@ -28,10 +28,13 @@ import System.FilePath((</>), dropFileName)
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
 
-import Modules.Builder
 import Modules.Raw
+import Modules.Types
 import Code.ModuleCode
+
+import Main.Monad
 import Main.Options
+
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
