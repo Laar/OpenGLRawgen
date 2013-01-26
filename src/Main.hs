@@ -28,8 +28,8 @@ import System.FilePath((</>), dropFileName)
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
 
-import Code.Builder
-import Code.Raw
+import Modules.Builder
+import Modules.Raw
 import Code.ModuleCode
 import Main.Options
 import Spec

@@ -29,8 +29,8 @@ import Text.OpenGL.Spec(Category, showCategory)
 import Code.Generating.Utils
 
 import Main.Monad
-import Code.ModuleNames
-import Code.Types
+import Modules.ModuleNames
+import Modules.Types
 -----------------------------------------------------------------------------
 
 

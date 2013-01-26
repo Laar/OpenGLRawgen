@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 
--- Module      :  Code.Types
+-- Module      :  Modules.Types
 -- Copyright   :  (c) 2013 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -12,7 +12,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.Types (
+module Modules.Types (
     RawModule(..), External,
     
     ModulePart(..), Imported, GLName,

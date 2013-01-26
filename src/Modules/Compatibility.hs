@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.Compatibility
+-- Module      :  Modules.Compatibility
 -- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -12,7 +12,7 @@
 -- older layout of OpenGLRaw.
 -----------------------------------------------------------------------------
 
-module Code.Compatibility (
+module Modules.Compatibility (
     addCompatibilityModules,
 ) where
 
@@ -22,9 +22,9 @@ import Text.OpenGL.Spec(Category(Version))
 
 import Language.Haskell.Exts.Syntax
 
-import Code.Builder
-import Code.GroupModule
-import Code.ModuleNames
+import Modules.Builder
+import Modules.GroupModule
+import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
 

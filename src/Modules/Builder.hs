@@ -1,7 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 -----------------------------------------------------------------------------
 --
--- Module      :  Code.Builder
+-- Module      :  Modules.Builder
 -- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -15,7 +15,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Code.Builder (
+module Modules.Builder (
 
     -- * The builders
     Builder,
@@ -61,8 +61,9 @@ import Language.Haskell.Exts.Syntax
 import Text.OpenGL.Spec as S
 import Spec
 import Main.Monad
-import Code.ModuleNames
-import Code.Types
+
+import Modules.ModuleNames
+import Modules.Types
 
 -----------------------------------------------------------------------------
 
