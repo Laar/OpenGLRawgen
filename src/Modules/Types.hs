@@ -21,7 +21,6 @@ module Modules.Types (
 -----------------------------------------------------------------------------
 
 import Language.Haskell.Exts.Syntax
-import Code.Generating.Utils
 
 import Text.OpenGL.Spec (Category)
 
@@ -34,9 +33,9 @@ type External = Bool
 -- | A generated module
 data RawModule
     = RawModule
-    { rawModuleName   :: ModuleName
-    , externalRModule :: External
-    , rawModuleParts  :: [ModulePart]
+    { rawModuleName     :: ModuleName
+    , externalRawModule :: External
+    , rawModuleParts    :: [ModulePart]
     } deriving (Show)
 
 -----------------------------------------------------------------------------

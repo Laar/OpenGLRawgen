@@ -99,7 +99,7 @@ outputModules :: [RawModule] -> RawGenIO ()
 outputModules modules = do
     logMessage $ "Writing " ++ show (length modules) ++ " modules"
     F.forM_ modules $ outputModule
-    let (exts, ints) = partition externalRModule modules
+    let (exts, ints) = partition externalRawModule modules
     oDir <- asksOptions outputDir
     logMessage "Writing modulelistings"
     writeModuleListing (oDir </> "modulesE.txt") exts
