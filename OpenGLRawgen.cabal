@@ -42,7 +42,8 @@ executable OpenGLRawgen
     mtl -any,
     opengl-api -any,
     parsec -any,
-    xml
+    xml,
+    haskell-src-exts-qq
   ghc-options: -Wall -O2 -rtsopts
   ghc-shared-options:
   ghc-prof-options: -Wall -O2 -rtsopts -prof -auto-all -caf-all
