@@ -170,26 +170,23 @@ funcTemplate name fType glname category = flip fmap askExtensionModule $ \emod -
         let name' = unname name
             dynEntry = "dyn_" ++ name' -- function ptr invoker
             ptrEntry = "ptr_" ++ name' -- function ptr to the gl function
-            -- The FFI import decl using a temporary call convention
-            invoker = TyCon . Qual emod $ Ident "Invoker"
-            fimport = [dec| foreign import stdcall unsafe "dynamic" __dynEntry__ :: ((invoker)) ((fType))|]
-            
-            -- The used/exported function.
-            function = [decs|
-                __name'__ :: ((fType))
-                __name'__ = __dynEntry__ __ptrEntry__
-                |]
-            
-            -- The function used for the function pointer
-            getExtensionEntry = Var . Qual emod $ Ident "getExtensionEntry"
-            glFuncName       = Lit . String $ "gl" ++ glname
-            categoryString   = Lit . String $ "GL_" ++ showCategory category
-            funcPointer = [decs|
-                {-# NOINLINE __ptrEntry__ #-}
-                __ptrEntry__ :: FunPtr a
-                __ptrEntry__ = unsafePerformIO $ $getExtensionEntry $categoryString $glFuncName
-                |]
-    in fimport : function ++ funcPointer
+            invoker = TyCon . Qual emod $ Ident "Invoker" -- Qualified type for the Invoker
+            getExtensionEntry = Var . Qual emod $ Ident "getExtensionEntry" -- getExtensionEntry function
+            glFuncName       = Lit . String $ "gl" ++ glname -- The name of the function to be imported
+            categoryString   = Lit . String $ "GL_" ++ showCategory category -- The category name string
+    in [decs|
+-- The function pointer invoker (uses a temporary callconvention)
+foreign import stdcall unsafe "dynamic" __dynEntry__ :: ((invoker)) ((fType))
+
+-- The actual function (exported)
+__name'__ :: ((fType))
+__name'__ = __dynEntry__ __ptrEntry__
+
+-- The function pointer
+{-# NOINLINE __ptrEntry__ #-}
+__ptrEntry__ :: FunPtr a
+__ptrEntry__ = unsafePerformIO $ $getExtensionEntry $categoryString $glFuncName
+|]
 
 
 -- | Replace every occurence of a certain calling convention by the given
