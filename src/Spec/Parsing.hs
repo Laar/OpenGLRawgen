@@ -116,7 +116,7 @@ parseFSpec funcs tm = foldr (add . convertFunc tm) mempty funcs
             = (addLocation c fn lMap, addValue fn fv vMap)
 
 convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
-convertFunc tm rf = (cat, (wrapName name, RawFunc name ty alias))
+convertFunc tm rf = (cat, (wrapName name, RawFunc ty alias))
     where
         name = funName rf
         cat = case funProfile rf of

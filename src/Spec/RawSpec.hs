@@ -25,6 +25,7 @@ module Spec.RawSpec (
     EnumValue(..), EnumName,
     FuncValue(..), FuncName,
     
+    GLName, toGLName,
     -- * ValueMap
     ValueMap,
     lookupValue,
@@ -73,10 +74,14 @@ data EnumValue
 
 -- | The specification of how the function is defined
 data FuncValue
-    -- | FFI import of the given type, with the alias and the GLfunction
-    -- name for which the pointer should be used.
-    = RawFunc  String Type (Maybe String)
+    = RawFunc
+        Type -- ^ The type of the imported function
+        (Maybe String) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
+
+-- | The original name of something from OpenGL (thus the name as used in the
+-- specification).
+type GLName = String
 
 -----------------------------------------------------------------------------
 
@@ -190,6 +195,8 @@ emptyDefineMap = DefMap M.empty M.empty
 class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     data ValueName sv
     wrapName    :: String -> ValueName sv
+    -- | Return the original OpenGLName (as in the specification).
+    toGLName    :: ValueName sv -> GLName
     unwrapName  :: ValueName sv -> RawGenOptions -> Name
     
     getValMap         :: ValueMap -> ValMap sv
@@ -209,6 +216,7 @@ instance SpecValue EnumValue where
     newtype ValueName EnumValue = EN{ unEN :: String }
         deriving (Eq, Ord, Show)
     wrapName = EN
+    toGLName = unEN
     unwrapName n o =
         let name = unEN n
             name' = if stripNames o then removeEnumExtension name else name
@@ -226,6 +234,7 @@ instance SpecValue FuncValue where
     newtype ValueName FuncValue = FN{ unFN :: String }
         deriving (Eq, Ord, Show)
     wrapName = FN
+    toGLName = unFN
     unwrapName n o =
         let name = unFN n
             name' = if stripNames o then removeFuncExtension name else name

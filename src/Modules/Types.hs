@@ -43,15 +43,15 @@ data RawModule
 -- | The parts in a module for OpenGLRaw.
 data ModulePart
     -- | Define an enumeration value with a specific value
-    = DefineEnum        Name Type Integer
+    = DefineEnum        Name GLName Type Integer
     -- | Define an enumeration value as an alias for another value in the
     -- same module.
-    | ReDefineLEnum     Name Type Name
+    | ReDefineLEnum     Name GLName Type Name
     -- | Define an enumeration value as an alias for another value, imported
     -- from another module.
-    | ReDefineIEnum     Name Type Imported
+    | ReDefineIEnum     Name GLName Type Imported
     -- | Reexport something (enum or function)
-    | ReExport          Imported
+    | ReExport          Imported GLName
     -- | Define a function.
     | DefineFunc        Name Type
         GLName    -- | The original name

@@ -59,10 +59,10 @@ toModule rmodule = do
 
 toExport :: ModulePart -> ExportSpec
 toExport mp = case mp of
-    DefineEnum      n _ _   -> nameExport n
-    ReDefineLEnum   n _ _   -> nameExport n
-    ReDefineIEnum   n _ _   -> nameExport n
-    ReExport        (n,_)   -> nameExport n
+    DefineEnum      n _ _ _ -> nameExport n
+    ReDefineLEnum   n _ _ _ -> nameExport n
+    ReDefineIEnum   n _ _ _ -> nameExport n
+    ReExport        (n,_) _ -> nameExport n
     DefineFunc      n _ _ _ -> nameExport n
     ReExportModule  mn      -> EModuleContents mn
     where
@@ -70,12 +70,12 @@ toExport mp = case mp of
 
 toImport :: ModulePart -> Maybe ImportDecl
 toImport mp = case mp of
-    DefineEnum{}        -> Nothing
-    ReDefineLEnum{}     -> Nothing
-    ReDefineIEnum _ _ i -> Just $ imported i
-    ReExport     i      -> Just $ imported i
-    DefineFunc{}        -> Nothing
-    ReExportModule mn   -> Just $ importAll mn
+    DefineEnum{}          -> Nothing
+    ReDefineLEnum{}       -> Nothing
+    ReDefineIEnum _ _ _ i -> Just $ imported i
+    ReExport      i _     -> Just $ imported i
+    DefineFunc{}          -> Nothing
+    ReExportModule mn     -> Just $ importAll mn
     where
         imported (n, mn) = partialImport mn [IVar n]
 
@@ -120,9 +120,9 @@ enumPrags = []
 -----------------------------------------------------------------------------
 
 toDecls :: RawGenMonad m => ModulePart -> m [Decl]
-toDecls (DefineEnum    n t v)       = enumTemplate n t (Lit $ Int v)
-toDecls (ReDefineLEnum n t n')      = enumTemplate n t (var n')
-toDecls (ReDefineIEnum n t (n',_))  = enumTemplate n t (var n')
+toDecls (DefineEnum    n _ t v)       = enumTemplate n t (Lit $ Int v)
+toDecls (ReDefineLEnum n _ t n')      = enumTemplate n t (var n')
+toDecls (ReDefineIEnum n _ t (n',_))  = enumTemplate n t (var n')
 toDecls (DefineFunc n t gn c)       = funcTemplate n t gn c
 toDecls _                           = pure []
 

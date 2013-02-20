@@ -46,41 +46,43 @@ buildModule c = do
 -- current category. Needed to determine if it can be redefined locally.
 addEnum :: Category -> EnumName -> MBuilder ()
 addEnum c n = do
+    let glname = toGLName n
     name <- unwrapNameM n
     loc <- getDefineLoc n
     case loc of
         Just c' -> do c'Module <- askCategoryModule c'
-                      tellPart $ ReExport (name, c'Module)
+                      tellPart $ ReExport (name, c'Module) glname
         Nothing -> do
             -- it does exist so this shouldn't fail.
             Just x <- enumLookup n
             addDefineLoc n c
             case x of
-                Value val ty -> tellPart $ DefineEnum name ty val
+                Value val ty -> tellPart $ DefineEnum name glname ty val
                 ReUse reuseName ty -> do
                     reuseName' <- unwrapNameM reuseName
                     ic <- getDefineLoc reuseName
                         >>= liftMaybe ("Couldn't find " ++ show reuseName)
                     if ic == c
-                     then tellPart $ ReDefineLEnum name ty reuseName'
+                     then tellPart $ ReDefineLEnum name glname ty reuseName'
                      else do
                         icmod <- askCategoryModule ic
-                        tellPart $ ReDefineIEnum name ty (reuseName', icmod)
+                        tellPart $ ReDefineIEnum name glname ty (reuseName', icmod)
 
 -----------------------------------------------------------------------------
 
 -- Adds the function to the module.
 addFunc :: Category -> FuncName -> MBuilder ()
 addFunc c n = do
-    Just (RawFunc gln ty _) <- getsValueMap $ lookupValue n
+    let glname = toGLName n
+    Just (RawFunc ty _) <- getsValueMap $ lookupValue n
     name <- unwrapNameM n
     loc <- getDefineLoc n
     case loc of
         Nothing -> do
             addDefineLoc n c
-            tellPart $ DefineFunc name ty gln c
+            tellPart $ DefineFunc name ty glname c
         Just c' -> do
             c'Module <- askCategoryModule c'
-            tellPart $ ReExport (name, c'Module)
+            tellPart $ ReExport (name, c'Module) glname
 
 -----------------------------------------------------------------------------
