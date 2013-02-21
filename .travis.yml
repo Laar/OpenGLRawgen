@@ -1,5 +1,5 @@
 language: haskell
 before_install:
     - git submodule update --init --recursive
-install: cabal install opengl-api CodeGenerating && cabal install --only-dependencies --enable-tests
+install: cabal install opengl-api/ CodeGenerating/ && cabal install --only-dependencies --enable-tests
 script: cabal configure && cabal build && ./testrun.sh
