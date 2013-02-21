@@ -16,14 +16,14 @@ module Modules.Types (
     RawModule(..), External,
     
     ModulePart(..), Imported, GLName,
-    ValueType(..),
+    ValueType(..), FType(..),
 ) where
 
 -----------------------------------------------------------------------------
 
 import Language.Haskell.Exts.Syntax
 
-import Spec(ValueType(..))
+import Spec(ValueType(..), FType(..))
 import Text.OpenGL.Spec (Category)
 
 -----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ data ModulePart
     -- | Reexport something (enum or function)
     | ReExport          Imported GLName
     -- | Define a function.
-    | DefineFunc        Name Type
+    | DefineFunc        Name FType [FType]
         GLName    -- | The original name
         Category  -- | The category this function was part of.
     -- | Reexport a module

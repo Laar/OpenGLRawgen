@@ -74,13 +74,13 @@ addEnum c n = do
 addFunc :: Category -> FuncName -> MBuilder ()
 addFunc c n = do
     let glname = toGLName n
-    Just (RawFunc ty _) <- getsValueMap $ lookupValue n
+    Just (RawFunc rty atys _) <- getsValueMap $ lookupValue n
     name <- unwrapNameM n
     loc <- getDefineLoc n
     case loc of
         Nothing -> do
             addDefineLoc n c
-            tellPart $ DefineFunc name ty glname c
+            tellPart $ DefineFunc name rty atys glname c
         Just c' -> do
             c'Module <- askCategoryModule c'
             tellPart $ ReExport (name, c'Module) glname

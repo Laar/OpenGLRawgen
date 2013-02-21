@@ -60,12 +60,12 @@ toModule rmodule = do
 
 toExport :: ModulePart -> ExportSpec
 toExport mp = case mp of
-    DefineEnum      n _ _ _ -> nameExport n
-    ReDefineLEnum   n _ _ _ -> nameExport n
-    ReDefineIEnum   n _ _ _ -> nameExport n
-    ReExport        (n,_) _ -> nameExport n
-    DefineFunc      n _ _ _ -> nameExport n
-    ReExportModule  mn      -> EModuleContents mn
+    DefineEnum      n _ _ _   -> nameExport n
+    ReDefineLEnum   n _ _ _   -> nameExport n
+    ReDefineIEnum   n _ _ _   -> nameExport n
+    ReExport        (n,_) _   -> nameExport n
+    DefineFunc      n _ _ _ _ -> nameExport n
+    ReExportModule  mn        -> EModuleContents mn
     where
         nameExport = EVar . UnQual
 
@@ -124,8 +124,8 @@ toDecls :: RawGenMonad m => ModulePart -> m [Decl]
 toDecls (DefineEnum    n _ t v)       = enumTemplate n t (Lit $ Int v)
 toDecls (ReDefineLEnum n _ t n')      = enumTemplate n t (var n')
 toDecls (ReDefineIEnum n _ t (n',_))  = enumTemplate n t (var n')
-toDecls (DefineFunc n t gn c)       = funcTemplate n t gn c
-toDecls _                           = pure []
+toDecls (DefineFunc n rt ats gn c)    = funcTemplate n (fromFType rt ats) gn c
+toDecls _                             = pure []
 
 -----------------------------------------------------------------------------
 
@@ -139,6 +139,20 @@ enumTemplate name vType vExp =
             BitfieldValue   -> tyCon' "GLbitfield"
 
 -----------------------------------------------------------------------------
+
+-- | Forms the `Type` of a function from its return and argument types. The
+-- type variables must be all different. Therefore each type variable gets
+-- its letter from the position in the argument list. The @a@ for the return
+-- type, "b" for the first argument, "c" for the second and so forth.
+fromFType :: FType -> [FType] -> Type
+fromFType rty atys = foldr TyFun rType $ zipWith toType vars atys
+    where
+        toType _ (TCon t) = tyCon' t
+        toType c TVar     = tyVar' c -- "a"
+        toType _ UnitTCon = unit_tycon
+        toType c (TPtr t) = TyApp (tyCon' "Ptr") $ toType c t
+        rType = TyApp (tyCon' "IO") $ toType "a" rty
+        vars = map (:[]) $ ['b'..'z']
 
 -- | Template for defining a function. It adds three declerations. One for
 -- the FFI import, one for the retrieving the 'FuncPtr' to the functions and

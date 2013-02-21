@@ -28,9 +28,6 @@ import Data.List(stripPrefix)
 import qualified Data.Map as M
 import Data.Maybe(fromMaybe)
 
-import Language.Haskell.Exts.Syntax
-import Code.Generating.Utils
-
 import Control.Applicative
 
 import Text.Parsec.String(GenParser)
@@ -116,15 +113,14 @@ parseFSpec funcs tm = foldr (add . convertFunc tm) mempty funcs
             = (addLocation c fn lMap, addValue fn fv vMap)
 
 convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
-convertFunc tm rf = (cat, (wrapName name, RawFunc ty alias))
+convertFunc tm rf = (cat, (wrapName name, RawFunc rtype atype alias))
     where
         name = funName rf
         cat = case funProfile rf of
             Nothing -> funCategory rf
             Just Compatibility -> toDeprecatedCat $ funCategory rf
-        ty   = foldr (-->>)
-            (convertRetType $ funReturnType rf)
-            (map paramToType $ funParameters rf)
+        rtype = convertRetType $ funReturnType rf
+        atype = map paramToType $ funParameters rf
         alias = funAlias rf
         paramToType (Parameter _ t _ p) = lookupType t p tm
 
@@ -155,78 +151,78 @@ toDeprecatedCat c = case c of
 
 -- | Convert the 'ReturnType' supplied by openGL-api to a type useable for
 -- Language.Haskell.Exts
-convertRetType :: ReturnType -> Type
-convertRetType rt = addIOType $ case rt of
-    Boolean      -> tyCon' "GLboolean"
-    BufferOffset -> tyCon' "GLsizeiptr"
-    ErrorCode    -> tyCon' "GLenum" -- TODO lookup
-    Float32      -> tyCon' "GLfloat"
-    FramebufferStatus -> tyCon' "GLenum" -- lookup
-    GLEnum       -> tyCon' "GLenum"
-    HandleARB    -> tyCon' "GLuint" -- lookup
-    Int32        -> tyCon' "GLint"
-    Path         -> tyCon' "GLuint" -- lookup, seems to be an object
-    S.List       -> tyCon' "GLuint" -- lookup
-    S.String     -> TyApp (tyCon' "Ptr") (tyCon' "GLchar")
-    Sync         -> tyCon' "GLsync"
-    UInt32       -> tyCon' "GLuint"
-    UInt64       -> tyCon' "GLuint64"
-    Void         -> unit_tycon
-    VoidPointer  -> TyApp (tyCon' "Ptr") (tyVar' "a") -- TODO improve the type variable
-    VdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
+convertRetType :: ReturnType -> FType
+convertRetType rt = case rt of
+    Boolean      -> TCon "GLboolean"
+    BufferOffset -> TCon "GLsizeiptr"
+    ErrorCode    -> TCon "GLenum" -- TODO lookup
+    Float32      -> TCon "GLfloat"
+    FramebufferStatus -> TCon "GLenum" -- lookup
+    GLEnum       -> TCon "GLenum"
+    HandleARB    -> TCon "GLuint" -- lookup
+    Int32        -> TCon "GLint"
+    Path         -> TCon "GLuint" -- lookup, seems to be an object
+    S.List       -> TCon "GLuint" -- lookup
+    S.String     -> TPtr $ TCon "GLchar"
+    Sync         -> TCon "GLsync"
+    UInt32       -> TCon "GLuint"
+    UInt64       -> TCon "GLuint64"
+    Void         -> UnitTCon
+    VoidPointer  -> TPtr TVar
+    VdpauSurfaceNV -> TCon "GLintptr" -- lookup
 
 -- | Convert the type supplied by openGL-api to a type useable for
 -- Language.Haskell.Exts
-lookupType :: String -> Passing -> TypeMap -> Type
-lookupType t _ _ | t == "cl_context" = tyCon' "CLcontext"
-                 | t == "cl_event"   = tyCon' "CLevent"
+lookupType :: String -> Passing -> TypeMap -> FType
+lookupType t _ _ | t == "cl_context" = TCon "CLcontext"
+                 | t == "cl_event"   = TCon "CLevent"
 lookupType t p tm = case M.lookup t tm of
     Just (t', ptr) -> addPointer (p /= S.Value) . addPointer ptr $ convertType t'
     Nothing -> error $ "lookupType: Type not found " ++ show t
     where
-        addPointer :: Bool -> Type -> Type
-        addPointer addptr = if addptr then TyApp (tyCon' "Ptr") else id
+        addPointer :: Bool -> FType -> FType
+        addPointer addptr = if addptr then TPtr else id
         convertType t' = case t' of
-            Star        -> TyApp (tyCon' "Ptr") (tyVar' "a")
-            GLbitfield  -> tyCon' "GLbitfield"
-            GLboolean   -> tyCon' "GLboolean"
-            GLbyte      -> tyCon' "GLbyte"
-            GLchar      -> tyCon' "GLchar"
-            GLcharARB   -> tyCon' "GLchar"
-            GLcharStarConst -> tyCon' "GLchar" -- LOOKUP if it needs a pointer
-            GLclampd    -> tyCon' "GLclampd"
-            GLclampf    -> tyCon' "GLclampf"
-            GLdouble    -> tyCon' "GLdouble"
-            GLenum      -> tyCon' "GLenum"
+            Star        -> TPtr TVar
+            GLbitfield  -> TCon "GLbitfield"
+            GLboolean   -> TCon "GLboolean"
+            GLbyte      -> TCon "GLbyte"
+            GLchar      -> TCon "GLchar"
+            GLcharARB   -> TCon "GLchar"
+            GLcharStarConst -> TCon "GLchar" -- LOOKUP if it needs a pointer
+            GLclampd    -> TCon "GLclampd"
+            GLclampf    -> TCon "GLclampf"
+            GLdouble    -> TCon "GLdouble"
+            GLenum      -> TCon "GLenum"
 --            GLenumWithTrailingComma -- removed from the source
-            GLfloat     -> tyCon' "GLfloat"
+            GLfloat     -> TCon "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> tyCon' "GLushort" -- lookup
-            GLhandleARB -> tyCon' "GLhandle"--tyCon' "GLuint" -- lookup
-            GLint       -> tyCon' "GLint"
-            GLint64     -> tyCon' "GLint64"
-            GLint64EXT  -> tyCon' "GLint64"
-            GLintptr    -> tyCon' "GLintptr"
-            GLintptrARB -> tyCon' "GLintptr"
-            GLshort     -> tyCon' "GLshort"
-            GLsizei     -> tyCon' "GLsizei"
-            GLsizeiptr  -> tyCon' "GLsizeiptr"
-            GLsizeiptrARB -> tyCon' "GLsizeiptr"
-            GLsync      -> tyCon' "GLsync"
-            GLubyte     -> tyCon' "GLubyte"
+            GLhalfNV    -> TCon "GLushort" -- lookup
+            GLhandleARB -> TCon "GLhandle"--tyCon' "GLuint" -- lookup
+            GLint       -> TCon "GLint"
+            GLint64     -> TCon "GLint64"
+            GLint64EXT  -> TCon "GLint64"
+            GLintptr    -> TCon "GLintptr"
+            GLintptrARB -> TCon "GLintptr"
+            GLshort     -> TCon "GLshort"
+            GLsizei     -> TCon "GLsizei"
+            GLsizeiptr  -> TCon "GLsizeiptr"
+            GLsizeiptrARB -> TCon "GLsizeiptr"
+            GLsync      -> TCon "GLsync"
+            GLubyte     -> TCon "GLubyte"
             ConstGLubyte -> error "cubyte"
-            GLuint      -> tyCon' "GLuint"
-            GLuint64    -> tyCon' "GLuint64"
-            GLuint64EXT -> tyCon' "GLuint64"
+            GLuint      -> TCon "GLuint"
+            GLuint64    -> TCon "GLuint64"
+            GLuint64EXT -> TCon "GLuint64"
             GLUnurbs    -> error "Unurbs"
             GLUquadric  -> error "Uquadric"
-            GLushort    -> tyCon' "GLushort"
+            GLushort    -> TCon "GLushort"
             GLUtesselator -> error  "tesselator"
-            GLvoid      -> tyVar' "a"
-            GLvoidStarConst -> TyApp (tyCon' "Ptr") (tyVar' "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
-            GLvdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
-            GLdebugproc    -> tyCon' "GLdebugproc"
-            GLdebugprocARB -> tyCon' "GLdebugprocARB" -- lookup
-            GLdebugprocAMD -> tyCon' "GLdebugprocAMD" -- lookup
+            GLvoid      -> TVar
+            GLvoidStarConst -> TPtr TVar -- TODO lookup ??, only used in MultiModeDrawElementsIBM
+            GLvdpauSurfaceNV -> TCon "GLintptr" -- lookup
+            GLdebugproc    -> TCon "GLdebugproc"
+            GLdebugprocARB -> TCon "GLdebugprocARB" -- lookup
+            GLdebugprocAMD -> TCon "GLdebugprocAMD" -- lookup
 
 -----------------------------------------------------------------------------

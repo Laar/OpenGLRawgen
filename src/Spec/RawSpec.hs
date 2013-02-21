@@ -19,7 +19,7 @@ module Spec.RawSpec (
     -- * The `RawSpec` and associates
     Category() , -- Convenience
     
-    ValueType(..),
+    ValueType(..), FType(..),
 
     SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
     ValueName(),
@@ -59,7 +59,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Maybe
 
-import Language.Haskell.Exts.Syntax(Type, Name(Ident))
+import Language.Haskell.Exts.Syntax(Name(Ident))
 import Text.OpenGL.Spec (Category)
 
 import Main.Options
@@ -69,20 +69,27 @@ import Main.Options
 data ValueType
     = EnumValue
     | BitfieldValue
-    deriving(Eq, Ord, Show)
+    deriving (Eq, Ord, Show)
 
 -- | The real values of an enum
 data EnumValue
     -- | A localy defined enumvalue
     = Value     Integer   ValueType
     | ReUse     EnumName  ValueType
-    deriving(Eq, Ord, Show)
+    deriving (Eq, Ord, Show)
 
+data FType
+    = TCon String
+    | TVar
+    | TPtr FType
+    | UnitTCon
+    deriving (Eq, Ord, Show)
 
 -- | The specification of how the function is defined
 data FuncValue
     = RawFunc
-        Type -- ^ The type of the imported function
+        FType   -- ^ Return type without IO
+        [FType] -- ^ Types of the arguments
         (Maybe String) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
 
