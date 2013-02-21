@@ -10,3 +10,4 @@ script:
     - cabal configure
     - cabal build
     - ./testrun.sh
+    - ./testbuild.sh testoutput/normal/
