@@ -16,12 +16,14 @@ module Modules.Types (
     RawModule(..), External,
     
     ModulePart(..), Imported, GLName,
+    ValueType(..),
 ) where
 
 -----------------------------------------------------------------------------
 
 import Language.Haskell.Exts.Syntax
 
+import Spec(ValueType(..))
 import Text.OpenGL.Spec (Category)
 
 -----------------------------------------------------------------------------
@@ -43,13 +45,13 @@ data RawModule
 -- | The parts in a module for OpenGLRaw.
 data ModulePart
     -- | Define an enumeration value with a specific value
-    = DefineEnum        Name GLName Type Integer
+    = DefineEnum        Name GLName ValueType Integer
     -- | Define an enumeration value as an alias for another value in the
     -- same module.
-    | ReDefineLEnum     Name GLName Type Name
+    | ReDefineLEnum     Name GLName ValueType Name
     -- | Define an enumeration value as an alias for another value, imported
     -- from another module.
-    | ReDefineIEnum     Name GLName Type Imported
+    | ReDefineIEnum     Name GLName ValueType Imported
     -- | Reexport something (enum or function)
     | ReExport          Imported GLName
     -- | Define a function.

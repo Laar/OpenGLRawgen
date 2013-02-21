@@ -31,6 +31,7 @@ import Code.Generating.Utils
 import Main.Monad
 import Modules.ModuleNames
 import Modules.Types
+
 -----------------------------------------------------------------------------
 
 
@@ -128,10 +129,14 @@ toDecls _                           = pure []
 
 -----------------------------------------------------------------------------
 
-enumTemplate :: RawGenMonad m => Name -> Type -> Exp -> m [Decl]
+enumTemplate :: RawGenMonad m => Name -> ValueType -> Exp -> m [Decl]
 enumTemplate name vType vExp =
-    pure [ oneTypeSig name vType
+    pure [ oneTypeSig name vType'
          , oneLiner name [] vExp]
+    where
+        vType' = case vType of
+            EnumValue       -> tyCon' "GLenum"
+            BitfieldValue   -> tyCon' "GLbitfield"
 
 -----------------------------------------------------------------------------
 

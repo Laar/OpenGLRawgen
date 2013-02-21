@@ -19,6 +19,8 @@ module Spec.RawSpec (
     -- * The `RawSpec` and associates
     Category() , -- Convenience
     
+    ValueType(..),
+
     SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
     ValueName(),
 
@@ -64,11 +66,16 @@ import Main.Options
 
 -----------------------------------------------------------------------------
 
+data ValueType
+    = EnumValue
+    | BitfieldValue
+    deriving(Eq, Ord, Show)
+
 -- | The real values of an enum
 data EnumValue
     -- | A localy defined enumvalue
-    = Value     Integer   Type
-    | ReUse     EnumName  Type
+    = Value     Integer   ValueType
+    | ReUse     EnumName  ValueType
     deriving(Eq, Ord, Show)
 
 

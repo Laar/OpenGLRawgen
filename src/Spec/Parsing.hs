@@ -102,8 +102,8 @@ addEnumValue name v = addValue' $ case v of
     where
         addValue' :: EnumValue -> EP ()
         addValue' enumVal = tellVal $ addValue (wrapName name) enumVal
-        ty :: Type
-        ty = tyCon' $ if isBitfieldName name then "GLbitfield" else "GLenum"
+        ty :: ValueType
+        ty = if isBitfieldName name then BitfieldValue else EnumValue
 
 -----------------------------------------------------------------------------
 
