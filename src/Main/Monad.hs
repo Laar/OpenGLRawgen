@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
 -- needed for the instances of the other mtl typeclasses
@@ -165,9 +166,13 @@ liftMaybe m = maybe (throwRawError m) return
 instance MonadState s m => MonadState s (RawGenT m) where
     get     = lift get
     put     = lift . put
+#if MIN_VERSION_mtl(2,1,0)
     state   = lift . state
+#endif
 instance MonadWriter w m => MonadWriter w (RawGenT m) where
+#if MIN_VERSION_mtl(2,1,0)
     writer  = lift . writer
+#endif
     tell    = lift . tell
     listen  = RawGen . listen . _runRawGenT
     pass    = RawGen . pass   . _runRawGenT

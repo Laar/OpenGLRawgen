@@ -3,6 +3,8 @@
 OpenGLRawgen is a generator tool to make a Raw FFI import of OpenGL to
 haskell in style of OpenGLRaw.
 
+[![Build Status](https://travis-ci.org/Laar/OpenGLRawgen.png)](https://travis-ci.org/Laar/OpenGLRawgen)
+
 ## Project goal
 
 The current (01-2013) OpenGLRaw is quite outdated and not practical to
