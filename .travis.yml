@@ -1,8 +1,8 @@
 language: haskell
 before_install:
     - git submodule update --init --recursive
-    - sudo apt-get install libghc-cmdargs-dev
-    - sudo apt-get install libghc-src-exts-dev
+    - sudo apt-get -q install libghc-cmdargs-dev
+    - sudo apt-get -q install libghc-src-exts-dev
 install: 
     - cabal install opengl-api/ CodeGenerating/
     - cabal install --only-dependencies --enable-tests
