@@ -1,4 +1,5 @@
 module Interface.Module (
+    moduleToRenderedInterface,
     moduleToInterface
 ) where
 
@@ -8,6 +9,9 @@ import Code.Generating.Utils
 import Text.XML.Light
 
 import Modules.Types
+
+moduleToRenderedInterface :: RawModule -> String
+moduleToRenderedInterface = ppTopElement . moduleToInterface
 
 moduleToInterface :: RawModule -> Element
 moduleToInterface rawMod =
