@@ -17,3 +17,4 @@ OpenGLRawgen
 testoutput/
 referenceoutput
 compile/
+cabal-dev
