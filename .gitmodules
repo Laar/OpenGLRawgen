@@ -4,3 +4,6 @@
 [submodule "opengl-api"]
 	path = opengl-api
 	url = git://github.com/Laar/opengl-api.git
+[submodule "haskell-src-exts-qq"]
+	path = haskell-src-exts-qq
+	url = git://github.com/Laar/haskell-src-exts-qq.git
