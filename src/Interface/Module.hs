@@ -6,7 +6,6 @@ module Interface.Module (
 ) where
 
 import Language.Haskell.Exts.Syntax hiding (QName)
-import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
 import Data.String
 import Text.XML.Light
@@ -40,10 +39,33 @@ instance IsString QName where
     fromString = unqual
 
 functionElem :: Name -> GLName -> FType -> [FType] -> Element
-functionElem = undefined
+functionElem name glname rettype argtypes =
+    node "function"
+        ([ Attr "glname" glname
+        , Attr "name" $ unname name
+        ], typeContents)
+    where
+        typeContents =
+            node "return" (toElem rettype)
+            : map toArgElem argtypes
+        toArgElem = node "argument" . toElem
+        toElem :: FType -> Element
+        toElem (TCon n)  = node "con" [Attr "type" n]
+        toElem TVar      = node "var" ()
+        toElem (TPtr ft) = node "ptr" $ toElem ft
+        toElem UnitTCon  = node "unit" ()
 
 enumElem :: Name -> GLName -> ValueType -> Element
-enumElem = undefined
+enumElem name glname vt =
+    node "enum"
+        [ Attr "glname" glname
+        , Attr "name" $ unname name
+        , Attr "type" valType
+        ]
+    where
+        valType = case vt of
+            EnumValue       -> "enum"
+            BitfieldValue   -> "bitfield"
 
 reExportElem :: Name -> GLName -> ModuleName -> Element
 reExportElem name glname (ModuleName modName) =
