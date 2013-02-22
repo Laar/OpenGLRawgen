@@ -38,6 +38,8 @@ import Main.Options
 import Spec
 import Spec.Parsing(parseSpecs, parseReuses)
 
+
+import Interface.Module
 -- needed for the version
 import Data.Version(showVersion)
 import Paths_OpenGLRawgen(version)
@@ -111,9 +113,12 @@ outputModule rmodule = do
     modu <- toModule rmodule
     oDir <- asksOptions outputDir
     let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
+        interf = moduleToRenderedInterface rmodule
         path = oDir </> moduleNameToPath mname ++ ".hs"
+        ipath = oDir </> "interface" </> moduleNameToPath mname ++ ".xml"
 --    logMessage $ "Writing: " ++ moduleNameToName mname
     liftIO $ safeWriteFile path modu'
+    liftIO $ safeWriteFile ipath interf
 
 writeModuleListing :: FilePath -> [RawModule] -> RawGenIO ()
 writeModuleListing fp mods = do
