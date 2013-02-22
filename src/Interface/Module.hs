@@ -25,28 +25,18 @@ moduleToInterface rawMod =
 
 modulePartToElement :: ModulePart -> Element
 modulePartToElement p = case p of
-    DefineEnum      n gln t _  -> valueElem n gln t EnumDef
-    ReDefineLEnum   n gln t _  -> valueElem n gln t EnumDef
-    ReDefineIEnum   n gln t _  -> valueElem n gln t EnumDef
+    DefineEnum      n gln t _  -> enumElem n gln t
+    ReDefineLEnum   n gln t _  -> enumElem n gln t
+    ReDefineIEnum   n gln t _  -> enumElem n gln t
     ReExport        (n, m) gln -> reExportElem n gln m
-    DefineFunc      n t gln _  -> valueElem n gln t FuncDef
+    DefineFunc      n rt ats gln _  -> functionElem n gln rt ats
     ReExportModule  m          -> moduleReexport m
 
-data DefType
-    = EnumDef
-    | FuncDef
+functionElem :: Name -> GLName -> FType -> [FType] -> Element
+functionElem = undefined
 
-valueElem :: Name -> GLName -> Type -> DefType -> Element
-valueElem name glname ty def = 
-    node (unqual "define")
-        ([ Attr (unqual "glname") glname
-        , Attr (unqual "name")   $ unname name
-        , Attr (unqual "type")   defString
-        ], prettyPrint ty)
-    where 
-        defString = case def of
-            EnumDef -> "enum"
-            FuncDef -> "function"
+enumElem :: Name -> GLName -> ValueType -> Element
+enumElem = undefined
 
 reExportElem :: Name -> GLName -> ModuleName -> Element
 reExportElem name glname (ModuleName modName) =
