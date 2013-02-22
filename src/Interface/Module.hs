@@ -1,11 +1,14 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Interface.Module (
     moduleToRenderedInterface,
     moduleToInterface
 ) where
 
-import Language.Haskell.Exts.Syntax
+import Language.Haskell.Exts.Syntax hiding (QName)
 import Language.Haskell.Exts.Pretty
 import Code.Generating.Utils
+import Data.String
 import Text.XML.Light
 
 import Modules.Types
@@ -15,12 +18,12 @@ moduleToRenderedInterface = ppTopElement . moduleToInterface
 
 moduleToInterface :: RawModule -> Element
 moduleToInterface rawMod =
-    node (unqual "moduledefinition")
-        ([Attr (unqual "module") . moduleNameToName $ rawModuleName rawMod
-        , Attr (unqual "exported") $ if externalRawModule rawMod then "True" else "False"
+    node "moduledefinition"
+        ([Attr "module" . moduleNameToName $ rawModuleName rawMod
+        , Attr "exported" $ if externalRawModule rawMod then "True" else "False"
         ], parts)
     where
-        parts = node (unqual "parts") 
+        parts = node "parts" 
             . map modulePartToElement $ rawModuleParts rawMod
 
 modulePartToElement :: ModulePart -> Element
@@ -32,6 +35,10 @@ modulePartToElement p = case p of
     DefineFunc      n rt ats gln _  -> functionElem n gln rt ats
     ReExportModule  m          -> moduleReexport m
 
+-- To make constructing xml easier
+instance IsString QName where
+    fromString = unqual
+
 functionElem :: Name -> GLName -> FType -> [FType] -> Element
 functionElem = undefined
 
@@ -40,13 +47,15 @@ enumElem = undefined
 
 reExportElem :: Name -> GLName -> ModuleName -> Element
 reExportElem name glname (ModuleName modName) =
-    node (unqual "reexported")
-        [ Attr (unqual "glname") glname
-        , Attr (unqual "name")   $ unname name
-        , Attr (unqual "module") modName
+    node "reexported"
+        [ Attr "glname" glname
+        , Attr "name"   $ unname name
+        , Attr "module" modName
         ]
 
 moduleReexport :: ModuleName -> Element
 moduleReexport (ModuleName modName) =
-    node (unqual "exportedmodule")
-        [ Attr (unqual "module") modName]
+    node "exportedmodule"
+        [ Attr "module" modName]
+
+
