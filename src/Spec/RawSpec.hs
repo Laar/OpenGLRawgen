@@ -19,12 +19,15 @@ module Spec.RawSpec (
     -- * The `RawSpec` and associates
     Category() , -- Convenience
     
+    ValueType(..), FType(..),
+
     SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
     ValueName(),
 
     EnumValue(..), EnumName,
     FuncValue(..), FuncName,
     
+    GLName, toGLName,
     -- * ValueMap
     ValueMap,
     lookupValue,
@@ -56,27 +59,43 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Maybe
 
-import Language.Haskell.Exts.Syntax(Type, Name(Ident))
+import Language.Haskell.Exts.Syntax(Name(Ident))
 import Text.OpenGL.Spec (Category)
 
 import Main.Options
 
 -----------------------------------------------------------------------------
 
+data ValueType
+    = EnumValue
+    | BitfieldValue
+    deriving (Eq, Ord, Show)
+
 -- | The real values of an enum
 data EnumValue
     -- | A localy defined enumvalue
-    = Value     Integer   Type
-    | ReUse     EnumName  Type
-    deriving(Eq, Ord, Show)
+    = Value     Integer   ValueType
+    | ReUse     EnumName  ValueType
+    deriving (Eq, Ord, Show)
 
+data FType
+    = TCon String
+    | TVar
+    | TPtr FType
+    | UnitTCon
+    deriving (Eq, Ord, Show)
 
 -- | The specification of how the function is defined
 data FuncValue
-    -- | FFI import of the given type, with the alias and the GLfunction
-    -- name for which the pointer should be used.
-    = RawFunc  String Type (Maybe String)
+    = RawFunc
+        FType   -- ^ Return type without IO
+        [FType] -- ^ Types of the arguments
+        (Maybe String) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
+
+-- | The original name of something from OpenGL (thus the name as used in the
+-- specification).
+type GLName = String
 
 -----------------------------------------------------------------------------
 
@@ -190,6 +209,8 @@ emptyDefineMap = DefMap M.empty M.empty
 class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     data ValueName sv
     wrapName    :: String -> ValueName sv
+    -- | Return the original OpenGLName (as in the specification).
+    toGLName    :: ValueName sv -> GLName
     unwrapName  :: ValueName sv -> RawGenOptions -> Name
     
     getValMap         :: ValueMap -> ValMap sv
@@ -209,6 +230,7 @@ instance SpecValue EnumValue where
     newtype ValueName EnumValue = EN{ unEN :: String }
         deriving (Eq, Ord, Show)
     wrapName = EN
+    toGLName = unEN
     unwrapName n o =
         let name = unEN n
             name' = if stripNames o then removeEnumExtension name else name
@@ -226,6 +248,7 @@ instance SpecValue FuncValue where
     newtype ValueName FuncValue = FN{ unFN :: String }
         deriving (Eq, Ord, Show)
     wrapName = FN
+    toGLName = unFN
     unwrapName n o =
         let name = unFN n
             name' = if stripNames o then removeFuncExtension name else name
