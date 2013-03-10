@@ -62,15 +62,6 @@ rmain = do
     let lMap'' = cleanupSpec opts lMap'
     modules <- liftRawGen $ makeRaw (lMap'', vMap)
     outputModules modules
-    -- write out the modules
---    logMessage $ "Writing modules"
---    processModules' outputModule modules
---    logMessage $ "Writing module names"
-    -- and a list of exposed and internal modules.
---    liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
---        map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
---    liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
---        map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse
