@@ -66,11 +66,6 @@ import Main.Options
 
 -----------------------------------------------------------------------------
 
-data ValueType
-    = EnumValue
-    | BitfieldValue
-    deriving (Eq, Ord, Show)
-
 -- | The real values of an enum
 data EnumValue
     -- | A localy defined enumvalue

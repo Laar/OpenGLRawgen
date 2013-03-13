@@ -23,7 +23,6 @@ module Modules.Types (
 
 import Language.Haskell.Exts.Syntax
 
-import Spec(ValueType(..))
 import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
