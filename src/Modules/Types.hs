@@ -23,8 +23,8 @@ module Modules.Types (
 
 import Language.Haskell.Exts.Syntax
 
-import Spec(ValueType(..), FType(..))
-import Text.OpenGL.Spec (Category)
+import Spec(ValueType(..))
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
 
@@ -64,8 +64,5 @@ data ModulePart
 
 -- | An imported name with specific module.
 type Imported = (Name, ModuleName)
--- | The original name of something from OpenGL (thus the name as used in the
--- specification).
-type GLName = String
 
 -----------------------------------------------------------------------------

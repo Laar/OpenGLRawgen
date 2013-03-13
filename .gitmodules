@@ -4,3 +4,6 @@
 [submodule "opengl-api"]
 	path = opengl-api
 	url = git://github.com/Laar/opengl-api.git
+[submodule "OpenGLRawgenBase"]
+	path = OpenGLRawgenBase
+	url = git@github.com:Laar/OpenGLRawgenBase.git

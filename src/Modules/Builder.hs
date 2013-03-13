@@ -58,7 +58,6 @@ import Control.Monad.Writer
 
 import Language.Haskell.Exts.Syntax
 
-import Text.OpenGL.Spec as S
 import Spec
 import Main.Monad
 

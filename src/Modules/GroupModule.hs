@@ -27,7 +27,7 @@ import Control.Monad.Reader
 import Data.Maybe(mapMaybe)
 import Data.List(nub)
 
-import Text.OpenGL.Spec(Category(..), Extension)
+import Language.OpenGLRaw.Base
 
 import Modules.Builder
 import Modules.ModuleNames

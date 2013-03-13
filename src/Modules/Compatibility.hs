@@ -18,9 +18,8 @@ module Modules.Compatibility (
 
 -----------------------------------------------------------------------------
 
-import Text.OpenGL.Spec(Category(Version))
-
 import Language.Haskell.Exts.Syntax
+import Language.OpenGLRaw.Base
 
 import Modules.Builder
 import Modules.GroupModule
