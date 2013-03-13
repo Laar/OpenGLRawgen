@@ -60,7 +60,7 @@ import qualified Data.Set as S
 import Data.Maybe
 
 import Language.Haskell.Exts.Syntax(Name(Ident))
-import Text.OpenGL.Spec (Category)
+import Language.OpenGLRaw.Base
 
 import Main.Options
 
@@ -78,13 +78,6 @@ data EnumValue
     | ReUse     EnumName  ValueType
     deriving (Eq, Ord, Show)
 
-data FType
-    = TCon String
-    | TVar
-    | TPtr FType
-    | UnitTCon
-    deriving (Eq, Ord, Show)
-
 -- | The specification of how the function is defined
 data FuncValue
     = RawFunc
@@ -92,10 +85,6 @@ data FuncValue
         [FType] -- ^ Types of the arguments
         (Maybe String) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
-
--- | The original name of something from OpenGL (thus the name as used in the
--- specification).
-type GLName = String
 
 -----------------------------------------------------------------------------
 

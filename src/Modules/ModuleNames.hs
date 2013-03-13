@@ -44,7 +44,7 @@ import Data.List(partition)
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 
-import Text.OpenGL.Spec as S
+import Language.OpenGLRaw.Base
 import Main.Monad
 
 -----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ categoryModule (Extension ex n d) = return .
     ModuleName
         $ moduleBase <.> upperFirst (show ex) <.> correctName n
         ++ (if d then "Compatibility" else "")
-categoryModule (S.Name n) = throwRawError
+categoryModule (Name n) = throwRawError
     $ "categoryModule: Category with only a name "
     ++ upperFirst (show n)
 

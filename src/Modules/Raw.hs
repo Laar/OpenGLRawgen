@@ -26,7 +26,7 @@ import Data.List(minimumBy)
 
 import Main.Options
 import Spec
-import Text.OpenGL.Spec(Category(..))
+import Language.OpenGLRaw.Base
 
 import Modules.Builder
 import Modules.Compatibility

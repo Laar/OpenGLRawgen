@@ -24,7 +24,7 @@ import Data.Maybe
 import Data.Traversable(traverse)
 import Language.Haskell.Exts.Syntax
 
-import Text.OpenGL.Spec(Category, showCategory)
+import Language.OpenGLRaw.Base
 
 import Code.Generating.Utils
 

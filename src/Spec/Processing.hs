@@ -22,7 +22,7 @@ module Spec.Processing (
 import Data.Monoid
 import qualified Data.Set as S
 
-import Text.OpenGL.Spec(Category(Extension), Extension)
+import Language.OpenGLRaw.Base
 
 import Main.Options
 
