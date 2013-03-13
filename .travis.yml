@@ -4,7 +4,7 @@ before_install:
     - sudo apt-get install libghc-cmdargs-dev
     - sudo apt-get install libghc-src-exts-dev
 install: 
-    - cabal install opengl-api/ CodeGenerating/
+    - cabal install opengl-api/ CodeGenerating/ OpenGLRawgenBase/
     - cabal install --only-dependencies --enable-tests
 script: 
     - cabal configure
