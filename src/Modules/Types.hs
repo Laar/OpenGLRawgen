@@ -13,7 +13,8 @@
 -----------------------------------------------------------------------------
 
 module Modules.Types (
-    RawModule(..), External,
+    RawModule(..), ModuleType(..),
+    isExternal,
     
     ModulePart(..), Imported, GLName,
     ValueType(..), FType(..),
@@ -27,17 +28,18 @@ import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
 
--- | Type indicating if a module is exposed to the outside world or
--- purely for internal use
-type External = Bool
-
 -- | A generated module
 data RawModule
     = RawModule
     { rawModuleName     :: ModuleName
-    , externalRawModule :: External
+    , rawModuleType     :: ModuleType
     , rawModuleParts    :: [ModulePart]
     } deriving (Show)
+
+isExternal :: RawModule -> Bool
+isExternal rm = case rawModuleType rm of
+    Internal -> False
+    _        -> True
 
 -----------------------------------------------------------------------------
 

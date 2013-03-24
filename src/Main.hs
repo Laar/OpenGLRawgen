@@ -92,11 +92,13 @@ outputModules :: [RawModule] -> RawGenIO ()
 outputModules modules = do
     logMessage $ "Writing " ++ show (length modules) ++ " modules"
     F.forM_ modules $ outputModule
-    let (exts, ints) = partition externalRawModule modules
+    let (exts, ints) = partition isExternal modules
     oDir <- asksOptions outputDir
     logMessage "Writing modulelistings"
     writeModuleListing (oDir </> "modulesE.txt") exts
     writeModuleListing (oDir </> "modulesI.txt") ints
+    -- writing the interface listing
+    writePackageInterface modules
 
 outputModule :: RawModule -> RawGenIO ()
 outputModule rmodule = do
@@ -104,12 +106,10 @@ outputModule rmodule = do
     modu <- toModule rmodule
     oDir <- asksOptions outputDir
     let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
-        interf = moduleToRenderedInterface rmodule
         path = oDir </> moduleNameToPath mname ++ ".hs"
-        ipath = oDir </> "interface" </> moduleNameToPath mname ++ ".xml"
 --    logMessage $ "Writing: " ++ moduleNameToName mname
     liftIO $ safeWriteFile path modu'
-    liftIO $ safeWriteFile ipath interf
+    writeModuleInterface rmodule
 
 writeModuleListing :: FilePath -> [RawModule] -> RawGenIO ()
 writeModuleListing fp mods = do

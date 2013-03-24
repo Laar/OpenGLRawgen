@@ -1,83 +1,49 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Interface.Module (
-    moduleToRenderedInterface,
-    moduleToInterface
+    moduleToInterface, writeModuleInterface,
+    writePackageInterface,
 ) where
 
-import Language.Haskell.Exts.Syntax hiding (QName)
-import Code.Generating.Utils
-import Data.String
-import Text.XML.Light
+import Language.Haskell.Exts.Syntax
+import Data.List
+import qualified Data.Set as S
 
+import Language.OpenGLRaw.Interface.Serialize
+import Language.OpenGLRaw.Interface.Types
+
+import Main.Monad
+import Main.Options
 import Modules.Types
 
-moduleToRenderedInterface :: RawModule -> String
-moduleToRenderedInterface = ppTopElement . moduleToInterface
+writePackageInterface :: [RawModule] -> RawGenIO ()
+writePackageInterface modus = do
+    let inter = OpenGLRawI . S.fromList $ map rawModuleName modus
+    path <- asksOptions interfaceDir
+    liftIO $ writePackage path inter
 
-moduleToInterface :: RawModule -> Element
-moduleToInterface rawMod =
-    node "moduledefinition"
-        ([Attr "module" . moduleNameToName $ rawModuleName rawMod
-        , Attr "exported" $ if externalRawModule rawMod then "True" else "False"
-        ], parts)
+writeModuleInterface :: RawModule -> RawGenIO ()
+writeModuleInterface modu = do
+    path <- asksOptions interfaceDir
+    liftIO . writeModule path $ moduleToInterface modu
+
+moduleToInterface :: RawModule -> ModuleI
+moduleToInterface rm = 
+    let baseModule 
+            = ModuleI 
+                (rawModuleName rm) (rawModuleType rm)
+                S.empty S.empty S.empty
+    in foldl' (flip addModulePart) baseModule $ rawModuleParts rm
+
+addModulePart :: ModulePart -> ModuleI -> ModuleI
+addModulePart p m = case p of
+    DefineEnum      n gln t _ -> addEnum        $ EnumI gln (unName n) t
+    ReDefineLEnum   n gln t _ -> addEnum        $ EnumI gln (unName n) t
+    ReDefineIEnum   n gln t _ -> addEnum        $ EnumI gln (unName n) t
+    ReExport        (n,m') _  -> addReExport    $ SingleExport m' (unName n)
+    DefineFunc      n rt ats gln _  -> addFunc  $ FuncI gln (unName n) rt ats
+    ReExportModule  m'        -> addReExport    $ ModuleExport m'
     where
-        parts = node "parts" 
-            . map modulePartToElement $ rawModuleParts rawMod
-
-modulePartToElement :: ModulePart -> Element
-modulePartToElement p = case p of
-    DefineEnum      n gln t _  -> enumElem n gln t
-    ReDefineLEnum   n gln t _  -> enumElem n gln t
-    ReDefineIEnum   n gln t _  -> enumElem n gln t
-    ReExport        (n, m) gln -> reExportElem n gln m
-    DefineFunc      n rt ats gln _  -> functionElem n gln rt ats
-    ReExportModule  m          -> moduleReexport m
-
--- To make constructing xml easier
-instance IsString QName where
-    fromString = unqual
-
-functionElem :: Name -> GLName -> FType -> [FType] -> Element
-functionElem name glname rettype argtypes =
-    node "function"
-        ([ Attr "glname" glname
-        , Attr "name" $ unname name
-        ], typeContents)
-    where
-        typeContents =
-            node "return" (toElem rettype)
-            : map toArgElem argtypes
-        toArgElem = node "argument" . toElem
-        toElem :: FType -> Element
-        toElem (TCon n)  = node "con" [Attr "type" n]
-        toElem TVar      = node "var" ()
-        toElem (TPtr ft) = node "ptr" $ toElem ft
-        toElem UnitTCon  = node "unit" ()
-
-enumElem :: Name -> GLName -> ValueType -> Element
-enumElem name glname vt =
-    node "enum"
-        [ Attr "glname" glname
-        , Attr "name" $ unname name
-        , Attr "type" valType
-        ]
-    where
-        valType = case vt of
-            EnumValue       -> "enum"
-            BitfieldValue   -> "bitfield"
-
-reExportElem :: Name -> GLName -> ModuleName -> Element
-reExportElem name glname (ModuleName modName) =
-    node "reexported"
-        [ Attr "glname" glname
-        , Attr "name"   $ unname name
-        , Attr "module" modName
-        ]
-
-moduleReexport :: ModuleName -> Element
-moduleReexport (ModuleName modName) =
-    node "exportedmodule"
-        [ Attr "module" modName]
-
-
+        addEnum e = m{modEnums = S.insert e $ modEnums m}
+        addFunc f = m{modFuncs = S.insert f $ modFuncs m}
+        addReExport r = m{modReExports = S.insert r $ modReExports m}
+        unName (Ident  i) = i
+        unName (Symbol s) = s
