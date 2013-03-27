@@ -1,8 +1,25 @@
+-----------------------------------------------------------------------------
+--
+-- Module      :  Interface.Module
+-- Copyright   :  (c) 2013 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
+--
+-- Maintainer  :
+-- Stability   :
+-- Portability :
+--
+-- | The interface writing part of the generator.
+--
+-----------------------------------------------------------------------------
+
 module Interface.Module (
     moduleToInterface, writeModuleInterface,
     writePackageInterface,
     verifyInterface,
 ) where
+
+-----------------------------------------------------------------------------
+
 
 import Control.Monad
 import Language.Haskell.Exts.Syntax
@@ -17,17 +34,22 @@ import Main.Monad
 import Main.Options
 import Modules.Types
 
+-----------------------------------------------------------------------------
+
+-- | Writes the package/index interface file.
 writePackageInterface :: [RawModule] -> RawGenIO ()
 writePackageInterface modus = do
     let inter = OpenGLRawI . S.fromList $ map rawModuleName modus
     path <- asksOptions interfaceDir
     liftIO $ writePackage path inter
 
+-- | Writes the interface file for a single `RawModule`.
 writeModuleInterface :: RawModule -> RawGenIO ()
 writeModuleInterface modu = do
     path <- asksOptions interfaceDir
     liftIO . writeModule path $ moduleToInterface modu
 
+-- | Converts a single module to its interface representation.
 moduleToInterface :: RawModule -> ModuleI
 moduleToInterface rm = 
     let baseModule 
@@ -36,6 +58,7 @@ moduleToInterface rm =
                 S.empty S.empty S.empty
     in foldl' (flip addModulePart) baseModule $ rawModuleParts rm
 
+-- | Adds a `ModulePart` to the interface of a module.
 addModulePart :: ModulePart -> ModuleI -> ModuleI
 addModulePart p m = case p of
     DefineEnum      n gln t _ -> addEnum        $ EnumI gln (unName n) t
@@ -51,6 +74,9 @@ addModulePart p m = case p of
         unName (Ident  i) = i
         unName (Symbol s) = s
 
+-----------------------------------------------------------------------------
+
+-- | Performs some simple checks on the interface files.
 verifyInterface :: [RawModule] -> RawGenIO ()
 verifyInterface rmods = do
     let rmodNames = S.fromList $ map rawModuleName rmods
@@ -69,6 +95,7 @@ verifyInterface rmods = do
     where
         unmodName (ModuleName mn) = mn
 
+-- | Verification of a single module from the interface.
 verifyModule :: ModuleName -> RawGenIO ()
 verifyModule mn = do
     iDir <- asksOptions interfaceDir
@@ -77,3 +104,5 @@ verifyModule mn = do
     where
         errMsg = "Module interface parsing failed for: " ++ mName
         (ModuleName mName) = mn
+
+-----------------------------------------------------------------------------
