@@ -137,6 +137,9 @@ The `RawModule`s are used to generate to forms of output.
 * Two listings specifying the internal modules (`other-modules` field
   in cabal) in `modulesI.txt` and the external modules
   (`exposed-modules` in cabal) in `modulesE.txt`.
+* The interface, which describes what each module defines, useful to
+  lookup where a piece (function or enum) has been defined and what its
+  haskell name and type are.
 
 
 ### Dependencies
