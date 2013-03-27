@@ -62,7 +62,7 @@ rmain = do
     let lMap'' = cleanupSpec opts lMap'
     modules <- liftRawGen $ makeRaw (lMap'', vMap)
     outputModules modules
-    verifyInterface
+    verifyInterface modules
 
 -- | Parse and process the reuse files. It generates no warning if there is
 -- no reuse file to parse

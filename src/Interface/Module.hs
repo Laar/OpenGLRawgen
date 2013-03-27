@@ -4,6 +4,7 @@ module Interface.Module (
     verifyInterface,
 ) where
 
+import Control.Monad
 import Language.Haskell.Exts.Syntax
 import Data.List
 import qualified Data.Foldable as F
@@ -50,17 +51,28 @@ addModulePart p m = case p of
         unName (Ident  i) = i
         unName (Symbol s) = s
 
-verifyInterface :: RawGenIO ()
-verifyInterface = do
+verifyInterface :: [RawModule] -> RawGenIO ()
+verifyInterface rmods = do
+    let rmodNames = S.fromList $ map rawModuleName rmods
     logMessage "Verifying interface files"
     iDir <- asksOptions interfaceDir
-    mpack <- liftMaybe "package not readable" =<< liftIO (readPackage iDir)
+    mpack <- liftEitherPrepend "Package interface verifying failed"
+        =<< liftIO (readPackage iDir)
+    let imodNames = rawMods mpack
+    unless (imodNames == rmodNames) . throwRawError . unlines $
+        [ "The modules in the interface and the generated modules are not the same!"
+        , "Missing interfaces:"
+        ] ++ (map unmodName $ S.toList (rmodNames S.\\ imodNames)) ++
+        [ "Excess interfaces:"
+        ] ++ (map unmodName $ S.toList (imodNames S.\\ rmodNames))
     F.mapM_ verifyModule $ rawMods mpack
+    where
+        unmodName (ModuleName mn) = mn
 
 verifyModule :: ModuleName -> RawGenIO ()
 verifyModule mn = do
     iDir <- asksOptions interfaceDir
-    _ <- liftMaybe errMsg =<< liftIO (readModule iDir mn)
+    _ <- liftEitherPrepend errMsg =<< liftIO (readModule iDir mn)
     return ()
     where
         errMsg = "Module interface parsing failed for: " ++ mName
