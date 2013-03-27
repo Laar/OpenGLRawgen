@@ -37,7 +37,7 @@ addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
     let modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.Core" ++ show ma ++ show mi
     in do cp <- askProfileModule ma mi False
-          addModule' modName True $ tellReExportModule cp
+          addModule' modName Compatibility $ tellReExportModule cp
 
 addARBCompatibility :: Builder ()
 addARBCompatibility = do
@@ -45,6 +45,7 @@ addARBCompatibility = do
         modFilter _                  = False
 
         modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
-    addModule' modName True $ (lift . asksCategories $ filter modFilter) >>= mkGroupModule
+    addModule' modName Compatibility $ 
+        (lift . asksCategories $ filter modFilter) >>= mkGroupModule
 
 -----------------------------------------------------------------------------

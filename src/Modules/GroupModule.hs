@@ -57,9 +57,9 @@ addCoreProfiles = do
 -- reexports all functions and enumeration values that are part of the
 -- specification of OpenGL.
 addCoreProfile
-    :: Int  -- ^ Major version
-    -> Int  -- ^ Minor version
-    -> Bool -- ^ Compatibility Profile?
+    :: Major        -- ^ Major version
+    -> Minor        -- ^ Minor version
+    -> Deprecated   -- ^ Compatibility Profile?
     -> Builder ()
 addCoreProfile ma mi comp = do
      let catFilter (Version ma' mi' comp') =
@@ -68,7 +68,7 @@ addCoreProfile ma mi comp = do
          catFilter _                 = False
      cats <- asksCategories (filter catFilter)
      mn <- askProfileModule ma mi comp
-     addModule' mn True $ do
+     addModule' mn  (CoreInterface ma mi comp) $ do
         mkGroupModule cats
         -- let the core modules also expose the types
         askTypesModule >>= tellReExportModule
@@ -97,6 +97,6 @@ addVendorModule e = do
         catFilter _                 = False
     mn <- askVendorModule e
     cats <- asksCategories (filter catFilter)
-    addModule' mn True $ mkGroupModule cats
+    addModule' mn (VendorGroup e)  $ mkGroupModule cats
 
 -----------------------------------------------------------------------------

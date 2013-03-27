@@ -6,5 +6,5 @@ then
 fi
 CABAL="$1"
 git submodule update --init --recursive
-$CABAL install opengl-api/ CodeGenerating/ OpenGLRawgenBase/OpenGLRawgenBase/
+$CABAL install opengl-api/ CodeGenerating/ OpenGLRawgenBase/OpenGLRawgenBase/ OpenGLRawgenBase/OpenGLRawInterface/
 $CABAL install --only-dependencies

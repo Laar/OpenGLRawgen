@@ -25,7 +25,7 @@ module Main.Options (
     enumextFile, glFile, tmFile,
     freuseFile, ereuseFile,
     stripNames, mkExtensionGroups,
-    outputDir,
+    outputDir, interfaceDir,
     -- * Retrieving the options
     getOptions,
 ) where
@@ -172,5 +172,8 @@ mkExtensionGroups = rgEGrouping
 
 outputDir :: RawGenOptions -> FilePath
 outputDir = rgOutputDir
+
+interfaceDir :: RawGenOptions -> FilePath
+interfaceDir rgo =  outputDir rgo </> "interface"
 
 -----------------------------------------------------------------------------

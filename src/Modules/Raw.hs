@@ -66,7 +66,7 @@ addLatestProfileToRaw = do
     Version ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
-    addModule' bm True $ tellReExportModule latestProf
+    addModule' bm TopLevelGroup $ tellReExportModule latestProf
     where
         catRanking (Version ma mi False) = (-ma, -mi)
         catRanking _                     = (1, 1)
