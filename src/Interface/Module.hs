@@ -1,10 +1,12 @@
 module Interface.Module (
     moduleToInterface, writeModuleInterface,
     writePackageInterface,
+    verifyInterface,
 ) where
 
 import Language.Haskell.Exts.Syntax
 import Data.List
+import qualified Data.Foldable as F
 import qualified Data.Set as S
 
 import Language.OpenGLRaw.Interface.Serialize
@@ -47,3 +49,19 @@ addModulePart p m = case p of
         addReExport r = m{modReExports = S.insert r $ modReExports m}
         unName (Ident  i) = i
         unName (Symbol s) = s
+
+verifyInterface :: RawGenIO ()
+verifyInterface = do
+    logMessage "Verifying interface files"
+    iDir <- asksOptions interfaceDir
+    mpack <- liftMaybe "package not readable" =<< liftIO (readPackage iDir)
+    F.mapM_ verifyModule $ rawMods mpack
+
+verifyModule :: ModuleName -> RawGenIO ()
+verifyModule mn = do
+    iDir <- asksOptions interfaceDir
+    _ <- liftMaybe errMsg =<< liftIO (readModule iDir mn)
+    return ()
+    where
+        errMsg = "Module interface parsing failed for: " ++ mName
+        (ModuleName mName) = mn
