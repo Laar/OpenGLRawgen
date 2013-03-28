@@ -36,6 +36,7 @@ do
     if [ $? -ne 0 ]
     then
         echo "compiling failed for $TARGET"
+        rm -r "$REFERENCEDOR"
         exit 1
     fi
 done
