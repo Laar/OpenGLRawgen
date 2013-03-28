@@ -189,7 +189,7 @@ lookupType t p tm = case M.lookup t tm of
             GLbyte      -> TCon "GLbyte"
             GLchar      -> TCon "GLchar"
             GLcharARB   -> TCon "GLchar"
-            GLcharStarConst -> TCon "GLchar" -- LOOKUP if it needs a pointer
+            GLcharStarConst -> TPtr $ TCon "GLchar" -- LOOKUP if it needs a pointer
             GLclampd    -> TCon "GLclampd"
             GLclampf    -> TCon "GLclampf"
             GLdouble    -> TCon "GLdouble"
