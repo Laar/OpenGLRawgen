@@ -159,7 +159,7 @@ convertRetType rt = case rt of
     Float32      -> TCon "GLfloat"
     FramebufferStatus -> TCon "GLenum" -- lookup
     GLEnum       -> TCon "GLenum"
-    HandleARB    -> TCon "GLuint" -- lookup
+    HandleARB    -> TCon "GLhandle"
     Int32        -> TCon "GLint"
     Path         -> TCon "GLuint" -- lookup, seems to be an object
     S.List       -> TCon "GLuint" -- lookup
@@ -197,8 +197,8 @@ lookupType t p tm = case M.lookup t tm of
 --            GLenumWithTrailingComma -- removed from the source
             GLfloat     -> TCon "GLfloat"
             UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> TCon "GLushort" -- lookup
-            GLhandleARB -> TCon "GLhandle"--tyCon' "GLuint" -- lookup
+            GLhalfNV    -> TCon "GLhalf"
+            GLhandleARB -> TCon "GLhandle"
             GLint       -> TCon "GLint"
             GLint64     -> TCon "GLint64"
             GLint64EXT  -> TCon "GLint64"
@@ -220,9 +220,9 @@ lookupType t p tm = case M.lookup t tm of
             GLUtesselator -> error  "tesselator"
             GLvoid      -> TVar
             GLvoidStarConst -> TPtr TVar -- TODO lookup ??, only used in MultiModeDrawElementsIBM
-            GLvdpauSurfaceNV -> TCon "GLintptr" -- lookup
+            GLvdpauSurfaceNV -> TCon "GLvdpauSurface" -- lookup
             GLdebugproc    -> TCon "GLdebugproc"
-            GLdebugprocARB -> TCon "GLdebugprocARB" -- lookup
-            GLdebugprocAMD -> TCon "GLdebugprocAMD" -- lookup
+            GLdebugprocARB -> TCon "GLdebugproc"
+            GLdebugprocAMD -> TCon "GLdebugproc"
 
 -----------------------------------------------------------------------------
