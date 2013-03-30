@@ -64,12 +64,12 @@ moduleToInterface rm =
 -- | Adds a `ModulePart` to the interface of a module.
 addModulePart :: ModulePart -> ModuleI -> ModuleI
 addModulePart p m = case p of
-    DefineEnum      n gln t _ -> addEnum        $ EnumI gln (unName n) t
-    ReDefineLEnum   n gln t _ -> addEnum        $ EnumI gln (unName n) t
-    ReDefineIEnum   n gln t _ -> addEnum        $ EnumI gln (unName n) t
-    ReExport        (n,m') _  -> addReExport    $ SingleExport m' (unName n)
+    DefineEnum      n gln t _  -> addEnum        $ EnumI gln (unName n) t
+    ReDefineLEnum   n gln t _  -> addEnum        $ EnumI gln (unName n) t
+    ReDefineIEnum   n gln t _  -> addEnum        $ EnumI gln (unName n) t
+    ReExport        (_,m') gln -> addReExport    $ SingleExport m' gln
     DefineFunc      n rt ats gln _  -> addFunc  $ FuncI gln (unName n) rt ats
-    ReExportModule  m'        -> addReExport    $ ModuleExport m'
+    ReExportModule  m'         -> addReExport    $ ModuleExport m'
     where
         addEnum e = m{modEnums = S.insert e $ modEnums m}
         addFunc f = m{modFuncs = S.insert f $ modFuncs m}
