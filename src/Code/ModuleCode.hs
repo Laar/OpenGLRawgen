@@ -163,8 +163,8 @@ funcTemplate name ty glname category = flip fmap askExtensionModule $ \emod ->
         -- Two extra names, the unname function is needed here to keep the
         -- names every where else for type safety, consider this the safe usage of
         -- an unsafe function.
-        let dynEntry = Ident $ "dyn_" ++ unname name
-            ptrEntry = Ident $ "ptr_" ++ unname name
+        let dynEntry = Ident $ "dyn_" ++ unHSName name
+            ptrEntry = Ident $ "ptr_" ++ unHSName name
             -- The FFI import decl of the form
             --
             -- > foreign import stdcall unsafe "dynamic" dyn_funcName ::
@@ -189,7 +189,7 @@ funcTemplate name ty glname category = flip fmap askExtensionModule $ \emod ->
                        , oneLiner ptrEntry []
                             ( var' "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
                             @@ (Lit . String $ "GL_" ++ showCategory category)
-                            @@ (Lit . String $ "gl" ++ glname))
+                            @@ (Lit . String $ "gl" ++ unGLName glname))
                        ]
     in fimport : function ++ funcPointer
 

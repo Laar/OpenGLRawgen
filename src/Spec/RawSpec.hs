@@ -59,7 +59,6 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Maybe
 
-import Language.Haskell.Exts.Syntax(Name(Ident))
 import Language.OpenGLRaw.Base
 
 import Main.Options
@@ -214,7 +213,7 @@ instance SpecValue EnumValue where
     newtype ValueName EnumValue = EN{ unEN :: String }
         deriving (Eq, Ord, Show)
     wrapName = EN
-    toGLName = unEN
+    toGLName = GLName . unEN
     unwrapName n o =
         let name = unEN n
             name' = if stripNames o then removeEnumExtension name else name
@@ -232,7 +231,7 @@ instance SpecValue FuncValue where
     newtype ValueName FuncValue = FN{ unFN :: String }
         deriving (Eq, Ord, Show)
     wrapName = FN
-    toGLName = unFN
+    toGLName = GLName . unFN
     unwrapName n o =
         let name = unFN n
             name' = if stripNames o then removeFuncExtension name else name
