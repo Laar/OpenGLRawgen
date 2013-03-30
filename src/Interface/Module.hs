@@ -21,10 +21,12 @@ module Interface.Module (
 -----------------------------------------------------------------------------
 
 
+import Control.Arrow ((&&&))
 import Control.Monad
 import Language.Haskell.Exts.Syntax
 import Data.List
 import qualified Data.Foldable as F
+import qualified Data.Map as M
 import qualified Data.Set as S
 
 import Language.OpenGLRaw.Interface.Serialize
@@ -39,7 +41,8 @@ import Modules.Types
 -- | Writes the package/index interface file.
 writePackageInterface :: [RawModule] -> RawGenIO ()
 writePackageInterface modus = do
-    let inter = OpenGLRawI . S.fromList $ map rawModuleName modus
+    let inter = OpenGLRawI . M.fromList 
+            $ map (rawModuleName &&& rawModuleType)  modus
     path <- asksOptions interfaceDir
     liftIO $ writePackage path inter
 
@@ -84,14 +87,14 @@ verifyInterface rmods = do
     iDir <- asksOptions interfaceDir
     mpack <- liftEitherPrepend "Package interface verifying failed"
         =<< liftIO (readPackage iDir)
-    let imodNames = rawMods mpack
+    let imodNames = M.keysSet $ rawMods mpack
     unless (imodNames == rmodNames) . throwRawError . unlines $
         [ "The modules in the interface and the generated modules are not the same!"
         , "Missing interfaces:"
         ] ++ (map unmodName $ S.toList (rmodNames S.\\ imodNames)) ++
         [ "Excess interfaces:"
         ] ++ (map unmodName $ S.toList (imodNames S.\\ rmodNames))
-    F.mapM_ verifyModule $ rawMods mpack
+    F.mapM_ verifyModule . M.keys $ rawMods mpack
     where
         unmodName (ModuleName mn) = mn
 
