@@ -108,7 +108,6 @@ outputModule rmodule = do
     oDir <- asksOptions outputDir
     let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
         path = oDir </> moduleNameToPath mname ++ ".hs"
---    logMessage $ "Writing: " ++ moduleNameToName mname
     liftIO $ safeWriteFile path modu'
     writeModuleInterface rmodule
 
