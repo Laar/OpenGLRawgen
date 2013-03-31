@@ -171,9 +171,12 @@ funcTemplate name fType glname category = flip fmap askExtensionModule $ \emod -
             dynEntry = "dyn_" ++ name' -- function ptr invoker
             ptrEntry = "ptr_" ++ name' -- function ptr to the gl function
             invoker = TyCon . Qual emod $ Ident "Invoker" -- Qualified type for the Invoker
-            getExtensionEntry = Var . Qual emod $ Ident "getExtensionEntry" -- getExtensionEntry function
-            glFuncName       = Lit . String $ "gl" ++ unGLName glname -- The name of the function to be imported
-            categoryString   = Lit . String $ "GL_" ++ showCategory category -- The category name string
+            -- getExtensionEntry function
+            getExtensionEntry = Var . Qual emod $ Ident "getExtensionEntry" 
+            -- The name of the function to be imported
+            glFuncName       = Lit . String $ "gl" ++ unGLName glname
+            -- The category name string, for error reporting
+            categoryString   = Lit . String $ "GL_" ++ showCategory category
     in [decs|
 -- The function pointer invoker (uses a temporary callconvention)
 foreign import stdcall unsafe "dynamic" __dynEntry__ :: ((invoker)) ((fType))
