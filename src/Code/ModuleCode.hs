@@ -167,9 +167,6 @@ funcTemplate name fType glname category = flip fmap askExtensionModule $ \emod -
         -- Two extra names, the unname function is needed here to keep the
         -- names every where else for type safety, consider this the safe usage of
         -- an unsafe function.
-{-
-<<<<<<< HEAD
--}
         let name' = unHSName name
             dynEntry = "dyn_" ++ name' -- function ptr invoker
             ptrEntry = "ptr_" ++ name' -- function ptr to the gl function
@@ -190,45 +187,7 @@ __name'__ = __dynEntry__ __ptrEntry__
 __ptrEntry__ :: FunPtr a
 __ptrEntry__ = unsafePerformIO $ $getExtensionEntry $categoryString $glFuncName
 |]
-{-
-=======
-        let dynEntry = Ident $ "dyn_" ++ unHSName name
-            ptrEntry = Ident $ "ptr_" ++ unHSName name
-            -- The FFI import decl of the form
-            --
-            -- > foreign import stdcall unsafe "dynamic" dyn_funcName ::
-            -- >   InvokerModulePath.Invoker (FuncType -> IO FuncResultType)
-            fimport = ForImp noSrcLoc callConv PlayRisky "dynamic" dynEntry
-                            (TyApp (TyCon . Qual emod $ Ident "Invoker") ty)
-            -- The used/exported function.
-            --
-            -- > funcName :: FuncType -> IO FuncResultType
-            -- > funcName = dyn_FuncName ptr_FuncName
-            function = [oneTypeSig name ty,
-                        oneLiner name [] (var dynEntry @@ var ptrEntry)
-                       ]
-            -- The function used for the function pointer
-            --
-            -- > {-# NOINLINE ptr_funcName #-}
-            -- > ptr_FuncName :: FuncPtr a
-            -- > ptr_FuncName = unsafePerformIO $
-            -- >    ExtensionEntryModulePath.getExtensionEntry "GL_FUNC_CATEGORY" "funcName"
-            funcPointer = [ InlineSig noSrcLoc False AlwaysActive (UnQual ptrEntry)
-                       , oneTypeSig ptrEntry (TyApp (tyCon' "FunPtr") (tyVar' "a"))
-                       , oneLiner ptrEntry []
-                            ( var' "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
-                            @@ (Lit . String $ "GL_" ++ showCategory category)
-                            @@ (Lit . String $ "gl" ++ unGLName glname))
-                       ]
-    in fimport : function ++ funcPointer
 
-
-
--- | The temporary 'CallConv' used.
-callConv :: CallConv
-callConv = StdCall
->>>>>>> develop
--}
 -- | Replace every occurence of a certain calling convention by the given
 -- string.
 replaceCallConv
