@@ -42,7 +42,6 @@ executable OpenGLRawgen
     mtl -any,
     opengl-api -any,
     parsec -any,
-    xml,
     OpenGLRawgenBase,
     OpenGLRawInterface
   ghc-options: -Wall -O2 -rtsopts
