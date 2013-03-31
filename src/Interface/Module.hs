@@ -1,83 +1,109 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
+-----------------------------------------------------------------------------
+--
+-- Module      :  Interface.Module
+-- Copyright   :  (c) 2013 Lars Corbijn
+-- License     :  BSD-style (see the file /LICENSE)
+--
+-- Maintainer  :
+-- Stability   :
+-- Portability :
+--
+-- | The interface writing part of the generator.
+--
+-----------------------------------------------------------------------------
+
 module Interface.Module (
-    moduleToRenderedInterface,
-    moduleToInterface
+    moduleToInterface, writeModuleInterface,
+    writePackageInterface,
+    verifyInterface,
 ) where
 
-import Language.Haskell.Exts.Syntax hiding (QName)
-import Code.Generating.Utils
-import Data.String
-import Text.XML.Light
+-----------------------------------------------------------------------------
 
+
+import Control.Arrow ((&&&))
+import Control.Monad
+import Language.Haskell.Exts.Syntax
+import Data.List
+import qualified Data.Foldable as F
+import qualified Data.Map as M
+import qualified Data.Set as S
+
+import Language.OpenGLRaw.Interface.Serialize
+import Language.OpenGLRaw.Interface.Types
+
+import Main.Monad
+import Main.Options
 import Modules.Types
 
-moduleToRenderedInterface :: RawModule -> String
-moduleToRenderedInterface = ppTopElement . moduleToInterface
+-----------------------------------------------------------------------------
 
-moduleToInterface :: RawModule -> Element
-moduleToInterface rawMod =
-    node "moduledefinition"
-        ([Attr "module" . moduleNameToName $ rawModuleName rawMod
-        , Attr "exported" $ if externalRawModule rawMod then "True" else "False"
-        ], parts)
+-- | Writes the package/index interface file.
+writePackageInterface :: [RawModule] -> RawGenIO ()
+writePackageInterface modus = do
+    let inter = OpenGLRawI . M.fromList 
+            $ map (rawModuleName &&& rawModuleType)  modus
+    path <- asksOptions interfaceDir
+    liftIO $ writePackage path inter
+
+-- | Writes the interface file for a single `RawModule`.
+writeModuleInterface :: RawModule -> RawGenIO ()
+writeModuleInterface modu = do
+    path <- asksOptions interfaceDir
+    liftIO . writeModule path $ moduleToInterface modu
+
+-- | Converts a single module to its interface representation.
+moduleToInterface :: RawModule -> ModuleI
+moduleToInterface rm = 
+    let baseModule 
+            = ModuleI 
+                (rawModuleName rm) (rawModuleType rm)
+                S.empty S.empty S.empty
+    in foldl' (flip addModulePart) baseModule $ rawModuleParts rm
+
+-- | Adds a `ModulePart` to the interface of a module.
+addModulePart :: ModulePart -> ModuleI -> ModuleI
+addModulePart p m = case p of
+    DefineEnum      hsn gln t _  -> addEnum        $ EnumI gln hsn t
+    ReDefineLEnum   hsn gln t _  -> addEnum        $ EnumI gln hsn t
+    ReDefineIEnum   hsn gln t _  -> addEnum        $ EnumI gln hsn t
+    ReExport        (_,m') gln   -> addReExport    $ SingleExport m' gln
+    DefineFunc      hsn rt ats gln _  -> addFunc   $ FuncI gln hsn rt ats
+    ReExportModule  m'         -> addReExport      $ ModuleExport m'
     where
-        parts = node "parts" 
-            . map modulePartToElement $ rawModuleParts rawMod
+        addEnum e = m{modEnums = S.insert e $ modEnums m}
+        addFunc f = m{modFuncs = S.insert f $ modFuncs m}
+        addReExport r = m{modReExports = S.insert r $ modReExports m}
 
-modulePartToElement :: ModulePart -> Element
-modulePartToElement p = case p of
-    DefineEnum      n gln t _  -> enumElem n gln t
-    ReDefineLEnum   n gln t _  -> enumElem n gln t
-    ReDefineIEnum   n gln t _  -> enumElem n gln t
-    ReExport        (n, m) gln -> reExportElem n gln m
-    DefineFunc      n rt ats gln _  -> functionElem n gln rt ats
-    ReExportModule  m          -> moduleReexport m
+-----------------------------------------------------------------------------
 
--- To make constructing xml easier
-instance IsString QName where
-    fromString = unqual
-
-functionElem :: Name -> GLName -> FType -> [FType] -> Element
-functionElem name glname rettype argtypes =
-    node "function"
-        ([ Attr "glname" glname
-        , Attr "name" $ unname name
-        ], typeContents)
+-- | Performs some simple checks on the interface files.
+verifyInterface :: [RawModule] -> RawGenIO ()
+verifyInterface rmods = do
+    let rmodNames = S.fromList $ map rawModuleName rmods
+    logMessage "Verifying interface files"
+    iDir <- asksOptions interfaceDir
+    mpack <- liftEitherPrepend "Package interface verifying failed"
+        =<< liftIO (readPackage iDir)
+    let imodNames = M.keysSet $ rawMods mpack
+    unless (imodNames == rmodNames) . throwRawError . unlines $
+        [ "The modules in the interface and the generated modules are not the same!"
+        , "Missing interfaces:"
+        ] ++ (map unmodName $ S.toList (rmodNames S.\\ imodNames)) ++
+        [ "Excess interfaces:"
+        ] ++ (map unmodName $ S.toList (imodNames S.\\ rmodNames))
+    F.mapM_ verifyModule . M.keys $ rawMods mpack
     where
-        typeContents =
-            node "return" (toElem rettype)
-            : map toArgElem argtypes
-        toArgElem = node "argument" . toElem
-        toElem :: FType -> Element
-        toElem (TCon n)  = node "con" [Attr "type" n]
-        toElem TVar      = node "var" ()
-        toElem (TPtr ft) = node "ptr" $ toElem ft
-        toElem UnitTCon  = node "unit" ()
+        unmodName (ModuleName mn) = mn
 
-enumElem :: Name -> GLName -> ValueType -> Element
-enumElem name glname vt =
-    node "enum"
-        [ Attr "glname" glname
-        , Attr "name" $ unname name
-        , Attr "type" valType
-        ]
+-- | Verification of a single module from the interface.
+verifyModule :: ModuleName -> RawGenIO ()
+verifyModule mn = do
+    iDir <- asksOptions interfaceDir
+    _ <- liftEitherPrepend errMsg =<< liftIO (readModule iDir mn)
+    return ()
     where
-        valType = case vt of
-            EnumValue       -> "enum"
-            BitfieldValue   -> "bitfield"
+        errMsg = "Module interface parsing failed for: " ++ mName
+        (ModuleName mName) = mn
 
-reExportElem :: Name -> GLName -> ModuleName -> Element
-reExportElem name glname (ModuleName modName) =
-    node "reexported"
-        [ Attr "glname" glname
-        , Attr "name"   $ unname name
-        , Attr "module" modName
-        ]
-
-moduleReexport :: ModuleName -> Element
-moduleReexport (ModuleName modName) =
-    node "exportedmodule"
-        [ Attr "module" modName]
-
-
+-----------------------------------------------------------------------------

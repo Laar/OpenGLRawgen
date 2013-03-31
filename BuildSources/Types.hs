@@ -47,10 +47,10 @@ type GLuint64   = Word64
 -- Not part of the core, but it is very handy to define this here
 type GLhandle = CUInt
 type GLsync   = Ptr ()
+type GLvdpauSurface = GLintptr
 
 newtype CLevent = CLEvent (Ptr CLevent)
 newtype CLcontext = CLContext (Ptr CLcontext)
 -- both are actually function pointers
-newtype GLdebugprocARB =  GLdebugprocARB (Ptr GLdebugprocARB)
-newtype GLdebugprocAMD =  GLdebugprocAMD (Ptr GLdebugprocAMD)
-newtype GLdebugproc =  GLdebugproc (Ptr GLdebugproc)
+type GLdebugproc =  FunPtr (GLenum -> GLenum -> GLuint -> GLenum -> GLsizei 
+                                -> Ptr GLchar -> Ptr () -> IO ())

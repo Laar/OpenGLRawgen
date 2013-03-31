@@ -26,7 +26,7 @@ import Data.Traversable(traverse)
 import Language.Haskell.Exts.QQ
 import Language.Haskell.Exts.Syntax
 
-import Text.OpenGL.Spec(Category, showCategory)
+import Language.OpenGLRaw.Base
 
 import Code.Generating.Utils
 
@@ -167,12 +167,15 @@ funcTemplate name fType glname category = flip fmap askExtensionModule $ \emod -
         -- Two extra names, the unname function is needed here to keep the
         -- names every where else for type safety, consider this the safe usage of
         -- an unsafe function.
-        let name' = unname name
+{-
+<<<<<<< HEAD
+-}
+        let name' = unHSName name
             dynEntry = "dyn_" ++ name' -- function ptr invoker
             ptrEntry = "ptr_" ++ name' -- function ptr to the gl function
             invoker = TyCon . Qual emod $ Ident "Invoker" -- Qualified type for the Invoker
             getExtensionEntry = Var . Qual emod $ Ident "getExtensionEntry" -- getExtensionEntry function
-            glFuncName       = Lit . String $ "gl" ++ glname -- The name of the function to be imported
+            glFuncName       = Lit . String $ "gl" ++ unGLName glname -- The name of the function to be imported
             categoryString   = Lit . String $ "GL_" ++ showCategory category -- The category name string
     in [decs|
 -- The function pointer invoker (uses a temporary callconvention)
@@ -187,8 +190,45 @@ __name'__ = __dynEntry__ __ptrEntry__
 __ptrEntry__ :: FunPtr a
 __ptrEntry__ = unsafePerformIO $ $getExtensionEntry $categoryString $glFuncName
 |]
+{-
+=======
+        let dynEntry = Ident $ "dyn_" ++ unHSName name
+            ptrEntry = Ident $ "ptr_" ++ unHSName name
+            -- The FFI import decl of the form
+            --
+            -- > foreign import stdcall unsafe "dynamic" dyn_funcName ::
+            -- >   InvokerModulePath.Invoker (FuncType -> IO FuncResultType)
+            fimport = ForImp noSrcLoc callConv PlayRisky "dynamic" dynEntry
+                            (TyApp (TyCon . Qual emod $ Ident "Invoker") ty)
+            -- The used/exported function.
+            --
+            -- > funcName :: FuncType -> IO FuncResultType
+            -- > funcName = dyn_FuncName ptr_FuncName
+            function = [oneTypeSig name ty,
+                        oneLiner name [] (var dynEntry @@ var ptrEntry)
+                       ]
+            -- The function used for the function pointer
+            --
+            -- > {-# NOINLINE ptr_funcName #-}
+            -- > ptr_FuncName :: FuncPtr a
+            -- > ptr_FuncName = unsafePerformIO $
+            -- >    ExtensionEntryModulePath.getExtensionEntry "GL_FUNC_CATEGORY" "funcName"
+            funcPointer = [ InlineSig noSrcLoc False AlwaysActive (UnQual ptrEntry)
+                       , oneTypeSig ptrEntry (TyApp (tyCon' "FunPtr") (tyVar' "a"))
+                       , oneLiner ptrEntry []
+                            ( var' "unsafePerformIO" .$. (Var . Qual emod $ Ident "getExtensionEntry")
+                            @@ (Lit . String $ "GL_" ++ showCategory category)
+                            @@ (Lit . String $ "gl" ++ unGLName glname))
+                       ]
+    in fimport : function ++ funcPointer
 
 
+
+-- | The temporary 'CallConv' used.
+callConv :: CallConv
+callConv = StdCall
+>>>>>>> develop
+-}
 -- | Replace every occurence of a certain calling convention by the given
 -- string.
 replaceCallConv

@@ -30,7 +30,7 @@ module Modules.ModuleNames (
     askCategoryPImport,
 
     -- * Ask-ers for other (spec related) information
-    isExposedCategory,
+    askCategoryModuleType,
     askCorePath,
 
 ) where
@@ -44,7 +44,7 @@ import Data.List(partition)
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 
-import Text.OpenGL.Spec as S
+import Language.OpenGLRaw.Base
 import Main.Monad
 
 -----------------------------------------------------------------------------
@@ -110,15 +110,18 @@ categoryModule (Extension ex n d) = return .
     ModuleName
         $ moduleBase <.> upperFirst (show ex) <.> correctName n
         ++ (if d then "Compatibility" else "")
-categoryModule (S.Name n) = throwRawError
+categoryModule (Name n) = throwRawError
     $ "categoryModule: Category with only a name "
     ++ upperFirst (show n)
 
--- | query whether or not the module of a certain category is an exposed
--- module.
-isExposedCategory :: RawGenMonad m => Category -> m Bool
---isExposedCategory (Version _ _ _) = return False
-isExposedCategory _               = return True
+-- | Query what the module type of a given module is.
+askCategoryModuleType :: RawGenMonad m => Category -> m ModuleType
+askCategoryModuleType (Version _ _ _)
+    = return Internal
+askCategoryModuleType (Extension e n d)
+    = return $ ExtensionMod e n d
+askCategoryModuleType (Name _)
+    = throwRawError "askCategoryModuleType: Name category encountered"
 
 -- | Asks the 'ModuleName' of a specific core profile
 askProfileModule

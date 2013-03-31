@@ -13,7 +13,8 @@
 -----------------------------------------------------------------------------
 
 module Modules.Types (
-    RawModule(..), External,
+    RawModule(..), ModuleType(..),
+    isExternal,
     
     ModulePart(..), Imported, GLName,
     ValueType(..), FType(..),
@@ -23,22 +24,22 @@ module Modules.Types (
 
 import Language.Haskell.Exts.Syntax
 
-import Spec(ValueType(..), FType(..))
-import Text.OpenGL.Spec (Category)
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
-
--- | Type indicating if a module is exposed to the outside world or
--- purely for internal use
-type External = Bool
 
 -- | A generated module
 data RawModule
     = RawModule
     { rawModuleName     :: ModuleName
-    , externalRawModule :: External
+    , rawModuleType     :: ModuleType
     , rawModuleParts    :: [ModulePart]
     } deriving (Show)
+
+isExternal :: RawModule -> Bool
+isExternal rm = case rawModuleType rm of
+    Internal -> False
+    _        -> True
 
 -----------------------------------------------------------------------------
 
@@ -64,8 +65,5 @@ data ModulePart
 
 -- | An imported name with specific module.
 type Imported = (Name, ModuleName)
--- | The original name of something from OpenGL (thus the name as used in the
--- specification).
-type GLName = String
 
 -----------------------------------------------------------------------------

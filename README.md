@@ -137,15 +137,25 @@ The `RawModule`s are used to generate to forms of output.
 * Two listings specifying the internal modules (`other-modules` field
   in cabal) in `modulesI.txt` and the external modules
   (`exposed-modules` in cabal) in `modulesE.txt`.
+* The interface, which describes what each module defines, useful to
+  lookup where a piece (function or enum) has been defined and what its
+  haskell name and type are.
 
 
-#### Dependencies
-The generator depends on several packages.
-The special ones are
+### Dependencies
+The generator has some quite some dependencies, of which some are
+managed by using git submodules. The current submodules are
 
-* `haskell-src-exts` for representing the source code.
-* `CodeGenerating` to add extra functions to `haskell-src-exts` for
-   generating source code, it can be found [here][codegen]
-* `opengl-api` [from noteed][parser] for parsing the spec files.
+* `CodeGenerating` to add some extra functions to `haskell-src-exts` for
+  generating source code.
+* `opengl-api` the [parser][parser] from noteed, which needs to be
+  patched for the latest version of the spec files.
+* `OpenGLRawgenBase` basic types also used in the interface, which could
+  be used without the generator.
 
-[codegen]:https://github.com/Laar/CodeGenerating
+To simplify the installation (for both
+users and travis CI) there is a dependecy installation script 
+`depsinstall.sh`. This should be invoked with your favorite cabal
+command e.g. `./depsinstall.sh cabal` or `./depsinstall.sh cabal-dev`.
+Doing so will update the git submodules and install all the
+dependencies.

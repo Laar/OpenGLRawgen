@@ -59,30 +59,17 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Maybe
 
-import Language.Haskell.Exts.Syntax(Name(Ident))
-import Text.OpenGL.Spec (Category)
+import Language.OpenGLRaw.Base
 
 import Main.Options
 
 -----------------------------------------------------------------------------
-
-data ValueType
-    = EnumValue
-    | BitfieldValue
-    deriving (Eq, Ord, Show)
 
 -- | The real values of an enum
 data EnumValue
     -- | A localy defined enumvalue
     = Value     Integer   ValueType
     | ReUse     EnumName  ValueType
-    deriving (Eq, Ord, Show)
-
-data FType
-    = TCon String
-    | TVar
-    | TPtr FType
-    | UnitTCon
     deriving (Eq, Ord, Show)
 
 -- | The specification of how the function is defined
@@ -92,10 +79,6 @@ data FuncValue
         [FType] -- ^ Types of the arguments
         (Maybe String) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
-
--- | The original name of something from OpenGL (thus the name as used in the
--- specification).
-type GLName = String
 
 -----------------------------------------------------------------------------
 
@@ -230,7 +213,7 @@ instance SpecValue EnumValue where
     newtype ValueName EnumValue = EN{ unEN :: String }
         deriving (Eq, Ord, Show)
     wrapName = EN
-    toGLName = unEN
+    toGLName = GLName . unEN
     unwrapName n o =
         let name = unEN n
             name' = if stripNames o then removeEnumExtension name else name
@@ -248,7 +231,7 @@ instance SpecValue FuncValue where
     newtype ValueName FuncValue = FN{ unFN :: String }
         deriving (Eq, Ord, Show)
     wrapName = FN
-    toGLName = unFN
+    toGLName = GLName . unFN
     unwrapName n o =
         let name = unFN n
             name' = if stripNames o then removeFuncExtension name else name
