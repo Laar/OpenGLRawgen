@@ -33,6 +33,7 @@ data RawModule
     = RawModule
     { rawModuleName     :: ModuleName
     , rawModuleType     :: ModuleType
+    , rawModuleWarning  :: Maybe WarningText
     , rawModuleParts    :: [ModulePart]
     } deriving (Show)
 

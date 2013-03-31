@@ -28,6 +28,7 @@ module Modules.Builder (
     -- * Miscellaneous functions for the builders
     addCategoryModule,  addCategoryModule',
     addModule, addModule',
+    addModuleWithWarning,
     runBuilder,
 
     -- * ModuleBuilding related
@@ -59,6 +60,7 @@ import Control.Monad.Writer
 import Language.Haskell.Exts.Syntax
 
 import Spec
+import Main.Options
 import Main.Monad
 
 import Modules.ModuleNames
@@ -99,8 +101,8 @@ lgbuilder = lift . gbuilder
 -----------------------------------------------------------------------------
 
 -- | Adds a new module
-newModule :: ModuleName -> ModuleType -> [ModulePart] -> Builder ()
-newModule m t parts = Builder . tell . pure $ RawModule m t parts
+newModule :: ModuleName -> ModuleType -> Maybe WarningText -> [ModulePart] -> Builder ()
+newModule m t wt parts = Builder . tell . pure $ RawModule m t wt parts
 
 -----------------------------------------------------------------------------
 
@@ -114,7 +116,7 @@ addCategoryModule cat buildFunc = do
     modName <- askCategoryModule cat
     moduType <- askCategoryModuleType cat
     (a,parts) <- runMBuilder (buildFunc cat)
-    newModule modName moduType parts
+    newModule modName moduType Nothing parts
     return a
 
 -- | See `addCategoryModule`.
@@ -125,12 +127,21 @@ addCategoryModule' c = addCategoryModule c . const
 addModule :: ModuleName -> ModuleType -> (ModuleName -> MBuilder a) -> Builder a
 addModule modName modType buildFunc = do
     (a,parts) <- runMBuilder (buildFunc modName)
-    newModule modName modType parts
+    newModule modName modType Nothing parts
     return a
 
 -- | See `addModule`.
 addModule' :: ModuleName -> ModuleType -> MBuilder a -> Builder a
 addModule' modulName modulType = addModule modulName modulType . const
+
+addModuleWithWarning :: ModuleName -> ModuleType -> WarningText
+    -> MBuilder a -> Builder a
+addModuleWithWarning modName modType modWarning buildFunc = do
+    (a, parts) <- runMBuilder buildFunc
+    w <- asksOptions moduleWarnings
+    let warning = if w then Just modWarning else Nothing
+    newModule modName modType warning parts
+    return a
 
 -----------------------------------------------------------------------------
 

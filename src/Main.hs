@@ -31,6 +31,7 @@ import Code.Generating.Utils
 import Modules.Raw
 import Modules.Types
 import Code.ModuleCode
+import Code.PostProcessing
 
 import Main.Monad
 import Main.Options
@@ -106,7 +107,8 @@ outputModule rmodule = do
     let mname = rawModuleName rmodule
     modu <- toModule rmodule
     oDir <- asksOptions outputDir
-    let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
+    modu' <- liftRawGen $ postProcessModule $ prettyPrint modu
+    let -- modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
         path = oDir </> moduleNameToPath mname ++ ".hs"
     liftIO $ safeWriteFile path modu'
     writeModuleInterface rmodule

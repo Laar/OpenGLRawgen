@@ -32,6 +32,7 @@ executable OpenGLRawgen
     Modules.Raw
     Modules.Types
     Code.ModuleCode
+    Code.PostProcessing
   build-depends:
     CodeGenerating >=0.1.0 && <0.3.0,
     base >=4,

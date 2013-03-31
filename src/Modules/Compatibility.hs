@@ -37,14 +37,18 @@ addCompatibilityModules = do
 addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
     let modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.Core" ++ show ma ++ show mi
+        warning = DeprText "\"The core modules are moved to Graphics.Rendering.OpenGL.Raw.Core.CoreXY\""
     in do cp <- askProfileModule ma mi False
-          addModule' modName Compatibility $ tellReExportModule cp
+          addModuleWithWarning modName 
+                Compatibility warning $ tellReExportModule cp
 
 addOldCoreTypes :: Builder ()
 addOldCoreTypes = do
     let modName = ModuleName "Graphics.Rendering.OpenGL.Raw.Core31.Types"
+        warning = DeprText "\"The OpenGL types are moved to Graphics.Rendering.OpenGL.Raw.Types .\""
     typesModule <- askTypesModule
-    addModule' modName Compatibility $ tellReExportModule typesModule
+    addModuleWithWarning modName
+        Compatibility warning $ tellReExportModule typesModule
 
 addARBCompatibility :: Builder ()
 addARBCompatibility = do
@@ -52,7 +56,8 @@ addARBCompatibility = do
         modFilter _                  = False
 
         modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
-    addModule' modName Compatibility $ 
+        warning = DeprText "\"The ARB.Compatibility is combined with the profiles.\""
+    addModuleWithWarning modName Compatibility warning $
         (lift . asksCategories $ filter modFilter) >>= mkGroupModule
 
 -----------------------------------------------------------------------------

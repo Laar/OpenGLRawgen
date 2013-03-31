@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------
 module Code.ModuleCode (
     ModulePart(..), Imported,
-    toModule, replaceCallConv
+    toModule
 ) where
 
 -----------------------------------------------------------------------------
@@ -44,6 +44,7 @@ toModule rmodule = do
     fimports <- when' (any definesFunc parts) funcImports
     eimports <- when' (any definesEnum parts) enumImports
     let name = rawModuleName rmodule
+        warning = rawModuleWarning rmodule
         exps    = map toExport parts
         -- The imports that are needed when functions/enums are defined
         -- overlap. The current solution probably needs improving. Untill that
@@ -52,7 +53,7 @@ toModule rmodule = do
         prags =    if any definesFunc parts then funcPrags else []
                 ++ if any definesEnum parts then enumPrags else []
     decls <- concat <$> traverse toDecls parts
-    return $ Module noSrcLoc name prags Nothing (Just exps) imports decls
+    return $ Module noSrcLoc name prags warning (Just exps) imports decls
     where
         when' p m = if p then m else return []
 
@@ -198,18 +199,6 @@ funcTemplate name ty glname category = flip fmap askExtensionModule $ \emod ->
 -- | The temporary 'CallConv' used.
 callConv :: CallConv
 callConv = StdCall
-
--- | Replace every occurence of a certain calling convention by the given
--- string.
-replaceCallConv
-    :: String -- The replacing calling convention
-    -> String -- The source of the module
-    -> String
-replaceCallConv r = go
-    where
-        go []                               = []
-        go ('s':'t':'d':'c':'a':'l':'l':xs) = r ++ go xs
-        go (x                          :xs) = x : go xs
 
 -----------------------------------------------------------------------------
 

@@ -25,6 +25,7 @@ module Main.Options (
     enumextFile, glFile, tmFile,
     freuseFile, ereuseFile,
     stripNames, mkExtensionGroups,
+    moduleHeader, moduleWarnings,
     outputDir, interfaceDir,
     -- * Retrieving the options
     getOptions,
@@ -89,6 +90,14 @@ options =
         (NoArg $ \r -> return r{rgEGrouping = False}) "Disables the generation of Extension group modules"
     , Option ['o'] ["output"]
         (ReqArg (\d r -> return r{rgOutputDir = d}) "DIR") "The output directory"
+    , Option ['w'] ["warning"]
+        (ReqArg (\w r -> return r{rgModHeader = Just w}) "MSG") "Module header message"
+    , Option [] ["warning-file"]
+        (ReqArg (\wf r -> do
+            fc <- readFile wf -- TODO: add check that it is present?
+            return $ r{rgModHeader = Just fc}) "FILE") "File with the module header message"
+    , Option [] ["no-module-warnings"]
+        (NoArg $ \r -> return r{rgModWarns = False}) "Disables haskell module warnings"
     ]
     where
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
@@ -123,6 +132,8 @@ data RawGenOptions
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     , rgStripName   :: Bool             -- ^ Strip the names of extensions
     , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
+    , rgModHeader   :: Maybe String     -- ^ An optional header above the module
+    , rgModWarns    :: Bool             -- ^ Warning and deprecation texts on modules
     , rgOutputDir   :: FilePath
     }
 
@@ -139,6 +150,8 @@ defaultOptions
     , rgFilesDir    = Nothing
     , rgStripName   = False
     , rgEGrouping   = True
+    , rgModHeader   = Nothing
+    , rgModWarns    = True
     , rgOutputDir   = ""
     }
 
@@ -169,6 +182,12 @@ stripNames = rgStripName
 
 mkExtensionGroups :: RawGenOptions -> Bool
 mkExtensionGroups = rgEGrouping
+
+moduleHeader :: RawGenOptions -> Maybe String
+moduleHeader = rgModHeader
+
+moduleWarnings :: RawGenOptions -> Bool
+moduleWarnings = rgModWarns
 
 outputDir :: RawGenOptions -> FilePath
 outputDir = rgOutputDir
