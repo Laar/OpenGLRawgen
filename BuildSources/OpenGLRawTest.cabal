@@ -12,7 +12,6 @@ build-type: Simple
 cabal-version:  >= 1.6
 extra-source-files:
    include/CTypes.h
-   include/HsOpenGLRaw.h
 
 flag UseNativeWindowsLibraries
    description:
