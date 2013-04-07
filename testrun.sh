@@ -19,7 +19,7 @@ echo "---------------------------"
 echo "-- Generating new output --"
 echo "---------------------------"
 time ./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR/normal/" -c --groups -d input --warning-file=input/warningfile +RTS -sstderr &&
-./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR/striped/" -c -s -d input --warning-file=input/warningfile
+./OpenGLRawgen --no-vendorf=input/novendor -o "$TESTDIR/stripped/" -c -s -d input --warning-file=input/warningfile
 
 if [[ $? == 0 ]] ;
 then
