@@ -44,7 +44,11 @@ module Spec.RawSpec (
     DefineMap,
     emptyDefineMap,
 
-
+    -- * DeprecationMap
+    DeprecationMap,
+    emptyDeprecationMap,
+    GLVersion, DeprecationRange(..),
+    isInRange, getDeprecations,
     -- * Exported for parsing
     isBitfieldName,
 ) where
@@ -81,7 +85,6 @@ data FuncValue
     deriving (Eq, Ord, Show)
 
 -----------------------------------------------------------------------------
-
 
 type ValMap sv = M.Map (ValueName sv) sv
 
@@ -187,6 +190,42 @@ emptyDefineMap = DefMap M.empty M.empty
 
 -----------------------------------------------------------------------------
 
+type GLVersion = (Major, Minor)
+data DeprecationRange
+    = DeprRange
+    { deprecationStart :: GLVersion
+    , deprecationEnd   :: GLVersion
+    } deriving (Eq)
+
+isInRange :: GLVersion -> DeprecationRange -> Bool
+isInRange (ma, mi) (DeprRange (maS, miS) (maE,miE))
+    =  (ma == maS && mi >= miS)
+    || (ma == maE && mi <= miE)
+    || (ma >  maS && ma <  maE)
+
+type DepMap sv = [(ValueName sv, DeprecationRange)]
+
+-- | Mapping of Values that are deprecated and reintroduced later.
+data DeprecationMap
+    = DeprMap
+    { enumDepMap :: DepMap EnumValue
+    , funcDepMap :: DepMap FuncValue
+    }
+
+instance Monoid DeprecationMap where
+    mempty = DeprMap mempty mempty
+    DeprMap e1 f1 `mappend` DeprMap e2 f2 = DeprMap (e1 <> e2) (f1 <> f2)
+
+getDeprecations :: SpecValue sv 
+    => GLVersion -> DeprecationMap -> [ValueName sv]
+getDeprecations v
+    = map fst . filter (isInRange v . snd) . getDepMap 
+
+emptyDeprecationMap :: DeprecationMap
+emptyDeprecationMap = mempty
+
+-----------------------------------------------------------------------------
+
 -- | A class to generalize over the value types (EnumValue and FuncValue) in
 -- the Mappings to reduce boilerplate code
 class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
@@ -195,7 +234,7 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     -- | Return the original OpenGLName (as in the specification).
     toGLName    :: ValueName sv -> GLName
     unwrapName  :: ValueName sv -> RawGenOptions -> Name
-    
+
     getValMap         :: ValueMap -> ValMap sv
     modifyValMap      :: (ValMap sv -> ValMap sv)
                                 -> ValueMap -> ValueMap
@@ -206,6 +245,10 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     getDefLocation      :: ValueName sv -> DefineMap -> Maybe Category
     addDefLocation      :: ValueName sv -> Category
                                 -> DefineMap -> DefineMap
+
+    getDepMap       :: DeprecationMap -> DepMap sv
+    addDepMap       :: ValueName sv -> DeprecationRange
+                                -> DeprecationMap -> DeprecationMap
 
 type EnumName = ValueName EnumValue
 
@@ -224,6 +267,8 @@ instance SpecValue EnumValue where
     modifyLocMap f r   = r{enumLMap = f $ enumLMap r}
     getDefLocation    n d   = M.lookup n $ enumDMap d
     addDefLocation    n c d = d{enumDMap = M.insert n c $ enumDMap d}
+    getDepMap               = enumDepMap
+    addDepMap         n r m = m{enumDepMap = (n, r) : enumDepMap m}
 
 type FuncName = ValueName FuncValue
 
@@ -242,6 +287,8 @@ instance SpecValue FuncValue where
     modifyLocMap f r   = r{funcLMap = f $ funcLMap r}
     getDefLocation    n d   = M.lookup n $ funcDMap d
     addDefLocation    n c d = d{funcDMap = M.insert n c $ funcDMap d}
+    getDepMap               = funcDepMap
+    addDepMap         n r m = m{funcDepMap = (n, r) : funcDepMap m}
 
 -----------------------------------------------------------------------------
 
