@@ -247,8 +247,7 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
                                 -> DefineMap -> DefineMap
 
     getDepMap       :: DeprecationMap -> DepMap sv
-    addDepMap       :: ValueName sv -> DeprecationRange
-                                -> DeprecationMap -> DeprecationMap
+    depMapFromList  :: [(ValueName sv, DeprecationRange)] -> DeprecationMap
 
 type EnumName = ValueName EnumValue
 
@@ -268,7 +267,7 @@ instance SpecValue EnumValue where
     getDefLocation    n d   = M.lookup n $ enumDMap d
     addDefLocation    n c d = d{enumDMap = M.insert n c $ enumDMap d}
     getDepMap               = enumDepMap
-    addDepMap         n r m = m{enumDepMap = (n, r) : enumDepMap m}
+    depMapFromList    l     = emptyDeprecationMap{enumDepMap = l}
 
 type FuncName = ValueName FuncValue
 
@@ -288,7 +287,7 @@ instance SpecValue FuncValue where
     getDefLocation    n d   = M.lookup n $ funcDMap d
     addDefLocation    n c d = d{funcDMap = M.insert n c $ funcDMap d}
     getDepMap               = funcDepMap
-    addDepMap         n r m = m{funcDepMap = (n, r) : funcDepMap m}
+    depMapFromList    l     = emptyDeprecationMap{funcDepMap = l}
 
 -----------------------------------------------------------------------------
 
