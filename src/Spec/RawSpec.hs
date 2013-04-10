@@ -21,7 +21,8 @@ module Spec.RawSpec (
     
     ValueType(..), FType(..),
 
-    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
+    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation
+        , depMapFromList),
     ValueName(),
 
     EnumValue(..), EnumName,
@@ -195,12 +196,12 @@ data DeprecationRange
     = DeprRange
     { deprecationStart :: GLVersion
     , deprecationEnd   :: GLVersion
-    } deriving (Eq)
+    } deriving (Eq, Show)
 
 isInRange :: GLVersion -> DeprecationRange -> Bool
 isInRange (ma, mi) (DeprRange (maS, miS) (maE,miE))
     =  (ma == maS && mi >= miS)
-    || (ma == maE && mi <= miE)
+    || (ma == maE && mi <  miE)
     || (ma >  maS && ma <  maE)
 
 type DepMap sv = [(ValueName sv, DeprecationRange)]
@@ -210,7 +211,7 @@ data DeprecationMap
     = DeprMap
     { enumDepMap :: DepMap EnumValue
     , funcDepMap :: DepMap FuncValue
-    }
+    } deriving (Show)
 
 instance Monoid DeprecationMap where
     mempty = DeprMap mempty mempty
