@@ -146,7 +146,7 @@ pReuseLine = (,) <$> (pCategory <* blanks)
 
 parseDeprecations :: SpecValue sv
     => String -> Either ParseError [(ValueName sv, DeprecationRange)]
-parseDeprecations contents = concatMap id
+parseDeprecations contents = concat
         <$> parse (many pContents <* eof) "deprecations" contents
     where
         pContents = choice
