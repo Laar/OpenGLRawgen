@@ -146,7 +146,16 @@ pReuseLine = (,) <$> (pCategory <* blanks)
 
 parseDeprecations :: SpecValue sv
     => String -> Either ParseError [(ValueName sv, DeprecationRange)]
-parseDeprecations = parse (many pDepr <* eof) "deprecations"
+parseDeprecations contents = concatMap id
+        <$> parse (many pContents <* eof) "deprecations" contents
+    where
+        pContents = choice
+            [ []    <$ pComment
+            , (:[]) <$> pDepr
+            ]
+
+pComment :: CP ()
+pComment = () <$ char '#' <* manyTill anyChar eol
 
 pSpaces :: CP ()
 pSpaces = () <$ many1 (oneOf " \t")
