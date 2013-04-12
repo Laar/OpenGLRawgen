@@ -18,8 +18,13 @@ module Modules.Compatibility (
 
 -----------------------------------------------------------------------------
 
+import Control.Monad
+import qualified Data.Set as S
+
 import Language.Haskell.Exts.Syntax
 import Language.OpenGLRaw.Base
+
+import Spec
 
 import Modules.Builder
 import Modules.GroupModule
@@ -27,12 +32,12 @@ import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
 
-addCompatibilityModules :: Builder ()
-addCompatibilityModules = do
+addCompatibilityModules :: DeprecationMap -> Builder ()
+addCompatibilityModules depMap = do
     addOldCoreProfile 3 1
     addOldCoreProfile 3 2
     addOldCoreTypes
-    addARBCompatibility
+    addARBCompatibility depMap
 
 addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
@@ -50,14 +55,37 @@ addOldCoreTypes = do
     addModuleWithWarning modName
         Compatibility warning $ tellReExportModule typesModule
 
-addARBCompatibility :: Builder ()
-addARBCompatibility = do
+addARBCompatibility :: DeprecationMap -> Builder ()
+addARBCompatibility depMap = do
     let modFilter (Version _ _ True) = True
         modFilter _                  = False
 
         modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
         warning = DeprText "\"The ARB.Compatibility is combined with the profiles.\""
-    addModuleWithWarning modName Compatibility warning $
+
+        edeps = S.fromList $ getDeprecations (3,1) depMap :: S.Set EnumName
+        fdeps = S.fromList $ getDeprecations (3,1) depMap :: S.Set FuncName
+        pre31 (Version 3  0 False) = True
+        pre31 (Version ma _ False) = ma < 3
+        pre31 _                    = False
+        importLookup :: Category -> MBuilder ()
+        importLookup c = do
+            funcs <- lift . asksLocationMap $ categoryValues c
+            enums <- lift . asksLocationMap $ categoryValues c
+            cModName <- askCategoryModule c
+            let funcs' = fdeps `S.intersection` funcs
+                enums' = edeps `S.intersection` enums
+                mkReExport :: SpecValue s => ValueName s -> MBuilder ModulePart
+                mkReExport e = do
+                    n <- unwrapNameM e
+                    return . ReExport (n, cModName) $ toGLName e
+            mapM_ (mkReExport >=> tellPart) $ S.toList funcs'
+            mapM_ (mkReExport >=> tellPart) $ S.toList enums'
+            
+            return ()
+    pre31Cats <- asksCategories $ filter pre31
+    addModuleWithWarning modName Compatibility warning $ do
         (lift . asksCategories $ filter modFilter) >>= mkGroupModule
+        mapM_ importLookup pre31Cats
 
 -----------------------------------------------------------------------------

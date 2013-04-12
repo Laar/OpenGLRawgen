@@ -24,6 +24,7 @@ module Main.Options (
 
     enumextFile, glFile, tmFile,
     freuseFile, ereuseFile,
+    enumDeprecationsFile, funcDeprecationsFile,
     stripNames, mkExtensionGroups,
     moduleHeader, moduleWarnings,
     outputDir, interfaceDir,
@@ -78,6 +79,10 @@ options =
         (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The function reuse file"
     , Option []    ["ereuses"]
         (ReqArg (\f r -> return r{rgEReuse = Just f}) "FILE") "The enum reuse file"
+    , Option []    ["edeprs"]
+        (ReqArg (\f r -> return r{rgEDeprs = Just f}) "FILE") "The enum deprecation file"
+    , Option []    ["fdeprs"]
+        (ReqArg (\f r -> return r{rgFDeprs = Just f}) "FILE") "The function deprecation file"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
     , Option ['s'] ["strip"]
@@ -129,6 +134,8 @@ data RawGenOptions
     , rgTM          :: Maybe FilePath   -- ^ The location of the gl.tm file.
     , rgEReuse      :: Maybe FilePath   -- ^ The location of the enum reuse file.
     , rgFReuse      :: Maybe FilePath   -- ^ The location of the function reuse file.
+    , rgEDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated enums.
+    , rgFDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated functions.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     , rgStripName   :: Bool             -- ^ Strip the names of extensions
     , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
@@ -147,6 +154,8 @@ defaultOptions
     , rgTM          = Nothing
     , rgEReuse      = Nothing
     , rgFReuse      = Nothing
+    , rgEDeprs      = Nothing
+    , rgFDeprs      = Nothing
     , rgFilesDir    = Nothing
     , rgStripName   = False
     , rgEGrouping   = True
@@ -165,13 +174,17 @@ hasFlag f o = f `elem` rgFlags o
 dropExtension :: Extension -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
-enumextFile, glFile, tmFile, freuseFile, ereuseFile :: RawGenOptions -> FilePath
+enumextFile, glFile, tmFile, freuseFile, ereuseFile,
+    enumDeprecationsFile, funcDeprecationsFile :: RawGenOptions -> FilePath
 enumextFile = getFile rgEnum "enumext.spec"
 glFile      = getFile rgGL   "gl.spec"
 tmFile      = getFile rgTM   "gl.tm"
 
 freuseFile = getFile rgFReuse "reusefuncs"
 ereuseFile = getFile rgEReuse "reuseenums"
+
+enumDeprecationsFile = getFile rgEDeprs "enumDeprecations"
+funcDeprecationsFile = getFile rgFDeprs "functionDeprecations"
 
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =
