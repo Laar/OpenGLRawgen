@@ -46,5 +46,3 @@ executable OpenGLRawgen
     OpenGLRawgenBase,
     OpenGLRawInterface
   ghc-options: -Wall -O2 -rtsopts
-  ghc-shared-options:
-  ghc-prof-options: -Wall -O2 -rtsopts -prof -auto-all -caf-all
