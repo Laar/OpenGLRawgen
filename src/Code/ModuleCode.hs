@@ -20,7 +20,10 @@ module Code.ModuleCode (
 -----------------------------------------------------------------------------
 
 import Control.Applicative
-import Data.Maybe
+import Data.Foldable(foldMap)
+import qualified Data.Map as M
+import Data.Monoid
+import qualified Data.Set as S
 import Data.Traversable(traverse)
 import Language.Haskell.Exts.Syntax
 
@@ -46,16 +49,14 @@ toModule rmodule = do
     let name = rawModuleName rmodule
         warning = rawModuleWarning rmodule
         exps    = map toExport parts
-        -- The imports that are needed when functions/enums are defined
-        -- overlap. The current solution probably needs improving. Untill that
-        -- has been done addImportDecl is used to clear the duplicates.
-        imports = mapMaybe toImport parts ++ foldr addImportDecl fimports eimports
+        imports = toImportDecls $ 
+            foldMap toImport parts `mappend` fimports `mappend` eimports
         prags =    if any definesFunc parts then funcPrags else []
                 ++ if any definesEnum parts then enumPrags else []
     decls <- concat <$> traverse toDecls parts
     return $ Module noSrcLoc name prags warning (Just exps) imports decls
     where
-        when' p m = if p then m else return []
+        when' p m = if p then m else return mempty
 
 -----------------------------------------------------------------------------
 
@@ -70,16 +71,55 @@ toExport mp = case mp of
     where
         nameExport = EVar . UnQual
 
-toImport :: ModulePart -> Maybe ImportDecl
+toImport :: ModulePart -> Imports
 toImport mp = case mp of
-    DefineEnum{}          -> Nothing
-    ReDefineLEnum{}       -> Nothing
-    ReDefineIEnum _ _ _ i -> Just $ imported i
-    ReExport      i _     -> Just $ imported i
-    DefineFunc{}          -> Nothing
-    ReExportModule mn     -> Just $ importAll mn
+    DefineEnum{}          -> mempty
+    ReDefineLEnum{}       -> mempty
+    ReDefineIEnum _ _ _ i -> singletonImport i
+    ReExport      i _     -> singletonImport i
+    DefineFunc{}          -> mempty
+    ReExportModule mn     -> importMod mn
+
+-----------------------------------------------------------------------------
+
+-- | Listing of imports from multiple modules. Using a different type from
+-- the list of `ImportDecl` has a simple reason, `ImportDecl` and `ImportSpec`
+-- are far more complex than what is needed here.
+-- OpenGLRaw uses only two forms of imports, either the import everything or
+-- importing some specific things (see `Import`).
+newtype Imports = Imports { importMap :: M.Map ModuleName Import }
+
+instance Monoid Imports where
+    mempty = Imports mempty
+    Imports i1 `mappend` Imports i2
+        = Imports $ M.unionWith combineImport i1 i2
+        where
+            combineImport :: Import -> Import -> Import
+            combineImport IAll  _       = IAll
+            combineImport _     IAll    = IAll
+            combineImport (IThings is1)  (IThings is2)
+                = IThings $ is1 `mappend` is2
+
+-- | Import type for an import from a single module.
+data Import
+    = IAll                 -- ^ Import the full module.
+    | IThings (S.Set Name) -- ^ Import a specific set of items form the module.
+
+-- | Convert the `Imports` to the haskell-src-exts syntax type.
+toImportDecls :: Imports -> [ImportDecl]
+toImportDecls = map (uncurry toImportDecl) . M.toList . importMap
     where
-        imported (n, mn) = partialImport mn [IVar n]
+        toImportDecl :: ModuleName -> Import -> ImportDecl
+        toImportDecl mn IAll         = importAll mn
+        toImportDecl mn (IThings is) = partialImport mn . map IVar $ S.toList is
+
+-- | Import a single item.
+singletonImport :: Imported -> Imports
+singletonImport (n,mn) = Imports . M.singleton mn . IThings $ S.singleton n
+
+-- | Import a full module.
+importMod :: ModuleName -> Imports
+importMod mn = Imports $ M.singleton mn IAll
 
 -----------------------------------------------------------------------------
 
@@ -88,15 +128,15 @@ definesFunc DefineFunc{} = True
 definesFunc _            = False
 
 -- | Extra imports needed if a function is defined
-funcImports :: RawGenMonad m => m [ImportDecl]
+funcImports :: RawGenMonad m => m Imports
 funcImports = do
     typesModule <- askTypesModule
     extensionModule <- askExtensionModule
-    return
-        [ importAll typesModule
-        , importAll extensionModule
-        , importAll $ ModuleName "Foreign.Ptr"
-        , importAll $ ModuleName "Foreign.C.Types"
+    return $ foldMap importMod
+        [ typesModule
+        , extensionModule
+        , ModuleName "Foreign.Ptr"
+        , ModuleName "Foreign.C.Types"
         ]
 -- | Extra `ModulePragma`s needed if a function is defined
 funcPrags :: [ModulePragma]
@@ -112,8 +152,8 @@ definesEnum ReDefineLEnum{} = True
 definesEnum _               = False
 
 -- | Extra imports needed when an enum is defined
-enumImports :: RawGenMonad m => m [ImportDecl]
-enumImports = (\x -> [importAll x]) <$> askTypesModule
+enumImports :: RawGenMonad m => m Imports
+enumImports = importMod <$> askTypesModule
 
 -- | Extra `ModulePragma`s needed when an enum is defined.
 enumPrags :: [ModulePragma]
