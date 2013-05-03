@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies, FlexibleContexts, RankNTypes #-}
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.RawSpec
@@ -21,7 +21,8 @@ module Spec.RawSpec (
     
     ValueType(..), FType(..),
 
-    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
+    SpecValue(wrapName, unwrapName),
+    getDefLocation, addDefLocation,
     ValueName(),
 
     EnumValue(..), EnumName,
@@ -79,6 +80,14 @@ data FuncValue
         [FType] -- ^ Types of the arguments
         (Maybe String) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
+
+-----------------------------------------------------------------------------
+
+data DuoMap f
+    = DuoMap
+    { enumMap :: f EnumValue
+    , funcMap :: f FuncValue
+    }
 
 -----------------------------------------------------------------------------
 
@@ -168,21 +177,26 @@ categoryValues c rs = fromMaybe S.empty . M.lookup c $ getLocMap rs
 
 -----------------------------------------------------------------------------
 
-type DefMap sv = M.Map (ValueName sv) Category
+-- type DefMap sv = M.Map (ValueName sv) Category
+
+newtype DefMap sv = DefMap { unDefMap :: M.Map (ValueName sv) Category }
+
+instance SpecValue sv => Monoid (DefMap sv) where
+    mempty = DefMap mempty
+    DefMap d1 `mappend` DefMap d2 = DefMap $ d1 `mappend` d2
 
 -- | Definition map, which records where each value is used first.
-data DefineMap
-    = DefMap
-    { enumDMap :: DefMap EnumValue
-    , funcDMap :: DefMap FuncValue
-    }
-
-instance Monoid DefineMap where
-    mempty = emptyDefineMap
-    DefMap e1 f1 `mappend` DefMap e2 f2 = DefMap (e1 <> e2) (f1 <> f2)
+type DefineMap = DuoMap DefMap
 
 emptyDefineMap :: DefineMap
-emptyDefineMap = DefMap M.empty M.empty
+emptyDefineMap = DuoMap mempty mempty
+
+getDefLocation :: SpecValue sv => ValueName sv -> DefineMap -> Maybe Category
+getDefLocation n = M.lookup n . unDefMap . getDuoMap
+
+addDefLocation :: SpecValue sv => ValueName sv -> Category
+    -> DefineMap -> DefineMap
+addDefLocation n c = modifyDuoMap (DefMap . M.insert n c . unDefMap)
 
 
 -----------------------------------------------------------------------------
@@ -203,9 +217,11 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     modifyLocMap   :: (LocMap sv -> LocMap sv)
                                 -> LocationMap -> LocationMap
 
-    getDefLocation      :: ValueName sv -> DefineMap -> Maybe Category
-    addDefLocation      :: ValueName sv -> Category
-                                -> DefineMap -> DefineMap
+    getDuoMap :: DuoMap f -> f sv
+    setDuoMap :: f sv -> DuoMap f -> DuoMap f
+
+modifyDuoMap :: SpecValue sv => (f sv -> f sv) -> DuoMap f -> DuoMap f
+modifyDuoMap f d = setDuoMap (f $ getDuoMap d) $ d
 
 type EnumName = ValueName EnumValue
 
@@ -222,8 +238,8 @@ instance SpecValue EnumValue where
     modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
     getLocMap          = enumLMap
     modifyLocMap f r   = r{enumLMap = f $ enumLMap r}
-    getDefLocation    n d   = M.lookup n $ enumDMap d
-    addDefLocation    n c d = d{enumDMap = M.insert n c $ enumDMap d}
+    getDuoMap = enumMap
+    setDuoMap v d = d{enumMap = v}
 
 type FuncName = ValueName FuncValue
 
@@ -240,8 +256,8 @@ instance SpecValue FuncValue where
     modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
     getLocMap  = funcLMap
     modifyLocMap f r   = r{funcLMap = f $ funcLMap r}
-    getDefLocation    n d   = M.lookup n $ funcDMap d
-    addDefLocation    n c d = d{funcDMap = M.insert n c $ funcDMap d}
+    getDuoMap = funcMap
+    setDuoMap v d = d{funcMap = v}
 
 -----------------------------------------------------------------------------
 
