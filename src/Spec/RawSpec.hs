@@ -189,12 +189,22 @@ categoryValues c rs = fromMaybe S.empty . M.lookup c $ getLocMap rs
 
 newtype DefMap sv = DefMap { unDefMap :: M.Map (ValueName sv) Category }
 
+instance Newtype (DefMap sv) where
+    type Base (DefMap sv) = M.Map (ValueName sv) Category
+    unpack  = unDefMap
+    pack    = DefMap
+
 instance SpecValue sv => Monoid (DefMap sv) where
     mempty = DefMap mempty
-    DefMap d1 `mappend` DefMap d2 = DefMap $ d1 `mappend` d2
+    mappend = under2 mappend
 
 -- | Definition map, which records where each value is used first.
 newtype DefineMap = DefineMap { defineMap :: DuoMap DefMap }
+
+instance Newtype DefineMap where
+    type Base DefineMap = DuoMap DefMap
+    unpack  = defineMap
+    pack    = DefineMap
 
 emptyDefineMap :: DefineMap
 emptyDefineMap = DefineMap duoMempty
@@ -204,7 +214,20 @@ getDefLocation n = M.lookup n . unDefMap . getDuoMap . defineMap
 
 addDefLocation :: SpecValue sv => ValueName sv -> Category
     -> DefineMap -> DefineMap
-addDefLocation n c = DefineMap . modifyDuoMap (DefMap . M.insert n c . unDefMap) . defineMap
+addDefLocation n c = under $ modifyDuoMap (under $ M.insert n c)
+
+-----------------------------------------------------------------------------
+
+class Newtype n where
+    type Base n
+    unpack :: n      -> Base n
+    pack   :: Base n -> n
+
+under :: Newtype n => (Base n -> Base n) -> n -> n
+under f = pack . f . unpack
+
+under2 :: (Newtype n) => (Base n -> Base n -> Base n) -> n -> n -> n
+under2 f n1 n2 = pack $ f (unpack n1) (unpack n2)
 
 -----------------------------------------------------------------------------
 
