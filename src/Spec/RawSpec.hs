@@ -89,6 +89,14 @@ data DuoMap f
     , funcMap :: f FuncValue
     }
 
+duoMempty :: (Monoid (f EnumValue), Monoid (f FuncValue)) => DuoMap f
+duoMempty = DuoMap mempty mempty
+
+duoMappend :: (Monoid (f EnumValue), Monoid (f FuncValue))
+    => DuoMap f -> DuoMap f -> DuoMap f
+duoMappend (DuoMap e1 f1) (DuoMap e2 f2)
+    = DuoMap (e1 `mappend` e2) (f1 `mappend` f2)
+
 -----------------------------------------------------------------------------
 
 
@@ -186,18 +194,17 @@ instance SpecValue sv => Monoid (DefMap sv) where
     DefMap d1 `mappend` DefMap d2 = DefMap $ d1 `mappend` d2
 
 -- | Definition map, which records where each value is used first.
-type DefineMap = DuoMap DefMap
+newtype DefineMap = DefineMap { defineMap :: DuoMap DefMap }
 
 emptyDefineMap :: DefineMap
-emptyDefineMap = DuoMap mempty mempty
+emptyDefineMap = DefineMap duoMempty
 
 getDefLocation :: SpecValue sv => ValueName sv -> DefineMap -> Maybe Category
-getDefLocation n = M.lookup n . unDefMap . getDuoMap
+getDefLocation n = M.lookup n . unDefMap . getDuoMap . defineMap
 
 addDefLocation :: SpecValue sv => ValueName sv -> Category
     -> DefineMap -> DefineMap
-addDefLocation n c = modifyDuoMap (DefMap . M.insert n c . unDefMap)
-
+addDefLocation n c = DefineMap . modifyDuoMap (DefMap . M.insert n c . unDefMap) . defineMap
 
 -----------------------------------------------------------------------------
 
