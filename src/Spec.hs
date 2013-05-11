@@ -14,6 +14,7 @@
 
 module Spec (
     module Spec.DefineMap,
+    module Spec.LocationMap,
     module Spec.Processing,
     module Spec.RawSpec,
     module Spec.ValueMap,
@@ -22,6 +23,7 @@ module Spec (
 -----------------------------------------------------------------------------
 
 import Spec.DefineMap
+import Spec.LocationMap
 import Spec.Processing
 import Spec.RawSpec
 import Spec.ValueMap
