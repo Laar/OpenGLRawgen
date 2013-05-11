@@ -97,6 +97,10 @@ duoMappend :: (Monoid (f EnumValue), Monoid (f FuncValue))
 duoMappend (DuoMap e1 f1) (DuoMap e2 f2)
     = DuoMap (e1 `mappend` e2) (f1 `mappend` f2)
 
+-- | Unwrap a newtype layer and get the appropriate duomap
+extractDuoMap :: (Newtype a, Base a ~ DuoMap f, SpecValue sv) => a -> f sv
+extractDuoMap = getDuoMap . unpack
+
 -----------------------------------------------------------------------------
 
 
@@ -210,7 +214,7 @@ emptyDefineMap :: DefineMap
 emptyDefineMap = DefineMap duoMempty
 
 getDefLocation :: SpecValue sv => ValueName sv -> DefineMap -> Maybe Category
-getDefLocation n = M.lookup n . unDefMap . getDuoMap . defineMap
+getDefLocation n = M.lookup n . unDefMap . extractDuoMap
 
 addDefLocation :: SpecValue sv => ValueName sv -> Category
     -> DefineMap -> DefineMap
