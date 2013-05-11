@@ -107,26 +107,36 @@ extractDuoMap = getDuoMap . unpack
 -----------------------------------------------------------------------------
 
 
-type ValMap sv = M.Map (ValueName sv) sv
+newtype ValMap sv = ValMap { unValMap :: M.Map (ValueName sv) sv }
+
+instance Newtype (ValMap sv) where
+    type Base (ValMap sv) = M.Map (ValueName sv) sv
+    unpack = unValMap
+    pack   = ValMap
+
+instance SpecValue sv => Monoid (ValMap sv) where
+    mempty  = pack mempty
+    mappend = under2 mappend
 
 -- | Mapping from `ValueName`s to `SpecValue`s for looking up their values.
-data ValueMap
-    = ValMap
-    { enumVMap :: ValMap EnumValue
-    , funcVMap :: ValMap FuncValue
-    }
+newtype ValueMap = ValueMap { valueMap :: DuoMap ValMap }
+
+instance Newtype ValueMap where
+    type Base ValueMap = DuoMap ValMap
+    unpack  = valueMap
+    pack    = ValueMap
 
 instance Monoid ValueMap where
-    mempty = ValMap M.empty M.empty
-    ValMap e1 f1 `mappend` ValMap e2 f2 = ValMap (e1 <> e2) (f1 <> f2)
+    mempty  = pack duoMempty
+    mappend = under2 duoMappend
 
 -- | Adds a value to the `ValueMap`.
 addValue :: SpecValue sv => ValueName sv -> sv -> ValueMap -> ValueMap
-addValue vn val = modifyValMap (M.insert vn val)
+addValue vn val = under $ modifyDuoMap $ under (M.insert vn val)
 
 -- | Lookup the the `SpecValue` for a given `ValueName`
 lookupValue :: SpecValue sv => ValueName sv -> ValueMap -> Maybe sv
-lookupValue sv rs = M.lookup sv $ getValMap rs
+lookupValue sv = M.lookup sv . unpack . extractDuoMap
 
 -- | Swaps an `EnumValue` if it's an ReUse directive with the reused
 -- definition. Thus if it was originally
@@ -256,9 +266,9 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     toGLName    :: ValueName sv -> GLName
     unwrapName  :: ValueName sv -> RawGenOptions -> Name
     
-    getValMap         :: ValueMap -> ValMap sv
-    modifyValMap      :: (ValMap sv -> ValMap sv)
-                                -> ValueMap -> ValueMap
+--    getValMap         :: ValueMap -> ValMap sv
+--    modifyValMap      :: (ValMap sv -> ValMap sv)
+--                                -> ValueMap -> ValueMap
 
     getDuoMap :: DuoMap f -> f sv
     setDuoMap :: f sv -> DuoMap f -> DuoMap f
@@ -277,8 +287,8 @@ instance SpecValue EnumValue where
         let name = unEN n
             name' = if stripNames o then removeEnumExtension name else name
         in Ident $ "gl_" ++ name'
-    getValMap             = enumVMap
-    modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
+--    getValMap             = enumVMap
+--    modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
     getDuoMap = enumMap
     setDuoMap v d = d{enumMap = v}
 
@@ -293,8 +303,8 @@ instance SpecValue FuncValue where
         let name = unFN n
             name' = if stripNames o then removeFuncExtension name else name
         in Ident $ "gl" ++ name'
-    getValMap     = funcVMap
-    modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
+--    getValMap     = funcVMap
+--    modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
     getDuoMap = funcMap
     setDuoMap v d = d{funcMap = v}
 
