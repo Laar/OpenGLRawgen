@@ -16,23 +16,24 @@
 
 module Spec.RawSpec (
 
-    -- * The `RawSpec` and associates
-    Category() , -- Convenience
-    
-    ValueType(..), FType(..),
-
-    SpecValue(wrapName, unwrapName),
-    ValueName(),
-
+    -- * The datatypes representing the values in the spec.
     EnumValue(..), EnumName,
     FuncValue(..), FuncName,
     
+    -- * The generalization over the the values.
+    SpecValue(wrapName, unwrapName),
+    ValueName(),
+
+    -- * Associated datatypes for the values.
+    Category() ,
+    
+    ValueType(..), FType(..),
     GLName, toGLName,
 
-    -- * Internals
+    -- * Internals, used in constructing mappings.
     Newtype(..), under, under2,
     DuoMap(..), duoMempty, duoMappend, modifyDuoMap, extractDuoMap, duoMap,
-    -- * Exported for parsing
+    -- * Parsing definition.
     isBitfieldName,
 ) where
 
