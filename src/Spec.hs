@@ -15,11 +15,13 @@
 module Spec (
     module Spec.Processing,
     module Spec.RawSpec,
+    module Spec.ValueMap,
 ) where
 
 -----------------------------------------------------------------------------
 
 import Spec.Processing
 import Spec.RawSpec
+import Spec.ValueMap
 
 -----------------------------------------------------------------------------

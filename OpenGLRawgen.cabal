@@ -22,6 +22,7 @@ executable OpenGLRawgen
     Spec.Processing
     Spec.Parsing
     Spec.RawSpec
+    Spec.ValueMap
     Main.Options
     Main.Monad
     Modules.Builder
