@@ -42,9 +42,6 @@ import Control.Monad(msum)
 
 import Data.List(stripPrefix, isPrefixOf, isInfixOf, isSuffixOf)
 import Data.Monoid
-import qualified Data.Map as M
-import qualified Data.Set as S
-import Data.Maybe
 
 import Language.OpenGLRaw.Base
 
@@ -114,10 +111,6 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     toGLName    :: ValueName sv -> GLName
     unwrapName  :: ValueName sv -> RawGenOptions -> Name
     
---    getValMap         :: ValueMap -> ValMap sv
---    modifyValMap      :: (ValMap sv -> ValMap sv)
---                                -> ValueMap -> ValueMap
-
     getDuoMap :: DuoMap f -> f sv
     setDuoMap :: f sv -> DuoMap f -> DuoMap f
 
@@ -135,8 +128,6 @@ instance SpecValue EnumValue where
         let name = unEN n
             name' = if stripNames o then removeEnumExtension name else name
         in Ident $ "gl_" ++ name'
---    getValMap             = enumVMap
---    modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
     getDuoMap = enumMap
     setDuoMap v d = d{enumMap = v}
 
@@ -151,8 +142,6 @@ instance SpecValue FuncValue where
         let name = unFN n
             name' = if stripNames o then removeFuncExtension name else name
         in Ident $ "gl" ++ name'
---    getValMap     = funcVMap
---    modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
     getDuoMap = funcMap
     setDuoMap v d = d{funcMap = v}
 
