@@ -22,7 +22,6 @@ module Spec.RawSpec (
     ValueType(..), FType(..),
 
     SpecValue(wrapName, unwrapName),
-    getDefLocation, addDefLocation,
     ValueName(),
 
     EnumValue(..), EnumName,
@@ -35,11 +34,6 @@ module Spec.RawSpec (
     categoryValues,
     deleteCategory,
     allCategories,
-
-    -- * DefineMap
-    DefineMap,
-    emptyDefineMap,
-
 
     -- * Internals
     Newtype(..), under, under2,
@@ -150,39 +144,6 @@ deleteCategory c
 categoryValues :: SpecValue sv
     => Category -> LocationMap -> S.Set (ValueName sv)
 categoryValues c = fromMaybe S.empty . M.lookup c . unpack . extractDuoMap
-
------------------------------------------------------------------------------
-
--- type DefMap sv = M.Map (ValueName sv) Category
-
-newtype DefMap sv = DefMap { unDefMap :: M.Map (ValueName sv) Category }
-
-instance Newtype (DefMap sv) where
-    type Base (DefMap sv) = M.Map (ValueName sv) Category
-    unpack  = unDefMap
-    pack    = DefMap
-
-instance SpecValue sv => Monoid (DefMap sv) where
-    mempty = DefMap mempty
-    mappend = under2 mappend
-
--- | Definition map, which records where each value is used first.
-newtype DefineMap = DefineMap { defineMap :: DuoMap DefMap }
-
-instance Newtype DefineMap where
-    type Base DefineMap = DuoMap DefMap
-    unpack  = defineMap
-    pack    = DefineMap
-
-emptyDefineMap :: DefineMap
-emptyDefineMap = DefineMap duoMempty
-
-getDefLocation :: SpecValue sv => ValueName sv -> DefineMap -> Maybe Category
-getDefLocation n = M.lookup n . unDefMap . extractDuoMap
-
-addDefLocation :: SpecValue sv => ValueName sv -> Category
-    -> DefineMap -> DefineMap
-addDefLocation n c = under $ modifyDuoMap (under $ M.insert n c)
 
 -----------------------------------------------------------------------------
 
