@@ -97,6 +97,9 @@ duoMappend :: (Monoid (f EnumValue), Monoid (f FuncValue))
 duoMappend (DuoMap e1 f1) (DuoMap e2 f2)
     = DuoMap (e1 `mappend` e2) (f1 `mappend` f2)
 
+duoMap :: (forall sv. SpecValue sv => f sv -> f sv) -> DuoMap f -> DuoMap f
+duoMap g (DuoMap e f) = DuoMap (g e) (g f)
+
 -- | Unwrap a newtype layer and get the appropriate duomap
 extractDuoMap :: (Newtype a, Base a ~ DuoMap f, SpecValue sv) => a -> f sv
 extractDuoMap = getDuoMap . unpack
@@ -149,43 +152,52 @@ swapEnumValue e1 rawSpec = case lookupValue e1 rawSpec of
 
 -----------------------------------------------------------------------------
 
-type LocMap sv = M.Map Category (S.Set (ValueName sv))
+-- type LocMap sv = M.Map Category (S.Set (ValueName sv))
+newtype LocMap sv
+    = LocMap { unLocMap :: M.Map Category (S.Set (ValueName sv)) }
+instance Newtype (LocMap sv) where
+    type Base (LocMap sv) = M.Map Category (S.Set (ValueName sv))
+    unpack = unLocMap
+    pack = LocMap
+instance Monoid (LocMap sv) where
+    mempty = pack mempty
+    mappend = under2 mappend
 
 -- | Mapping of `Category`s to the `ValueName`s it contains.
-data LocationMap
-    = LocMap
-    { enumLMap :: LocMap EnumValue
-    , funcLMap :: LocMap FuncValue
-    }
+
+newtype LocationMap = LocationMap { locationMap :: DuoMap LocMap }
+
+instance Newtype LocationMap where
+    type (Base LocationMap) = DuoMap LocMap
+    unpack  = locationMap
+    pack    = LocationMap
 
 instance Monoid LocationMap where
-    mempty = LocMap M.empty M.empty
-    LocMap e1 f1 `mappend` LocMap e2 f2
-        = LocMap (M.unionWith S.union e1 e2) (M.unionWith S.union f1 f2)
+    mempty = pack duoMempty
+    mappend = under2 duoMappend
 
 -- | Listing of all `Category`s
 allCategories :: LocationMap -> [Category]
-allCategories rs = S.toList $ S.union ecats fcats
+allCategories lm = S.toList $ S.union ecats fcats
     where
-        ecats = M.keysSet . enumLMap $ rs
-        fcats = M.keysSet . funcLMap $ rs
+        ecats = M.keysSet . unpack $ (extractDuoMap lm :: LocMap EnumValue)
+        fcats = M.keysSet . unpack $ (extractDuoMap lm :: LocMap FuncValue)
 
 -- | Adds the location where a value is used.
 addLocation :: SpecValue sv
     => Category -> ValueName sv -> LocationMap -> LocationMap
 addLocation cat vn
-    = modifyLocMap (M.insertWith S.union cat $ S.singleton vn)
+    = under $ modifyDuoMap (under $ M.insertWith S.union cat $ S.singleton vn)
 
 -- | Deletes a `Category` from the `LocationMap`.
 deleteCategory :: Category -> LocationMap -> LocationMap
 deleteCategory c
-	= modifyLocMap (M.delete c :: LocMap EnumValue -> LocMap EnumValue)
-	. modifyLocMap (M.delete c :: LocMap FuncValue -> LocMap FuncValue)
+	= under $ duoMap (under $ M.delete c)
 
 -- | Set of all value's in a `Category`
 categoryValues :: SpecValue sv
     => Category -> LocationMap -> S.Set (ValueName sv)
-categoryValues c rs = fromMaybe S.empty . M.lookup c $ getLocMap rs
+categoryValues c = fromMaybe S.empty . M.lookup c . unpack . extractDuoMap
 
 -----------------------------------------------------------------------------
 
@@ -247,9 +259,6 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     getValMap         :: ValueMap -> ValMap sv
     modifyValMap      :: (ValMap sv -> ValMap sv)
                                 -> ValueMap -> ValueMap
-    getLocMap      :: LocationMap -> LocMap sv
-    modifyLocMap   :: (LocMap sv -> LocMap sv)
-                                -> LocationMap -> LocationMap
 
     getDuoMap :: DuoMap f -> f sv
     setDuoMap :: f sv -> DuoMap f -> DuoMap f
@@ -270,8 +279,6 @@ instance SpecValue EnumValue where
         in Ident $ "gl_" ++ name'
     getValMap             = enumVMap
     modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
-    getLocMap          = enumLMap
-    modifyLocMap f r   = r{enumLMap = f $ enumLMap r}
     getDuoMap = enumMap
     setDuoMap v d = d{enumMap = v}
 
@@ -288,8 +295,6 @@ instance SpecValue FuncValue where
         in Ident $ "gl" ++ name'
     getValMap     = funcVMap
     modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
-    getLocMap  = funcLMap
-    modifyLocMap f r   = r{funcLMap = f $ funcLMap r}
     getDuoMap = funcMap
     setDuoMap v d = d{funcMap = v}
 
