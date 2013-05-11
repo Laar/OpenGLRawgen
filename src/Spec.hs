@@ -25,7 +25,7 @@ module Spec (
 import Spec.DefineMap
 import Spec.LocationMap
 import Spec.Processing
-import Spec.RawSpec
+import Spec.RawSpec hiding (DuoMap, Newtype) -- Hide part of the internals.
 import Spec.ValueMap
 
 -----------------------------------------------------------------------------
