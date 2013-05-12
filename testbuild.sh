@@ -6,6 +6,7 @@
 COMPILEDIR="compile/"
 BUILDSRC="BuildSources/"
 RAWDIR="$COMPILEDIR/src/Graphics/Rendering/OpenGL/Raw/"
+GENDIR="$COMPILEDIR/generated"
 
 function printUsage() {
     echo "USAGE testbuild.sh GENERATED_SOURCES_DIR";
@@ -41,7 +42,8 @@ cp "$BUILDSRC/Setup.hs" "$COMPILEDIR"
 
 sed -i "/exposed-modules/r $1/modulesE.txt" "$COMPILEDIR/OpenGLRawTest.cabal"
 sed -i "/other-modules/r $1/modulesI.txt" "$COMPILEDIR/OpenGLRawTest.cabal"
-cp -r "$1/Graphics" "$COMPILEDIR/src/"
+mkdir -p "$GENDIR"
+cp -r "$1/Graphics" "$GENDIR/"
 cd "$COMPILEDIR"
 cabal configure --disable-library-profiling
 exec cabal build
