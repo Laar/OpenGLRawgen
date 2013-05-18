@@ -1,3 +1,6 @@
+# Syntax: lines of the form
+# "functionName deprecationVersion reintroductionVersion"
+# '#' signals the start of a comment
 # relevant part of the diff
 # > glSamplePass Couldn't be found.
 # < glWindowPos3sv Is part of the v1.4 compatibility profile.

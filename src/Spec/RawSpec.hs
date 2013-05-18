@@ -194,8 +194,8 @@ emptyDefineMap = DefMap M.empty M.empty
 type GLVersion = (Major, Minor)
 data DeprecationRange
     = DeprRange
-    { deprecationStart :: GLVersion
-    , deprecationEnd   :: GLVersion
+    { deprecationStart :: GLVersion -- First version where it was deprecated
+    , deprecationEnd   :: GLVersion -- First version where it was reintroduced
     } deriving (Eq, Show)
 
 isInRange :: GLVersion -> DeprecationRange -> Bool

@@ -1,3 +1,6 @@
+# Syntax: lines of the form
+# "enumName deprecationVersion reintroductionVersion"
+# '#' signals the start of a comment
 POLYGON_MODE            3.1 4.2
 QUADS                   3.1 4.0
 STACK_OVERFLOW          3.1 4.3
