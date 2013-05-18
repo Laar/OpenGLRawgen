@@ -1,1 +1,33 @@
-QUADS        3.1 4.0
+POLYGON_MODE            3.1 4.2
+QUADS                   3.1 4.0
+STACK_OVERFLOW          3.1 4.3
+STACK_UNDERFLOW         3.1 4.3
+#
+# INDEX wasn't reintroduced (a search on the 4.3 spec for ' INDEX ' came back
+# empty.
+# TEXTURE_BORDER wasn't exported correctly but is added.
+#
+#
+# These enumeration are part of EXT_vertex_array and somehow got into the ARB
+# compatibility module.
+# COLOR_ARRAY_COUNT       3.1 3.9
+# EDGE_FLAG_ARRAY_COUNT   3.1 3.9
+# INDEX_ARRAY_COUNT       3.1 3.9
+# NORMAL_ARRAY_COUNT      3.1 3.9
+# VERTEX_ARRAY_COUNT      3.1 3.9
+#
+#
+# relevant diff part
+# > gl_COLOR_ARRAY_COUNT
+# > gl_EDGE_FLAG_ARRAY_COUNT
+# > gl_INDEX
+# > gl_INDEX_ARRAY_COUNT
+# > gl_NORMAL_ARRAY_COUNT
+# > gl_POLYGON_MODE
+# > gl_QUADS
+# > gl_SRC1_ALPHA
+# > gl_STACK_OVERFLOW
+# > gl_STACK_UNDERFLOW
+# < gl_TEXTURE_BORDER
+# > gl_TEXTURE_COORD_ARRAY_COUNT
+# > gl_VERTEX_ARRAY_COUNT
