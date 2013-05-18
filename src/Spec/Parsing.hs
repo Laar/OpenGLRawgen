@@ -168,7 +168,7 @@ pGLVersion = (,) <$> pDigit <* char '.' <*> pDigit
 
 pDepr :: SpecValue sv => CP (ValueName sv, DeprecationRange)
 pDepr = (,) 
-    <$> (wrapName <$> many1 alphaNum <* pSpaces) 
+    <$> (wrapName <$> many1 (alphaNum <|> char '_') <* pSpaces)
     <*> (DeprRange
         <$> pGLVersion
         <* pSpaces
