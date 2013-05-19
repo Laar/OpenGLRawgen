@@ -40,8 +40,8 @@ import qualified Text.OpenGL.Spec as S
 
 import Main.Options
 import Main.Monad
+import Spec.Base
 import Spec.LocationMap
-import Spec.RawSpec
 import Spec.ValueMap
 
 -----------------------------------------------------------------------------

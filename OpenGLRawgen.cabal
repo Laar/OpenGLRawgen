@@ -19,10 +19,10 @@ executable OpenGLRawgen
   hs-source-dirs: src
   other-modules:
     Spec
+    Spec.Base
     Spec.DefineMap
     Spec.Processing
     Spec.Parsing
-    Spec.RawSpec
     Spec.ValueMap
     Main.Options
     Main.Monad

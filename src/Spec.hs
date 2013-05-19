@@ -13,19 +13,19 @@
 -----------------------------------------------------------------------------
 
 module Spec (
+    module Spec.Base,
     module Spec.DefineMap,
     module Spec.LocationMap,
     module Spec.Processing,
-    module Spec.RawSpec,
     module Spec.ValueMap,
 ) where
 
 -----------------------------------------------------------------------------
 
+import Spec.Base hiding (DuoMap, Newtype) -- Hide part of the internals.
 import Spec.DefineMap
 import Spec.LocationMap
 import Spec.Processing
-import Spec.RawSpec hiding (DuoMap, Newtype) -- Hide part of the internals.
 import Spec.ValueMap
 
 -----------------------------------------------------------------------------

@@ -25,7 +25,7 @@ module Spec.DefineMap (
 
 import qualified Data.Map as M
 import Data.Monoid
-import Spec.RawSpec
+import Spec.Base
 
 -----------------------------------------------------------------------------
 

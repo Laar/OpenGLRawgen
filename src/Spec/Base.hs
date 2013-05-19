@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeFamilies, FlexibleContexts, RankNTypes #-}
 -----------------------------------------------------------------------------
 --
--- Module      :  Spec.RawSpec
+-- Module      :  Spec.Base
 -- Copyright   :  (c) 2011 Lars Corbijn
 -- License     :  BSD-style (see the file /LICENSE)
 --
@@ -9,12 +9,14 @@
 -- Stability   :
 -- Portability :
 --
--- | Defines various mappings used for representing the specification files
--- and building the final result.
+-- | Defines the basic types for the specification. It roughly contains three
+-- parts. Firstly the values (`EnumValue` and `FuncValue`) and their names.
+-- Secondly their similarity in the form of `SpecValue` class. Thirdly `DuoMap`
+-- to handle a combination of two values one for enums and one for functions.
 --
 -----------------------------------------------------------------------------
 
-module Spec.RawSpec (
+module Spec.Base (
 
     -- * The datatypes representing the values in the spec.
     EnumValue(..), EnumName,

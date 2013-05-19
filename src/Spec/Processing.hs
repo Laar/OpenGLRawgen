@@ -26,8 +26,8 @@ import Language.OpenGLRaw.Base
 
 import Main.Options
 
+import Spec.Base
 import Spec.LocationMap
-import Spec.RawSpec
 
 -----------------------------------------------------------------------------
 

@@ -28,7 +28,7 @@ import Data.Maybe
 import qualified Data.Map as M
 import Data.Monoid
 import qualified Data.Set as S
-import Spec.RawSpec
+import Spec.Base
 
 -----------------------------------------------------------------------------
 
