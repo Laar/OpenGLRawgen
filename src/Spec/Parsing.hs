@@ -16,6 +16,7 @@
 module Spec.Parsing (
     parseSpecs,
     parseReuses,
+    parseDeprecations,
 ) where
 
 -----------------------------------------------------------------------------
@@ -140,6 +141,39 @@ eol = () <$ char '\n'
 pReuseLine :: CP (Category, [Category])
 pReuseLine = (,) <$> (pCategory <* blanks)
     <*> sepBy pCategory (char ',' *> blanks) <* eol
+
+-----------------------------------------------------------------------------
+
+parseDeprecations :: SpecValue sv
+    => String -> Either ParseError [(ValueName sv, DeprecationRange)]
+parseDeprecations contents = concat
+        <$> parse (many pContents <* eof) "deprecations" contents
+    where
+        pContents = choice
+            [ []    <$ pComment
+            , (:[]) <$> pDepr
+            ]
+
+pComment :: CP ()
+pComment = () <$ char '#' <* manyTill anyChar eol
+
+pSpaces :: CP ()
+pSpaces = () <$ many1 (oneOf " \t")
+
+pDigit :: CP Int
+pDigit = read . (:[]) <$> oneOf ['0'..'9']
+
+pGLVersion :: CP GLVersion
+pGLVersion = (,) <$> pDigit <* char '.' <*> pDigit
+
+pDepr :: SpecValue sv => CP (ValueName sv, DeprecationRange)
+pDepr = (,) 
+    <$> (wrapName <$> many1 (alphaNum <|> char '_') <* pSpaces)
+    <*> (DeprRange
+        <$> pGLVersion
+        <* pSpaces
+        <*> pGLVersion)
+    <* eol
 
 -----------------------------------------------------------------------------
 
