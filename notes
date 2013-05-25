@@ -1,0 +1,25 @@
+# Changes to the OpenGLRaw
+Compatibility not in groupmodule: ARB.hs
+TextureRG->TextureRg
+TextureCompressionRGTC->TextureCompressionRgtc
+
+
+## Removed extensions:
+ARB_create_context
+ARB_create_context_profile (GLX extensions
+
+
+## Missing extensions:
+NV->texture_compression_vtc (http://www.opengl.org/registry/specs/NV/texture_compression_vtc.txt)
+    Reuse the s3tc ones.
+EXT->fragment_lighting (http://www.opengl.org/registry/specs/EXT/fragment_lighting.txt)
+    effectively the same as teh SGIX extension with other suffices (possibly
+    other enum value).
+EXT->scene_marker (http://www.opengl.org/registry/specs/EXT/scene_marker.txt)
+EXT->texture_compression_dxt1 (http://www.opengl.org/registry/specs/EXT/texture_compression_dxt1.txt)
+    Was commented out, by uncommenting reintroducing it.
+EXT_texture_env_add (http://www.opengl.org/registry/specs/EXT/texture_env_add.txt)
+    Added in the spec
+ARB_texture_env_add (http://www.opengl.org/registry/specs/ARB/texture_env_add.txt)
+    Added in the spec
+ARB_texture_env_crossbar (http://www.opengl.org/registry/specs/ARB/texture_env_crossbar.txt)

@@ -2168,6 +2168,7 @@ ARB_multisample enum:
 # No new tokens
 # ARB Extension #6
 ARB_texture_env_add enum:
+    use VERSION_1_1_DEPRECATED      ADD
 
 ###############################################################################
 
@@ -5537,6 +5538,7 @@ SUN_convolution_border_modes enum:
 # No new tokens
 # Extension #185
 EXT_texture_env_add enum:
+    use ARB_texture_env_add     ADD
 
 ###############################################################################
 
@@ -6912,8 +6914,9 @@ NV_vertex_program3 enum:
 # Extension #308 - GLX_MESA_agp_offset
 
 # Extension #309 - GL_EXT_texture_compression_dxt1 (OpenGL ES only, subset of _s3tc version)
-#	 use EXT_texture_compression_s3tc    COMPRESSED_RGB_S3TC_DXT1_EXT
-#	 use EXT_texture_compression_s3tc    COMPRESSED_RGBA_S3TC_DXT1_EXT
+EXT_texture_compression_dxt1 enum:
+	 use EXT_texture_compression_s3tc    COMPRESSED_RGB_S3TC_DXT1_EXT
+	 use EXT_texture_compression_s3tc    COMPRESSED_RGBA_S3TC_DXT1_EXT
 
 ###############################################################################
 
