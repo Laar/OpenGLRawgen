@@ -28,6 +28,7 @@ module Spec.Parsing (
 --import Data.List(stripPrefix)
 --import qualified Data.Map as M
 --import Data.Maybe(fromMaybe)
+import Data.Monoid
 
 --import Control.Applicative
 
@@ -45,7 +46,7 @@ import Spec.RawSpec
 -- them.
 parseSpecs :: RawGenIO (LocationMap, ValueMap)
 parseSpecs = do
-    undefined
+    return mempty
 {-
     especf <- asksOptions enumextFile >>= liftIO . readFile
     fspecf <- asksOptions glFile >>= liftIO . readFile
@@ -127,7 +128,7 @@ convertFunc tm rf = (cat, (wrapName name, RawFunc rtype atype alias))
 -}
 -- | Parse the reuses from a string.
 parseReuses :: String -> Either ParseError [(Category, [Category])]
-parseReuses = undefined
+parseReuses _ = return []
 {-
 parseReuses = parse (many pReuseLine <* eof) "reuse"
 
@@ -147,7 +148,7 @@ pReuseLine = (,) <$> (pCategory <* blanks)
 -}
 parseDeprecations :: SpecValue sv
     => String -> Either ParseError [(ValueName sv, DeprecationRange)]
-parseDeprecations = undefined
+parseDeprecations _ = return []
 {-
 parseDeprecations contents = concat
         <$> parse (many pContents <* eof) "deprecations" contents
