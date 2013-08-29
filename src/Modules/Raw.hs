@@ -63,12 +63,12 @@ buildRawImports = do
 addLatestProfileToRaw :: Builder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
-    Version ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
+    CompVersion ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
     latestProf <- askProfileModule ma mi False
     bm <- askBaseModule
     addModule' bm TopLevelGroup $ tellReExportModule latestProf
     where
-        catRanking (Version ma mi False) = (-ma, -mi)
-        catRanking _                     = (1, 1)
+        catRanking (CompVersion ma mi False) = (-ma, -mi)
+        catRanking _                         = (1, 1)
 
 -----------------------------------------------------------------------------

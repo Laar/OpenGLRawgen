@@ -37,10 +37,10 @@ module Main.Options (
 import Data.Maybe
 import System.FilePath((</>))
 
-import Text.OpenGL.Spec(Extension)
-
 import System.Console.GetOpt
 import System.Environment(getArgs)
+
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
 
@@ -128,7 +128,7 @@ mkOptions (opts, _) = foldl (>>=) (return defaultOptions) opts
 data RawGenOptions
     = RawGenOptions
     { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
-    , rgNoExtension :: [Extension]      -- ^ The `Extension`s that should be dropped
+    , rgNoExtension :: [CompExtension]  -- ^ The `CompExtension`s that should be dropped
     , rgEnum        :: Maybe FilePath   -- ^ The location of the enumext.spec file.
     , rgGL          :: Maybe FilePath   -- ^ The location of the gl.spec file.
     , rgTM          :: Maybe FilePath   -- ^ The location of the gl.tm file.
@@ -171,7 +171,7 @@ hasFlag :: RawGenFlag -> RawGenOptions -> Bool
 hasFlag f o = f `elem` rgFlags o
 
 -- | Check wheter an `Extension` should be removed
-dropExtension :: Extension -> RawGenOptions -> Bool
+dropExtension :: CompExtension -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
 enumextFile, glFile, tmFile, freuseFile, ereuseFile,

@@ -57,17 +57,17 @@ addOldCoreTypes = do
 
 addARBCompatibility :: DeprecationMap -> Builder ()
 addARBCompatibility depMap = do
-    let modFilter (Version _ _ True) = True
-        modFilter _                  = False
+    let modFilter (CompVersion _ _ True) = True
+        modFilter _                      = False
 
         modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
         warning = DeprText "\"The ARB.Compatibility is combined with the profiles.\""
 
         edeps = S.fromList $ getDeprecations (3,1) depMap :: S.Set EnumName
         fdeps = S.fromList $ getDeprecations (3,1) depMap :: S.Set FuncName
-        pre31 (Version 3  0 False) = True
-        pre31 (Version ma _ False) = ma < 3
-        pre31 _                    = False
+        pre31 (CompVersion 3  0 False) = True
+        pre31 (CompVersion ma _ False) = ma < 3
+        pre31 _                        = False
         importLookup :: Category -> MBuilder ()
         importLookup c = do
             funcs <- lift . asksLocationMap $ categoryValues c

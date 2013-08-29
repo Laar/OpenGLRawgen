@@ -22,24 +22,20 @@ module Spec.Parsing (
 -----------------------------------------------------------------------------
 
 
-import Control.Monad.State
-import Control.Monad.Writer
+--import Control.Monad.State
+--import Control.Monad.Writer
 
-import Data.List(stripPrefix)
-import qualified Data.Map as M
-import Data.Maybe(fromMaybe)
+--import Data.List(stripPrefix)
+--import qualified Data.Map as M
+--import Data.Maybe(fromMaybe)
 
-import Control.Applicative
+--import Control.Applicative
 
-import Text.Parsec.String(GenParser)
+--import Text.Parsec.String(GenParser)
 import Text.Parsec hiding
   (many, optional, (<|>), token)
 
-import Text.OpenGL.Api as A
-import Text.OpenGL.Spec as S hiding (Value)
-import qualified Text.OpenGL.Spec as S
-
-import Main.Options
+--import Main.Options
 import Main.Monad
 import Spec.RawSpec
 
@@ -49,6 +45,8 @@ import Spec.RawSpec
 -- them.
 parseSpecs :: RawGenIO (LocationMap, ValueMap)
 parseSpecs = do
+    undefined
+{-
     especf <- asksOptions enumextFile >>= liftIO . readFile
     fspecf <- asksOptions glFile >>= liftIO . readFile
     tymapf <- asksOptions tmFile >>= liftIO . readFile
@@ -126,9 +124,11 @@ convertFunc tm rf = (cat, (wrapName name, RawFunc rtype atype alias))
         paramToType (Parameter _ t _ p) = lookupType t p tm
 
 -----------------------------------------------------------------------------
-
+-}
 -- | Parse the reuses from a string.
 parseReuses :: String -> Either ParseError [(Category, [Category])]
+parseReuses = undefined
+{-
 parseReuses = parse (many pReuseLine <* eof) "reuse"
 
 type CP = GenParser Char ()
@@ -144,8 +144,11 @@ pReuseLine = (,) <$> (pCategory <* blanks)
 
 -----------------------------------------------------------------------------
 
+-}
 parseDeprecations :: SpecValue sv
     => String -> Either ParseError [(ValueName sv, DeprecationRange)]
+parseDeprecations = undefined
+{-
 parseDeprecations contents = concat
         <$> parse (many pContents <* eof) "deprecations" contents
     where
@@ -258,5 +261,5 @@ lookupType t p tm = case M.lookup t tm of
             GLdebugproc    -> TCon "GLdebugproc"
             GLdebugprocARB -> TCon "GLdebugproc"
             GLdebugprocAMD -> TCon "GLdebugproc"
-
+-}
 -----------------------------------------------------------------------------

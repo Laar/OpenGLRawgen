@@ -35,7 +35,7 @@ data RawModule
     , rawModuleType     :: ModuleType
     , rawModuleWarning  :: Maybe WarningText
     , rawModuleParts    :: [ModulePart]
-    } deriving (Show)
+    } deriving ()
 
 isExternal :: RawModule -> Bool
 isExternal rm = case rawModuleType rm of
@@ -62,7 +62,7 @@ data ModulePart
         Category  -- | The category this function was part of.
     -- | Reexport a module
     | ReExportModule    ModuleName
-    deriving (Show)
+    deriving ()
 
 -- | An imported name with specific module.
 type Imported = (Name, ModuleName)

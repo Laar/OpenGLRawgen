@@ -102,25 +102,25 @@ askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
 categoryModule :: RawGenMonad m => Category -> m ModuleName
-categoryModule (Version ma mi d) = return .
+categoryModule (CompVersion ma mi d) = return .
     ModuleName
         $ corePath <.> "Internal"
         <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
-categoryModule (Extension ex n d) = return .
+categoryModule (CompExtension ex n d) = return .
     ModuleName
         $ moduleBase <.> upperFirst (show ex) <.> correctName n
         ++ (if d then "Compatibility" else "")
-categoryModule (Name n) = throwRawError
+categoryModule (CompName n) = throwRawError
     $ "categoryModule: Category with only a name "
     ++ upperFirst (show n)
 
 -- | Query what the module type of a given module is.
 askCategoryModuleType :: RawGenMonad m => Category -> m ModuleType
-askCategoryModuleType (Version _ _ _)
+askCategoryModuleType (CompVersion _ _ _)
     = return Internal
-askCategoryModuleType (Extension e n d)
+askCategoryModuleType (CompExtension e n d)
     = return $ ExtensionMod e n d
-askCategoryModuleType (Name _)
+askCategoryModuleType (CompName _)
     = throwRawError "askCategoryModuleType: Name category encountered"
 
 -- | Asks the 'ModuleName' of a specific core profile
@@ -136,7 +136,7 @@ askProfileModule ma mi comp = do
                 ++ (if comp then "Compatibility" else "")
 
 -- | Asks the 'ModuleName' of the grouping module for a certain vendor
-askVendorModule :: RawGenMonad m => Extension -> m ModuleName
+askVendorModule :: RawGenMonad m => CompExtension -> m ModuleName
 askVendorModule e = return . ModuleName $ moduleBase <.> show e
 
 -----------------------------------------------------------------------------

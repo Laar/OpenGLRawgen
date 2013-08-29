@@ -44,7 +44,7 @@ mkGroupModule cats = forM_ cats $ askCategoryModule >=> tellReExportModule
 -- | Add all the core profiles. See also 'addCoreProfile'.
 addCoreProfiles :: Builder ()
 addCoreProfiles = do
-    let addCat (Version ma mi False)
+    let addCat (CompVersion ma mi False)
             = Just $ do
                 addCoreProfile ma mi False
                 let makeCompatibilityModule = ma > 3 || (ma == 3 && mi /= 0)
@@ -62,7 +62,7 @@ addCoreProfile
     -> Deprecated   -- ^ Compatibility Profile?
     -> Builder ()
 addCoreProfile ma mi comp = do
-     let catFilter (Version ma' mi' comp') =
+     let catFilter (CompVersion ma' mi' comp') =
             (ma' < ma || (ma' == ma && mi' <= mi)) -- version check
             && (comp  || ma > 3 || (ma == 3 && mi == 0) || not comp') -- only import deprecated modules when needed
          catFilter _                 = False
@@ -77,10 +77,10 @@ addCoreProfile ma mi comp = do
 
 -- | Asks a list of all 'Extensions' that are used in the spec. This is
 -- essentially a list of all Vendors (ATI, NV, etc.), EXT and ARB
-askExtensionGroups :: Builder [Extension]
+askExtensionGroups :: Builder [CompExtension]
 askExtensionGroups =
-    let getExtension (Extension e _ _) = Just e
-        getExtension _                 = Nothing
+    let getExtension (CompExtension e _ _) = Just e
+        getExtension _                     = Nothing
     in fmap nub $ asksCategories (mapMaybe getExtension)
 
 -- | Add all vendor modules. These are the modules for each vendor that
@@ -91,10 +91,10 @@ addVendorModules = askExtensionGroups >>= mapM_ addVendorModule
 -- | Adds a module for a certain vendor, specified by the 'Extension', which
 -- reexports all the extensions defined by that vendor
 
-addVendorModule :: Extension -> Builder ()
+addVendorModule :: CompExtension -> Builder ()
 addVendorModule e = do
-    let catFilter (Extension e' _ _) = e' == e
-        catFilter _                 = False
+    let catFilter (CompExtension e' _ _) = e' == e
+        catFilter _                      = False
     mn <- askVendorModule e
     cats <- asksCategories (filter catFilter)
     addModule' mn (VendorGroup e)  $ mkGroupModule cats
