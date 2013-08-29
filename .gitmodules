@@ -7,3 +7,6 @@
 [submodule "OpenGLRawgenBase"]
 	path = OpenGLRawgenBase
 	url = git://github.com/Laar/OpenGLRawgenBase.git
+[submodule "opengl-xmlspec"]
+	path = opengl-xmlspec
+	url = git@github.com:Laar/opengl-xmlspec.git

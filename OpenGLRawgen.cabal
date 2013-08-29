@@ -42,6 +42,7 @@ executable OpenGLRawgen
     haskell-src-exts -any,
     mtl -any,
     opengl-api -any,
+    opengl-xmlspec -any,
     parsec -any,
     OpenGLRawgenBase,
     OpenGLRawInterface
