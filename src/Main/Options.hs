@@ -22,7 +22,7 @@ module Main.Options (
     hasFlag,
     dropExtension,
 
-    enumextFile, glFile, tmFile,
+    specFile,
     freuseFile, ereuseFile,
     enumDeprecationsFile, funcDeprecationsFile,
     stripNames, mkExtensionGroups,
@@ -69,13 +69,9 @@ options =
         (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
+    , Option ['f'] ["spec"]
+        (ReqArg (\f r -> return r{rgSpecFile = Just f}) "FILE") "The gl.spec file to use"
     , Option ['e'] ["enumext"]
-        (ReqArg (\f r -> return r{rgEnum = Just f}) "FILE") "The enumext.spec file to use"
-    , Option ['f'] ["gl"]
-        (ReqArg (\f r -> return r{rgGL = Just f}) "FILE") "The gl.spec file to use"
-    , Option ['t'] ["tm"]
-        (ReqArg (\f r -> return r{rgTM = Just f}) "FILE") "The gl.tm file to use"
-    , Option []    ["freuses"]
         (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The function reuse file"
     , Option []    ["ereuses"]
         (ReqArg (\f r -> return r{rgEReuse = Just f}) "FILE") "The enum reuse file"
@@ -129,9 +125,7 @@ data RawGenOptions
     = RawGenOptions
     { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
     , rgNoExtension :: [CompExtension]  -- ^ The `CompExtension`s that should be dropped
-    , rgEnum        :: Maybe FilePath   -- ^ The location of the enumext.spec file.
-    , rgGL          :: Maybe FilePath   -- ^ The location of the gl.spec file.
-    , rgTM          :: Maybe FilePath   -- ^ The location of the gl.tm file.
+    , rgSpecFile    :: Maybe FilePath   -- ^ The location of the spec file.
     , rgEReuse      :: Maybe FilePath   -- ^ The location of the enum reuse file.
     , rgFReuse      :: Maybe FilePath   -- ^ The location of the function reuse file.
     , rgEDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated enums.
@@ -149,9 +143,7 @@ defaultOptions
     = RawGenOptions
     { rgFlags       = []
     , rgNoExtension = []
-    , rgEnum        = Nothing
-    , rgGL          = Nothing
-    , rgTM          = Nothing
+    , rgSpecFile    = Nothing
     , rgEReuse      = Nothing
     , rgFReuse      = Nothing
     , rgEDeprs      = Nothing
@@ -174,11 +166,9 @@ hasFlag f o = f `elem` rgFlags o
 dropExtension :: CompExtension -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
-enumextFile, glFile, tmFile, freuseFile, ereuseFile,
+specFile, freuseFile, ereuseFile,
     enumDeprecationsFile, funcDeprecationsFile :: RawGenOptions -> FilePath
-enumextFile = getFile rgEnum "enumext.spec"
-glFile      = getFile rgGL   "gl.spec"
-tmFile      = getFile rgTM   "gl.tm"
+specFile      = getFile rgSpecFile   "gl.xml"
 
 freuseFile = getFile rgFReuse "reusefuncs"
 ereuseFile = getFile rgEReuse "reuseenums"
