@@ -25,20 +25,25 @@ module Spec.Parsing (
 --import Control.Monad.State
 --import Control.Monad.Writer
 
---import Data.List(stripPrefix)
+import qualified Data.Foldable as F
+import Data.List(stripPrefix)
 --import qualified Data.Map as M
---import Data.Maybe(fromMaybe)
+import Data.Maybe(fromMaybe)
 import Data.Monoid
 
 --import Control.Applicative
+
+import qualified Text.OpenGL as P
 
 --import Text.Parsec.String(GenParser)
 import Text.Parsec hiding
   (many, optional, (<|>), token)
 
---import Main.Options
+import Main.Options
 import Main.Monad
 import Spec.RawSpec
+
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
 
@@ -46,7 +51,127 @@ import Spec.RawSpec
 -- them.
 parseSpecs :: RawGenIO (LocationMap, ValueMap)
 parseSpecs = do
-    return mempty
+    specLocation <- asksOptions specFile
+    registry <- liftEither =<< (liftIO $ P.readRegistry specLocation True)
+    let lm = createLocMap registry
+        vm = createValMap registry
+    return (lm, vm)
+
+createLocMap :: P.Registry -> LocationMap
+createLocMap reg =
+    F.foldMap extensionLocs (P.regExtensions reg)
+    `mappend`
+    addLocation (CompVersion 1 0 False) (mkEnumName $ P.EnumName "GL_ZERO") mempty
+
+createValMap :: P.Registry -> ValueMap
+createValMap reg =
+    F.foldMap enumsMap (P.regEnums reg)
+    `mappend`
+    F.foldMap commandsMap (P.regCommands reg)
+  where
+    commandsMap = F.foldMap funcVal . P.commands
+
+enumsMap :: P.Enums -> ValueMap
+enumsMap ens = F.foldMap mkEnum $ P.enums ens
+  where
+    ty = case P.enumsType ens of
+        Just "bitfield" -> BitfieldValue
+        _               -> EnumValue
+    mkEnum (Right _) = mempty
+    mkEnum (Left  e) = enumVal ty e
+
+enumVal :: ValueType -> P.GLEnum -> ValueMap
+enumVal ty e
+    = addValue 
+        (mkEnumName $ P.enumName e) 
+        (Value (P.enumValue e) ty)
+        mempty
+
+funcVal :: P.Command -> ValueMap
+funcVal com 
+    = addValue 
+        (mkFuncName $ P.commandName com)
+        (RawFunc retType argTypes alias)
+        mempty
+  where
+    retType = convertType . P.returnType $ P.commandReturnType com
+    argTypes = map (convertType . P.paramType) $ P.commandParams com
+    alias = mkFuncName `fmap` P.commandAlias com
+
+mkEnumName :: P.EnumName -> EnumName
+mkEnumName = wrapName . tryStrip "GL_" . (\(P.EnumName n') -> n')
+
+mkFuncName :: P.CommandName -> FuncName
+mkFuncName = wrapName . tryStrip "gl" . (\(P.CommandName n) -> n)
+
+tryStrip :: String -> String -> String
+tryStrip pre n = fromMaybe n $ pre `stripPrefix` n
+
+convertType :: P.CType -> FType
+convertType ct = case ct of
+    P.Struct n      -> convertStruct n
+    P.CConst t      -> convertType t
+    P.Ptr    t      -> case convertType t of
+        UnitTCon    -> TPtr TVar
+        t'          -> TPtr t'
+    P.BaseType bt   -> convertBaseType bt
+    P.AliasType n   -> convertAliasType n
+
+convertStruct :: String -> FType
+convertStruct n = case n of
+    "_cl_context"   -> TCon "CLContext"
+    "_cl_event"     -> TCon "CLEvent"
+    _ -> error $ "struct " ++ n
+convertBaseType :: P.BaseType -> FType
+convertBaseType bt = case bt of
+    P.Void -> UnitTCon
+    _ -> error $ show bt
+convertAliasType :: String -> FType
+convertAliasType n = case n of
+    "GLboolean"         -> TCon "GLboolean"
+    "GLbyte"            -> TCon "GLbyte"
+    "GLubyte"           -> TCon "GLubyte"
+    "GLchar"            -> TCon "GLchar"
+    "GLshort"           -> TCon "GLshort"
+    "GLushort"          -> TCon "GLushort"
+    "GLint"             -> TCon "GLint"
+    "GLuint"            -> TCon "GLuint"
+    "GLfixed"           -> TCon "GLfixed"
+    "GLint64"           -> TCon "GLint64"
+    "GLuint64"          -> TCon "GLuint64"
+    "GLuint64EXT"       -> TCon "GLuint64"
+    "GLsizei"           -> TCon "GLsizei"
+    "GLenum"            -> TCon "GLenum"
+    "GLintptr"          -> TCon "GLintptr"
+    "GLsizeiptr"        -> TCon "GLsizeiptr"
+    "GLbitfield"        -> TCon "GLbitfield"
+    "GLsync"            -> TCon "GLsync"
+    "GLhalf"            -> TCon "GLhalf"
+    "GLfloat"           -> TCon "GLfloat"
+    "GLclampf"          -> TCon "GLclampf"
+    "GLdouble"          -> TCon "GLdouble"
+    "GLclampd"          -> TCon "GLclampd"
+    "GLvoid"            -> UnitTCon
+    "GLDEBUGPROC"       -> TCon "GLdebugproc"
+    "GLDEBUGPROCAMD"    -> TCon "GLdebugproc"
+    "GLDEBUGPROCARB"    -> TCon "GLdebugproc"
+    "GLhandleARB"       -> TCon "GLhandleARB"
+    _ -> error $ "alias type " ++ n
+
+extensionLocs :: P.Extension -> LocationMap
+extensionLocs ext = case P.decomposeExtensionToken $ P.extensionName ext of
+    Nothing -> mempty
+    Just (vn, name) ->
+        F.foldMap addExtensionElem $ P.extensionRequires ext
+      where
+        cat = CompExtension (CE vn) name False --TODO: just to get it working
+        addExtensionElem = F.foldMap addInterfaceElem . P.eeElements
+        addInterfaceElem ie = case P.ieElementType ie of
+            P.IEnum    eName -> addLocation cat (mkEnumName eName) mempty
+            P.ICommand cName -> addLocation cat (mkFuncName cName) mempty
+            _       -> mempty --TODO
+--        addLocation
+
 {-
     especf <- asksOptions enumextFile >>= liftIO . readFile
     fspecf <- asksOptions glFile >>= liftIO . readFile
@@ -88,19 +213,6 @@ addEnumLocation :: String -> EP ()
 addEnumLocation name = do
     cat <- get
     tellLoc $ addLocation cat (wrapName name :: EnumName)
-
-addEnumValue :: String -> S.Value -> EP ()
-addEnumValue name v = addValue' $ case v of
-    Hex  i _ _   -> Value i ty
-    Deci i       -> Value (fromIntegral i) ty
-    Identifier i ->
-        let i' = wrapName . fromMaybe i . stripPrefix "GL_" $ i
-        in ReUse i' ty
-    where
-        addValue' :: EnumValue -> EP ()
-        addValue' enumVal = tellVal $ addValue (wrapName name) enumVal
-        ty :: ValueType
-        ty = if isBitfieldName name then BitfieldValue else EnumValue
 
 -----------------------------------------------------------------------------
 

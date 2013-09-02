@@ -28,6 +28,8 @@ import Spec
 import Modules.Builder
 import Modules.ModuleNames
 
+import Debug.Trace
+
 -----------------------------------------------------------------------------
 
 -- | Builds a single module by adding the nessacery FFI imports and
@@ -53,20 +55,24 @@ addEnum c n = do
         Just c' -> do c'Module <- askCategoryModule c'
                       tellPart $ ReExport (name, c'Module) glname
         Nothing -> do
-            -- it does exist so this shouldn't fail.
-            Just x <- enumLookup n
-            addDefineLoc n c
-            case x of
-                Value val ty -> tellPart $ DefineEnum name glname ty val
-                ReUse reuseName ty -> do
-                    reuseName' <- unwrapNameM reuseName
-                    ic <- getDefineLoc reuseName
-                        >>= liftMaybe ("Couldn't find " ++ show reuseName)
-                    if ic == c
-                     then tellPart $ ReDefineLEnum name glname ty reuseName'
-                     else do
-                        icmod <- askCategoryModule ic
-                        tellPart $ ReDefineIEnum name glname ty (reuseName', icmod)
+            mk <- enumLookup n
+            case mk of
+                -- This should not happen, but with the spec it is
+                -- always the question.
+                Nothing -> trace (show n ++ " not found") $ return ()
+                Just x -> do
+                    addDefineLoc n c
+                    case x of
+                        Value val ty -> tellPart $ DefineEnum name glname ty val
+                        ReUse reuseName ty -> do
+                            reuseName' <- unwrapNameM reuseName
+                            ic <- getDefineLoc reuseName
+                                >>= liftMaybe ("Couldn't find " ++ show reuseName)
+                            if ic == c
+                             then tellPart $ ReDefineLEnum name glname ty reuseName'
+                             else do
+                                icmod <- askCategoryModule ic
+                                tellPart $ ReDefineIEnum name glname ty (reuseName', icmod)
 
 -----------------------------------------------------------------------------
 

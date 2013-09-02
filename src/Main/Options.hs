@@ -66,7 +66,7 @@ options =
     , Option ['c'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
-        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No modules for the specified vendor"
+        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . eread) "VENDOR")  "No modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     , Option ['f'] ["spec"]
@@ -104,8 +104,8 @@ options =
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
         flag f = NoArg $ \rgo -> return rgo{rgFlags = f : rgFlags rgo }
         extensionFile f r = readFile f >>=
-            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map read . concatMap words . lines
-
+            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map eread . concatMap words . lines
+        eread = CE . VendorName
 -- | Config flags used by the generator
 data RawGenFlag
     = RawCompatibility -- ^ Create modules for backward compatibility with

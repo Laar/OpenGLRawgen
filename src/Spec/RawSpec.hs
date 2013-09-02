@@ -82,7 +82,7 @@ data FuncValue
     = RawFunc
         FType   -- ^ Return type without IO
         [FType] -- ^ Types of the arguments
-        (Maybe String) -- ^ The possible alias.
+        (Maybe FuncName) -- ^ The possible alias.
     deriving (Eq, Ord, Show)
 
 -----------------------------------------------------------------------------
