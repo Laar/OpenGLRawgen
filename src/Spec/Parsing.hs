@@ -119,8 +119,8 @@ convertType ct = case ct of
 
 convertStruct :: String -> FType
 convertStruct n = case n of
-    "_cl_context"   -> TCon "CLContext"
-    "_cl_event"     -> TCon "CLEvent"
+    "_cl_context"   -> TCon "CLcontext"
+    "_cl_event"     -> TCon "CLevent"
     _ -> error $ "struct " ++ n
 convertBaseType :: P.BaseType -> FType
 convertBaseType bt = case bt of
@@ -132,21 +132,26 @@ convertAliasType n = case n of
     "GLbyte"            -> TCon "GLbyte"
     "GLubyte"           -> TCon "GLubyte"
     "GLchar"            -> TCon "GLchar"
+    "GLcharARB"         -> TCon "GLchar"
     "GLshort"           -> TCon "GLshort"
     "GLushort"          -> TCon "GLushort"
     "GLint"             -> TCon "GLint"
     "GLuint"            -> TCon "GLuint"
     "GLfixed"           -> TCon "GLfixed"
     "GLint64"           -> TCon "GLint64"
+    "GLint64EXT"        -> TCon "GLint64"
     "GLuint64"          -> TCon "GLuint64"
     "GLuint64EXT"       -> TCon "GLuint64"
     "GLsizei"           -> TCon "GLsizei"
     "GLenum"            -> TCon "GLenum"
     "GLintptr"          -> TCon "GLintptr"
+    "GLintptrARB"       -> TCon "GLintptr"
     "GLsizeiptr"        -> TCon "GLsizeiptr"
+    "GLsizeiptrARB"     -> TCon "GLsizeiptr"
     "GLbitfield"        -> TCon "GLbitfield"
     "GLsync"            -> TCon "GLsync"
     "GLhalf"            -> TCon "GLhalf"
+    "GLhalfNV"          -> TCon "GLhalf"
     "GLfloat"           -> TCon "GLfloat"
     "GLclampf"          -> TCon "GLclampf"
     "GLdouble"          -> TCon "GLdouble"
@@ -155,7 +160,9 @@ convertAliasType n = case n of
     "GLDEBUGPROC"       -> TCon "GLdebugproc"
     "GLDEBUGPROCAMD"    -> TCon "GLdebugproc"
     "GLDEBUGPROCARB"    -> TCon "GLdebugproc"
-    "GLhandleARB"       -> TCon "GLhandleARB"
+    "GLDEBUGPROCKHR"    -> TCon "GLdebugproc"
+    "GLhandleARB"       -> TCon "GLhandle"
+    "GLvdpauSurfaceNV"  -> TCon "GLvdpauSurface"
     _ -> error $ "alias type " ++ n
 
 extensionLocs :: P.Extension -> LocationMap
