@@ -121,11 +121,11 @@ convertStruct :: String -> FType
 convertStruct n = case n of
     "_cl_context"   -> TCon "CLcontext"
     "_cl_event"     -> TCon "CLevent"
-    _ -> error $ "struct " ++ n
+    _               -> error $ "struct " ++ n
 convertBaseType :: P.BaseType -> FType
 convertBaseType bt = case bt of
-    P.Void -> UnitTCon
-    _ -> error $ show bt
+    P.Void  -> UnitTCon
+    _       -> error $ show bt
 convertAliasType :: String -> FType
 convertAliasType n = case n of
     "GLboolean"         -> TCon "GLboolean"
@@ -163,7 +163,7 @@ convertAliasType n = case n of
     "GLDEBUGPROCKHR"    -> TCon "GLdebugproc"
     "GLhandleARB"       -> TCon "GLhandle"
     "GLvdpauSurfaceNV"  -> TCon "GLvdpauSurface"
-    _ -> error $ "alias type " ++ n
+    _                   -> error $ "alias type " ++ n
 
 extensionLocs :: P.Extension -> LocationMap
 extensionLocs ext = case P.decomposeExtensionToken $ P.extensionName ext of
