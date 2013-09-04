@@ -22,20 +22,17 @@ module Spec.Parsing (
 -----------------------------------------------------------------------------
 
 
---import Control.Monad.State
---import Control.Monad.Writer
+import Control.Monad.Writer
 
 import qualified Data.Foldable as F
-import Data.List(stripPrefix)
---import qualified Data.Map as M
-import Data.Maybe(fromMaybe)
-import Data.Monoid
-
---import Control.Applicative
+import Data.Function
+import Data.List(stripPrefix, groupBy, sortBy)
+import qualified Data.Map as M
+import Data.Maybe(fromMaybe, isNothing)
+import qualified Data.Set as S
 
 import qualified Text.OpenGL as P
 
---import Text.Parsec.String(GenParser)
 import Text.Parsec hiding
   (many, optional, (<|>), token)
 
@@ -61,7 +58,8 @@ createLocMap :: P.Registry -> LocationMap
 createLocMap reg =
     F.foldMap extensionLocs (P.regExtensions reg)
     `mappend`
-    addLocation (CompVersion 1 0 False) (mkEnumName $ P.EnumName "GL_ZERO") mempty
+--    addLocation (CompVersion 1 0 False) (mkEnumName $ P.EnumName "GL_ZERO") mempty
+    featureLocs (P.regFeatures reg)
 
 createValMap :: P.Registry -> ValueMap
 createValMap reg =
@@ -154,6 +152,7 @@ convertAliasType n = case n of
     "GLhalfNV"          -> TCon "GLhalf"
     "GLfloat"           -> TCon "GLfloat"
     "GLclampf"          -> TCon "GLclampf"
+    "GLclampx"          -> TCon "GLclampx"
     "GLdouble"          -> TCon "GLdouble"
     "GLclampd"          -> TCon "GLclampd"
     "GLvoid"            -> UnitTCon
@@ -164,6 +163,7 @@ convertAliasType n = case n of
     "GLhandleARB"       -> TCon "GLhandle"
     "GLvdpauSurfaceNV"  -> TCon "GLvdpauSurface"
     _                   -> error $ "alias type " ++ n
+-- TODO: filter OpenGL ES
 
 extensionLocs :: P.Extension -> LocationMap
 extensionLocs ext = case P.decomposeExtensionToken $ P.extensionName ext of
@@ -177,8 +177,87 @@ extensionLocs ext = case P.decomposeExtensionToken $ P.extensionName ext of
             P.IEnum    eName -> addLocation cat (mkEnumName eName) mempty
             P.ICommand cName -> addLocation cat (mkFuncName cName) mempty
             _       -> mempty --TODO
---        addLocation
 
+featureLocs :: S.Set P.Feature -> LocationMap
+featureLocs featureSet =
+    let features
+            = partitionBy P.featureApi $ S.toList featureSet
+    in F.foldMap featureApi features
+
+partitionBy :: Ord a => (b -> a) -> [b] -> [[b]]
+partitionBy f = groupBy ((==) `on` f) . sortBy (compare `on` f)
+
+type IE = P.InterfaceElement
+type Prof = P.ProfileName
+type ProfileBuild = (S.Set IE, M.Map Prof (S.Set IE))
+
+type W = Writer LocationMap
+
+featureApi :: [P.Feature] -> LocationMap
+featureApi features@(f:_) | P.featureApi f == P.GL = -- TODO: the generator can only handle OpenGL
+    let features' = sortBy (compare `on` P.featureNumber) $ features
+    in execWriter (F.foldlM (flip featureVersion) mempty features')
+featureApi _ = mempty
+
+featureVersion :: P.Feature -> ProfileBuild -> W ProfileBuild
+featureVersion feat profBuild = do
+    let (reqGeneric, reqProfile) = S.partition (isNothing . P.feProfileName)
+            $ P.featureRequires feat
+        (remGeneric, remProfile) = S.partition (isNothing . P.feProfileName)
+            $ P.featureRemoves feat
+        addGeneric :: Bool -> P.FeatureElement -> ProfileBuild -> ProfileBuild
+        addGeneric addRem element p = F.foldr' (updateNonProfile addRem) p
+                                    $ P.feElements element
+        addProf :: Bool -> P.FeatureElement -> ProfileBuild -> ProfileBuild
+        addProf addRem element p = F.foldr' (updateProfile addRem prof) p
+                                 $ P.feElements element
+            where prof = fromMaybe (error "No profile") $ P.feProfileName element
+        flipFoldr f = flip (F.foldr' f)
+        profBuild'
+            = addCore
+            . flipFoldr (addProf False)    remProfile
+            . flipFoldr (addProf True)     reqProfile
+            . flipFoldr (addGeneric False) remGeneric
+            . flipFoldr (addGeneric True)  reqGeneric
+            $ profBuild
+        -- | This function introduces the core profile for OpenGL 3.0, this is
+        -- needed as the compatibility profile is introduced at this version.
+        -- But the first require or remove for core is only at 3.2 thus to get
+        -- the core profile at version 3.0 it needs to be created explicitly.
+        addCore pb@(gen, profs) = if P.featureNumber feat /= (3,0)
+            then pb
+            else (gen, M.insert (P.ProfileName "core") gen profs)
+    defineLocations (P.featureNumber feat) profBuild'
+    return profBuild'
+
+updateNonProfile :: Bool -> IE -> ProfileBuild -> ProfileBuild
+updateNonProfile addRem ie (gen, profs) =
+    let update = (if addRem then S.insert else S.delete) ie
+    in (update gen, fmap update profs)
+
+updateProfile :: Bool -> Prof -> IE -> ProfileBuild -> ProfileBuild
+updateProfile addRem prof ie (gen, profs) =
+    let updateVal :: S.Set IE -> S.Set IE
+        updateVal = (if addRem then S.insert else S.delete) ie
+        update :: Maybe (S.Set IE) -> Maybe (S.Set IE)
+        update = Just . updateVal . fromMaybe gen
+    in (gen, M.alter update prof profs)
+
+defineLocations :: (Int, Int) -> ProfileBuild -> W ()
+defineLocations (ma, mi) (gen, profs) =
+    if M.null profs
+     then mkLocMap (CompVersion ma mi False) gen
+     else F.sequence_ $ M.mapWithKey (\p ies -> mkLocMap (mkCat p) ies) profs
+  where
+    mkCat :: Prof -> Category
+    mkCat (P.ProfileName pn) = CompVersion ma mi $ pn == "compatibility"
+    mkLocMap :: Category -> S.Set IE -> W ()
+    mkLocMap c = tell . F.foldMap (ieMap c . P.ieElementType)
+    ieMap :: Category -> P.ElementType -> LocationMap
+    ieMap c ie = case ie of
+        P.IEnum     eName -> addLocation c (mkEnumName eName) mempty
+        P.ICommand  cName -> addLocation c (mkFuncName cName) mempty
+        _                 -> mempty
 {-
     especf <- asksOptions enumextFile >>= liftIO . readFile
     fspecf <- asksOptions glFile >>= liftIO . readFile
