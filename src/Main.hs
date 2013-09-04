@@ -38,7 +38,7 @@ import Main.Monad
 import Main.Options
 
 import Spec
-import Spec.Parsing(parseSpecs, parseReuses, parseDeprecations)
+import Spec.Parsing(parseSpecs, parseDeprecations)
 
 
 import Interface.Module
@@ -59,33 +59,12 @@ main = do
 rmain :: RawGenIO ()
 rmain = do
     (lMap, vMap) <- parseSpecs
-    lMap' <- processReuses lMap
     opts <- askOptions
-    let lMap'' = cleanupSpec opts lMap'
+    let lMap' = cleanupSpec opts lMap
     depMap <- buildDeprecationMap
-    modules <- liftRawGen $ makeRaw (lMap'', vMap) depMap
+    modules <- liftRawGen $ makeRaw (lMap', vMap) depMap
     outputModules modules
     verifyInterface modules
-
--- | Parse and process the reuse files. It generates no warning if there is
--- no reuse file to parse
-processReuses :: LocationMap -> RawGenIO LocationMap
-processReuses lMap = do
-    o <- askOptions
-    let freuseP = freuseFile o
-        ereuseP = ereuseFile o
-    freuses <- getReuses freuseP
-    ereuses <- getReuses ereuseP
-    return $ addReuses freuses ereuses lMap
-    where
-        getReuses :: FilePath -> RawGenIO [(Category, [Category])]
-        getReuses fp = liftIO (doesFileExist fp) >>= \exists ->
-            if not exists
-             then return []
-             else liftIO (readFile fp) >>= \reuses ->
-                    liftEitherMsg 
-                        (\e -> "Parsing reuses failed with: " ++ show e)
-                        . parseReuses $ reuses
 
 buildDeprecationMap :: RawGenIO DeprecationMap
 buildDeprecationMap = do

@@ -15,7 +15,6 @@
 
 module Spec.Parsing (
     parseSpecs,
-    parseReuses,
     parseDeprecations,
 ) where
 
@@ -323,26 +322,6 @@ convertFunc tm rf = (cat, (wrapName name, RawFunc rtype atype alias))
         paramToType (Parameter _ t _ p) = lookupType t p tm
 
 -----------------------------------------------------------------------------
--}
--- | Parse the reuses from a string.
-parseReuses :: String -> Either ParseError [(Category, [Category])]
-parseReuses _ = return []
-{-
-parseReuses = parse (many pReuseLine <* eof) "reuse"
-
-type CP = GenParser Char ()
-
-blanks :: CP String
-blanks = many (oneOf " \t")
-eol :: CP ()
-eol = () <$ char '\n'
-
-pReuseLine :: CP (Category, [Category])
-pReuseLine = (,) <$> (pCategory <* blanks)
-    <*> sepBy pCategory (char ',' *> blanks) <* eol
-
------------------------------------------------------------------------------
-
 -}
 parseDeprecations :: SpecValue sv
     => String -> Either ParseError [(ValueName sv, DeprecationRange)]

@@ -23,7 +23,6 @@ module Main.Options (
     dropExtension,
 
     specFile,
-    freuseFile, ereuseFile,
     enumDeprecationsFile, funcDeprecationsFile,
     stripNames, mkExtensionGroups,
     moduleHeader, moduleWarnings,
@@ -71,10 +70,6 @@ options =
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     , Option ['f'] ["spec"]
         (ReqArg (\f r -> return r{rgSpecFile = Just f}) "FILE") "The gl.spec file to use"
-    , Option ['e'] ["enumext"]
-        (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The function reuse file"
-    , Option []    ["ereuses"]
-        (ReqArg (\f r -> return r{rgEReuse = Just f}) "FILE") "The enum reuse file"
     , Option []    ["edeprs"]
         (ReqArg (\f r -> return r{rgEDeprs = Just f}) "FILE") "The enum deprecation file"
     , Option []    ["fdeprs"]
@@ -126,8 +121,6 @@ data RawGenOptions
     { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
     , rgNoExtension :: [CompExtension]  -- ^ The `CompExtension`s that should be dropped
     , rgSpecFile    :: Maybe FilePath   -- ^ The location of the spec file.
-    , rgEReuse      :: Maybe FilePath   -- ^ The location of the enum reuse file.
-    , rgFReuse      :: Maybe FilePath   -- ^ The location of the function reuse file.
     , rgEDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated enums.
     , rgFDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated functions.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
@@ -144,8 +137,6 @@ defaultOptions
     { rgFlags       = []
     , rgNoExtension = []
     , rgSpecFile    = Nothing
-    , rgEReuse      = Nothing
-    , rgFReuse      = Nothing
     , rgEDeprs      = Nothing
     , rgFDeprs      = Nothing
     , rgFilesDir    = Nothing
@@ -166,12 +157,9 @@ hasFlag f o = f `elem` rgFlags o
 dropExtension :: CompExtension -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
-specFile, freuseFile, ereuseFile,
+specFile,
     enumDeprecationsFile, funcDeprecationsFile :: RawGenOptions -> FilePath
 specFile      = getFile rgSpecFile   "gl.xml"
-
-freuseFile = getFile rgFReuse "reusefuncs"
-ereuseFile = getFile rgEReuse "reuseenums"
 
 enumDeprecationsFile = getFile rgEDeprs "enumDeprecations"
 funcDeprecationsFile = getFile rgFDeprs "functionDeprecations"
