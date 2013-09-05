@@ -20,14 +20,12 @@ module Spec.Parsing (
 
 -----------------------------------------------------------------------------
 
-
-import Control.Monad.Writer
-
 import qualified Data.Foldable as F
 import Data.Function
-import Data.List(stripPrefix, groupBy, sortBy)
+import Data.List
 import qualified Data.Map as M
 import Data.Maybe(fromMaybe, isNothing)
+import Data.Monoid
 import qualified Data.Set as S
 
 import qualified Text.OpenGL as P
@@ -190,16 +188,16 @@ type IE = P.InterfaceElement
 type Prof = P.ProfileName
 type ProfileBuild = (S.Set IE, M.Map Prof (S.Set IE))
 
-type W = Writer LocationMap
-
 featureApi :: [P.Feature] -> LocationMap
 featureApi features@(f:_) | P.featureApi f == P.GL = -- TODO: the generator can only handle OpenGL
     let features' = sortBy (compare `on` P.featureNumber) $ features
-    in execWriter (F.foldlM (flip featureVersion) mempty features')
+        (_, locs) = mapAccumL (flip featureVersion) mempty features'
+    in mconcat locs
+    -- execWriter (F.foldlM (flip featureVersion) mempty features')
 featureApi _ = mempty
 
-featureVersion :: P.Feature -> ProfileBuild -> W ProfileBuild
-featureVersion feat profBuild = do
+featureVersion :: P.Feature -> ProfileBuild -> (ProfileBuild, LocationMap)
+featureVersion feat profBuild =
     let (reqGeneric, reqProfile) = S.partition (isNothing . P.feProfileName)
             $ P.featureRequires feat
         (remGeneric, remProfile) = S.partition (isNothing . P.feProfileName)
@@ -226,8 +224,8 @@ featureVersion feat profBuild = do
         addCore pb@(gen, profs) = if P.featureNumber feat /= (3,0)
             then pb
             else (gen, M.insert (P.ProfileName "core") gen profs)
-    defineLocations (P.featureNumber feat) profBuild'
-    return profBuild'
+        locMap = defineLocations (P.featureNumber feat) profBuild'
+    in (profBuild', locMap)
 
 updateNonProfile :: Bool -> IE -> ProfileBuild -> ProfileBuild
 updateNonProfile addRem ie (gen, profs) =
@@ -242,16 +240,16 @@ updateProfile addRem prof ie (gen, profs) =
         update = Just . updateVal . fromMaybe gen
     in (gen, M.alter update prof profs)
 
-defineLocations :: (Int, Int) -> ProfileBuild -> W ()
+defineLocations :: (Int, Int) -> ProfileBuild -> LocationMap
 defineLocations (ma, mi) (gen, profs) =
     if M.null profs
      then mkLocMap (CompVersion ma mi False) gen
-     else F.sequence_ $ M.mapWithKey (\p ies -> mkLocMap (mkCat p) ies) profs
+     else F.fold $ M.mapWithKey (\p ies -> mkLocMap (mkCat p) ies) profs
   where
     mkCat :: Prof -> Category
     mkCat (P.ProfileName pn) = CompVersion ma mi $ pn == "compatibility"
-    mkLocMap :: Category -> S.Set IE -> W ()
-    mkLocMap c = tell . F.foldMap (ieMap c . P.ieElementType)
+    mkLocMap :: Category -> S.Set IE -> LocationMap
+    mkLocMap c = F.foldMap (ieMap c . P.ieElementType)
     ieMap :: Category -> P.ElementType -> LocationMap
     ieMap c ie = case ie of
         P.IEnum     eName -> addLocation c (mkEnumName eName) mempty
