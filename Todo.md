@@ -1,0 +1,3 @@
+- Remove compatibility types
+- Handle profiles correctly
+- Handle the difference between OpenGL en OpenGL ES
