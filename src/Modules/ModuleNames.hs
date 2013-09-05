@@ -108,7 +108,7 @@ categoryModule (CompVersion ma mi d) = return .
         <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
 categoryModule (CompExtension ex n d) = return .
     ModuleName
-        $ moduleBase <.> upperFirst (show ex) <.> correctName n
+        $ moduleBase <.> upperFirst (showCompExtension ex) <.> correctName n
         ++ (if d then "Compatibility" else "")
 categoryModule (CompName n) = throwRawError
     $ "categoryModule: Category with only a name "
@@ -137,7 +137,7 @@ askProfileModule ma mi comp = do
 
 -- | Asks the 'ModuleName' of the grouping module for a certain vendor
 askVendorModule :: RawGenMonad m => CompExtension -> m ModuleName
-askVendorModule e = return . ModuleName $ moduleBase <.> show e
+askVendorModule e = return . ModuleName $ moduleBase <.> showCompExtension e
 
 -----------------------------------------------------------------------------
 
