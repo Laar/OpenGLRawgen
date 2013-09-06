@@ -57,8 +57,10 @@ addOldCoreTypes = do
 
 addARBCompatibility :: DeprecationMap -> Builder ()
 addARBCompatibility depMap = do
-    let modFilter (CompVersion _ _ True) = True
-        modFilter _                      = False
+    return ()
+{-
+    let modFilter (Version _ _ True) = True
+        modFilter _                  = False
 
         modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
         warning = DeprText "\"The ARB.Compatibility is combined with the profiles.\""
@@ -87,5 +89,5 @@ addARBCompatibility depMap = do
     addModuleWithWarning modName Compatibility warning $ do
         (lift . asksCategories $ filter modFilter) >>= mkGroupModule
         mapM_ importLookup pre31Cats
-
+-}
 -----------------------------------------------------------------------------

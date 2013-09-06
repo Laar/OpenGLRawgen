@@ -65,11 +65,11 @@ addReuse dummyValue cat addFrom rawSpec =
 
 -- | Removes `Category`s based on their `Extension` or keeps them if they
 -- aren't an extension category.
-filterExtensions :: (CompExtension -> Bool) -> LocationMap -> LocationMap
+filterExtensions :: (Vendor -> Bool) -> LocationMap -> LocationMap
 filterExtensions predicate rawspec
 	= foldr deleteCategory rawspec filterCats
     where
-        eFilter (CompExtension e _ _) = predicate e
+        eFilter (Extension e _ _) = predicate e
         eFilter _                 = False
         filterCats = filter eFilter $ allCategories rawspec
 

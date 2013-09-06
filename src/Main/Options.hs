@@ -65,7 +65,7 @@ options =
     , Option ['c'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
-        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . eread) "VENDOR")  "No modules for the specified vendor"
+        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . Vendor) "VENDOR")  "No modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     , Option ['f'] ["spec"]
@@ -99,8 +99,8 @@ options =
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
         flag f = NoArg $ \rgo -> return rgo{rgFlags = f : rgFlags rgo }
         extensionFile f r = readFile f >>=
-            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map eread . concatMap words . lines
-        eread = CE . VendorName
+            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map Vendor . concatMap words . lines
+
 -- | Config flags used by the generator
 data RawGenFlag
     = RawCompatibility -- ^ Create modules for backward compatibility with
@@ -119,7 +119,7 @@ mkOptions (opts, _) = foldl (>>=) (return defaultOptions) opts
 data RawGenOptions
     = RawGenOptions
     { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
-    , rgNoExtension :: [CompExtension]  -- ^ The `CompExtension`s that should be dropped
+    , rgNoExtension :: [Vendor]         -- ^ The `CompExtension`s that should be dropped
     , rgSpecFile    :: Maybe FilePath   -- ^ The location of the spec file.
     , rgEDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated enums.
     , rgFDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated functions.
@@ -153,8 +153,8 @@ defaultOptions
 hasFlag :: RawGenFlag -> RawGenOptions -> Bool
 hasFlag f o = f `elem` rgFlags o
 
--- | Check wheter an `Extension` should be removed
-dropExtension :: CompExtension -> RawGenOptions -> Bool
+-- | Check wheter extensions from a `Vendor` should be removed
+dropExtension :: Vendor -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
 specFile,

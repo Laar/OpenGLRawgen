@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.Parsing
@@ -168,12 +169,14 @@ extensionLocs ext = case P.decomposeExtensionToken $ P.extensionName ext of
     Just (vn, name) ->
         F.foldMap addExtensionElem $ P.extensionRequires ext
       where
-        cat = CompExtension (CE vn) name False --TODO: just to get it working
+        cat = Extension vendor name DefaultProfile --TODO: just to get it working
         addExtensionElem = F.foldMap addInterfaceElem . P.eeElements
         addInterfaceElem ie = case P.ieElementType ie of
             P.IEnum    eName -> addLocation cat (mkEnumName eName) mempty
             P.ICommand cName -> addLocation cat (mkFuncName cName) mempty
             _       -> mempty --TODO
+        vendor = case vn of
+            P.VendorName n -> Vendor n
 
 featureLocs :: S.Set P.Feature -> LocationMap
 featureLocs featureSet =
@@ -196,19 +199,43 @@ featureApi features@(f:_) | P.featureApi f == P.GL = -- TODO: the generator can 
     -- execWriter (F.foldlM (flip featureVersion) mempty features')
 featureApi _ = mempty
 
-featureVersion :: P.Feature -> ProfileBuild -> (ProfileBuild, LocationMap)
+class ElementContainer (ElemContainer p) => ApiPart p where
+    type ElemContainer p :: *
+    requires :: p -> S.Set (ElemContainer p)
+    removes  :: p -> S.Set (ElemContainer p)
+    version  :: p -> Profile -> Category
+instance ApiPart P.Feature where
+    type ElemContainer P.Feature = P.FeatureElement
+    requires = P.featureRequires
+    removes  = P.featureRemoves
+    version f = case P.featureNumber f of
+        (ma, mi) -> Version ma mi
+instance ApiPart P.Extension where
+    type ElemContainer P.Extension = P.ExtensionElement
+    requires = P.extensionRequires
+    removes = P.extensionRemoves
+    version e = case P.decomposeExtensionToken $ P.extensionName e of
+        Nothing -> error $ "Non decomposible extension token" ++ show (P.extensionName e) -- TODO : remove 
+        Just (vn,name) ->
+            Extension vend name
+          where vend = case vn of P.VendorName n -> Vendor n
+
+class ElementContainer e where
+    elements    :: e -> S.Set P.InterfaceElement
+    profileName :: e -> Maybe P.ProfileName
+instance ElementContainer P.FeatureElement where
+    elements    = P.feElements
+    profileName = P.feProfileName
+instance ElementContainer P.ExtensionElement where
+    elements    = P.eeElements
+    profileName = P.eeProfileName
+
+featureVersion :: ApiPart p => p -> ProfileBuild -> (ProfileBuild, LocationMap)
 featureVersion feat profBuild =
-    let (reqGeneric, reqProfile) = S.partition (isNothing . P.feProfileName)
-            $ P.featureRequires feat
-        (remGeneric, remProfile) = S.partition (isNothing . P.feProfileName)
-            $ P.featureRemoves feat
-        addGeneric :: Bool -> P.FeatureElement -> ProfileBuild -> ProfileBuild
-        addGeneric addRem element p = F.foldr' (updateNonProfile addRem) p
-                                    $ P.feElements element
-        addProf :: Bool -> P.FeatureElement -> ProfileBuild -> ProfileBuild
-        addProf addRem element p = F.foldr' (updateProfile addRem prof) p
-                                 $ P.feElements element
-            where prof = fromMaybe (error "No profile") $ P.feProfileName element
+    let (reqGeneric, reqProfile) = S.partition (isNothing . profileName)
+            $ requires feat
+        (remGeneric, remProfile) = S.partition (isNothing . profileName)
+            $ removes feat
         flipFoldr f = flip (F.foldr' f)
         profBuild'
             = addCore
@@ -221,11 +248,22 @@ featureVersion feat profBuild =
         -- needed as the compatibility profile is introduced at this version.
         -- But the first require or remove for core is only at 3.2 thus to get
         -- the core profile at version 3.0 it needs to be created explicitly.
-        addCore pb@(gen, profs) = if P.featureNumber feat /= (3,0)
+        addCore pb@(gen, profs) = if M.null profs || M.member (P.ProfileName "core") profs
             then pb
             else (gen, M.insert (P.ProfileName "core") gen profs)
-        locMap = defineLocations (P.featureNumber feat) profBuild'
+--        addCore pb@(gen, profs) = if P.featureNumber feat /= (3,0)
+--            then pb
+--            else (gen, M.insert (P.ProfileName "core") gen profs)
+        locMap = defineLocations (version feat) profBuild'
     in (profBuild', locMap)
+
+addGeneric :: ElementContainer c => Bool -> c  -> ProfileBuild -> ProfileBuild
+addGeneric addRem element p = F.foldr' (updateNonProfile addRem) p
+                            $ elements element
+addProf :: ElementContainer c => Bool -> c -> ProfileBuild -> ProfileBuild
+addProf addRem element p = F.foldr' (updateProfile addRem prof) p
+                         $ elements element
+    where prof = fromMaybe (error "No profile") $ profileName element
 
 updateNonProfile :: Bool -> IE -> ProfileBuild -> ProfileBuild
 updateNonProfile addRem ie (gen, profs) =
@@ -240,14 +278,16 @@ updateProfile addRem prof ie (gen, profs) =
         update = Just . updateVal . fromMaybe gen
     in (gen, M.alter update prof profs)
 
-defineLocations :: (Int, Int) -> ProfileBuild -> LocationMap
-defineLocations (ma, mi) (gen, profs) =
+defineLocations :: (Profile -> Category) -> ProfileBuild -> LocationMap
+defineLocations f (gen, profs) =
     if M.null profs
-     then mkLocMap (CompVersion ma mi False) gen
+     then mkLocMap (f DefaultProfile) gen
      else F.fold $ M.mapWithKey (\p ies -> mkLocMap (mkCat p) ies) profs
   where
     mkCat :: Prof -> Category
-    mkCat (P.ProfileName pn) = CompVersion ma mi $ pn == "compatibility"
+    mkCat (P.ProfileName pn) = f $ case pn of
+        "core"  -> DefaultProfile
+        _       -> ProfileName pn
     mkLocMap :: Category -> S.Set IE -> LocationMap
     mkLocMap c = F.foldMap (ieMap c . P.ieElementType)
     ieMap :: Category -> P.ElementType -> LocationMap

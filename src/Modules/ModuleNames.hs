@@ -102,26 +102,26 @@ askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
 categoryModule :: RawGenMonad m => Category -> m ModuleName
-categoryModule (CompVersion ma mi d) = return .
+categoryModule (Version ma mi prof) = return .
     ModuleName
-        $ corePath <.> "Internal"
-        <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
-categoryModule (CompExtension ex n d) = return .
+        $ corePath
+        <.> ("Core" ++ show ma ++ show mi ++ profileNameExtension prof)
+categoryModule (Extension ex n prof) = return .
     ModuleName
-        $ moduleBase <.> upperFirst (showCompExtension ex) <.> correctName n
-        ++ (if d then "Compatibility" else "")
-categoryModule (CompName n) = throwRawError
-    $ "categoryModule: Category with only a name "
-    ++ upperFirst (show n)
+        $ moduleBase <.> upperFirst (vendorName ex) <.> correctName n
+        ++ profileNameExtension prof
+
+profileNameExtension :: Profile -> String
+profileNameExtension p = case p of
+    DefaultProfile -> []
+    ProfileName pn -> upperFirst pn
 
 -- | Query what the module type of a given module is.
 askCategoryModuleType :: RawGenMonad m => Category -> m ModuleType
-askCategoryModuleType (CompVersion _ _ _)
+askCategoryModuleType (Version _ _ _)
     = return Internal
-askCategoryModuleType (CompExtension e n d)
-    = return $ ExtensionMod e n d
-askCategoryModuleType (CompName _)
-    = throwRawError "askCategoryModuleType: Name category encountered"
+askCategoryModuleType (Extension e n prof)
+    = return $ ExtensionMod e n prof
 
 -- | Asks the 'ModuleName' of a specific core profile
 askProfileModule
@@ -136,8 +136,8 @@ askProfileModule ma mi comp = do
                 ++ (if comp then "Compatibility" else "")
 
 -- | Asks the 'ModuleName' of the grouping module for a certain vendor
-askVendorModule :: RawGenMonad m => CompExtension -> m ModuleName
-askVendorModule e = return . ModuleName $ moduleBase <.> showCompExtension e
+askVendorModule :: RawGenMonad m => Vendor -> m ModuleName
+askVendorModule e = return . ModuleName $ moduleBase <.> vendorName e
 
 -----------------------------------------------------------------------------
 

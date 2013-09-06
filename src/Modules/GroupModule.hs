@@ -16,7 +16,7 @@
 
 module Modules.GroupModule (
     addCoreProfiles,
-    askExtensionGroups,
+    askExtensionVendors,
     addVendorModules,
     mkGroupModule,
 ) where
@@ -44,7 +44,7 @@ mkGroupModule cats = forM_ cats $ askCategoryModule >=> tellReExportModule
 -- | Add all the core profiles. See also 'addCoreProfile'.
 addCoreProfiles :: Builder ()
 addCoreProfiles = do
-    let addCat (CompVersion ma mi False)
+    let addCat (Version ma mi DefaultProfile)
             = Just $ do
                 addCoreProfile ma mi False
                 let makeCompatibilityModule = ma > 3 || (ma == 3 && mi /= 0)
@@ -62,7 +62,8 @@ addCoreProfile
     -> Deprecated   -- ^ Compatibility Profile?
     -> Builder ()
 addCoreProfile ma mi comp = do
-     let catFilter (CompVersion ma' mi' comp') =
+{-
+     let catFilter (Version ma' mi' comp') =
             (ma' < ma || (ma' == ma && mi' <= mi)) -- version check
             && (comp  || ma > 3 || (ma == 3 && mi == 0) || not comp') -- only import deprecated modules when needed
          catFilter _                 = False
@@ -72,31 +73,33 @@ addCoreProfile ma mi comp = do
         mkGroupModule cats
         -- let the core modules also expose the types
         askTypesModule >>= tellReExportModule
+-}
+    return ()
 
 -----------------------------------------------------------------------------
 
--- | Asks a list of all 'Extensions' that are used in the spec. This is
+-- | Asks a list of all 'Vendor' that are used in the spec. This is
 -- essentially a list of all Vendors (ATI, NV, etc.), EXT and ARB
-askExtensionGroups :: Builder [CompExtension]
-askExtensionGroups =
-    let getExtension (CompExtension e _ _) = Just e
-        getExtension _                     = Nothing
+askExtensionVendors :: Builder [Vendor]
+askExtensionVendors =
+    let getExtension (Extension e _ _) = Just e
+        getExtension _                 = Nothing
     in fmap nub $ asksCategories (mapMaybe getExtension)
 
 -- | Add all vendor modules. These are the modules for each vendor that
 -- reexport the content of all modules of the specific vendor.
 addVendorModules :: Builder ()
-addVendorModules = askExtensionGroups >>= mapM_ addVendorModule
+addVendorModules = askExtensionVendors >>= mapM_ addVendorModule
 
 -- | Adds a module for a certain vendor, specified by the 'Extension', which
 -- reexports all the extensions defined by that vendor
 
-addVendorModule :: CompExtension -> Builder ()
-addVendorModule e = do
-    let catFilter (CompExtension e' _ _) = e' == e
-        catFilter _                      = False
-    mn <- askVendorModule e
+addVendorModule :: Vendor -> Builder ()
+addVendorModule vn = do
+    let catFilter (Extension n _ _) = vn == n
+        catFilter _                 = False
+    mn <- askVendorModule vn
     cats <- asksCategories (filter catFilter)
-    addModule' mn (VendorGroup e)  $ mkGroupModule cats
+    addModule' mn (VendorGroup vn)  $ mkGroupModule cats
 
 -----------------------------------------------------------------------------
