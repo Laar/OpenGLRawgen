@@ -43,7 +43,7 @@ addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
     let modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.Core" ++ show ma ++ show mi
         warning = DeprText "\"The core modules are moved to Graphics.Rendering.OpenGL.Raw.Core.CoreXY\""
-    in do cp <- askProfileModule ma mi False
+    in do cp <- askProfileModule ma mi DefaultProfile
           addModuleWithWarning modName 
                 Compatibility warning $ tellReExportModule cp
 

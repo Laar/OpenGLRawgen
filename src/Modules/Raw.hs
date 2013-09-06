@@ -63,7 +63,7 @@ addLatestProfileToRaw :: Builder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
     Version ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
-    latestProf <- askProfileModule ma mi False
+    latestProf <- askProfileModule ma mi DefaultProfile
     bm <- askBaseModule
     addModule' bm TopLevelGroup $ tellReExportModule latestProf
     where

@@ -128,12 +128,9 @@ askProfileModule
     :: RawGenMonad m 
     => Int -- ^ Major version
     -> Int -- ^ Minor version
-    -> Bool -- ^ Compatibility module?
+    -> Profile -- ^ The profile
     -> m ModuleName
-askProfileModule ma mi comp = do
-    cp <- askCorePath
-    return . ModuleName $ cp ++ ".Core" ++ show ma ++ show mi
-                ++ (if comp then "Compatibility" else "")
+askProfileModule ma mi prof = askCategoryModule (Version ma mi prof)
 
 -- | Asks the 'ModuleName' of the grouping module for a certain vendor
 askVendorModule :: RawGenMonad m => Vendor -> m ModuleName
