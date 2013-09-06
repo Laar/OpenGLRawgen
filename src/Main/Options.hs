@@ -23,7 +23,6 @@ module Main.Options (
     dropExtension,
 
     specFile,
-    enumDeprecationsFile, funcDeprecationsFile,
     stripNames, mkExtensionGroups,
     moduleHeader, moduleWarnings,
     outputDir, interfaceDir,
@@ -70,10 +69,6 @@ options =
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
     , Option ['f'] ["spec"]
         (ReqArg (\f r -> return r{rgSpecFile = Just f}) "FILE") "The gl.spec file to use"
-    , Option []    ["edeprs"]
-        (ReqArg (\f r -> return r{rgEDeprs = Just f}) "FILE") "The enum deprecation file"
-    , Option []    ["fdeprs"]
-        (ReqArg (\f r -> return r{rgFDeprs = Just f}) "FILE") "The function deprecation file"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
     , Option ['s'] ["strip"]
@@ -121,8 +116,6 @@ data RawGenOptions
     { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
     , rgNoExtension :: [Vendor]         -- ^ The `CompExtension`s that should be dropped
     , rgSpecFile    :: Maybe FilePath   -- ^ The location of the spec file.
-    , rgEDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated enums.
-    , rgFDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated functions.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     , rgStripName   :: Bool             -- ^ Strip the names of extensions
     , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
@@ -137,8 +130,6 @@ defaultOptions
     { rgFlags       = []
     , rgNoExtension = []
     , rgSpecFile    = Nothing
-    , rgEDeprs      = Nothing
-    , rgFDeprs      = Nothing
     , rgFilesDir    = Nothing
     , rgStripName   = False
     , rgEGrouping   = True
@@ -157,12 +148,8 @@ hasFlag f o = f `elem` rgFlags o
 dropExtension :: Vendor -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
-specFile,
-    enumDeprecationsFile, funcDeprecationsFile :: RawGenOptions -> FilePath
-specFile      = getFile rgSpecFile   "gl.xml"
-
-enumDeprecationsFile = getFile rgEDeprs "enumDeprecations"
-funcDeprecationsFile = getFile rgFDeprs "functionDeprecations"
+specFile :: RawGenOptions -> FilePath
+specFile = getFile rgSpecFile   "gl.xml"
 
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =

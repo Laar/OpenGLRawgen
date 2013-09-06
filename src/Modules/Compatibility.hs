@@ -32,12 +32,12 @@ import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
 
-addCompatibilityModules :: DeprecationMap -> Builder ()
-addCompatibilityModules depMap = do
+addCompatibilityModules :: Builder ()
+addCompatibilityModules = do
     addOldCoreProfile 3 1
     addOldCoreProfile 3 2
     addOldCoreTypes
-    addARBCompatibility depMap
+    addARBCompatibility
 
 addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
@@ -55,8 +55,8 @@ addOldCoreTypes = do
     addModuleWithWarning modName
         Compatibility warning $ tellReExportModule typesModule
 
-addARBCompatibility :: DeprecationMap -> Builder ()
-addARBCompatibility depMap = do
+addARBCompatibility :: Builder ()
+addARBCompatibility = do
     return ()
 {-
     let modFilter (Version _ _ True) = True

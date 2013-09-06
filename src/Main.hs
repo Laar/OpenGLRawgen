@@ -21,7 +21,6 @@ module Main (
 import Control.Monad(when)
 import qualified Data.Foldable as F
 import Data.List(partition, sort)
-import Data.Monoid
 import System.Directory
 import System.Exit(exitSuccess)
 import System.FilePath((</>), dropFileName)
@@ -38,7 +37,7 @@ import Main.Monad
 import Main.Options
 
 import Spec
-import Spec.Parsing(parseSpecs, parseDeprecations)
+import Spec.Parsing(parseSpecs)
 
 
 import Interface.Module
@@ -61,30 +60,9 @@ rmain = do
     (lMap, vMap) <- parseSpecs
     opts <- askOptions
     let lMap' = cleanupSpec opts lMap
-    depMap <- buildDeprecationMap
-    modules <- liftRawGen $ makeRaw (lMap', vMap) depMap
+    modules <- liftRawGen $ makeRaw (lMap', vMap)
     outputModules modules
     verifyInterface modules
-
-buildDeprecationMap :: RawGenIO DeprecationMap
-buildDeprecationMap = do
-    enumDeprs <- readDeprecations enumDeprecationsFile
-    funcDeprs <- readDeprecations funcDeprecationsFile
-    return $
-        depMapFromList (enumDeprs :: [(EnumName, DeprecationRange)])
-        `mappend`
-        depMapFromList (funcDeprs :: [(FuncName, DeprecationRange)])
-    where
-        readDeprecations :: SpecValue sv => (RawGenOptions -> FilePath)
-                                -> RawGenIO [(ValueName sv, DeprecationRange)]
-        readDeprecations fileOption = do
-            fp <- asksOptions fileOption
-            exists  <- liftIO $ doesFileExist fp
-            if not exists
-             then return []
-             else liftIO (readFile fp) >>= \deprs ->
-                    liftEitherPrepend "Parsing deprecations failed with\n"
-                    . parseDeprecations $ deprs
 
 printVersion :: IO ()
 printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version

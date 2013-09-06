@@ -16,7 +16,6 @@
 
 module Spec.Parsing (
     parseSpecs,
-    parseDeprecations,
 ) where
 
 -----------------------------------------------------------------------------
@@ -30,9 +29,6 @@ import Data.Monoid
 import qualified Data.Set as S
 
 import qualified Text.OpenGL as P
-
-import Text.Parsec hiding
-  (many, optional, (<|>), token)
 
 import Main.Options
 import Main.Monad
@@ -295,9 +291,6 @@ defineLocations f (gen, profs) =
         P.IEnum     eName -> addLocation c (mkEnumName eName) mempty
         P.ICommand  cName -> addLocation c (mkFuncName cName) mempty
         _                 -> mempty
-parseDeprecations :: SpecValue sv
-    => String -> Either ParseError [(ValueName sv, DeprecationRange)]
-parseDeprecations _ = return []
 {-
 
 -- | Convert the 'ReturnType' supplied by openGL-api to a type useable for

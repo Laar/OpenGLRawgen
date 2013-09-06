@@ -37,19 +37,19 @@ import Modules.ModuleNames
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the specification.
-makeRaw :: (LocationMap, ValueMap) -> DeprecationMap -> RawGen [RawModule]
-makeRaw spec depMap = snd <$> runBuilder spec (buildRaw depMap)
+makeRaw :: (LocationMap, ValueMap) -> RawGen [RawModule]
+makeRaw spec = snd <$> runBuilder spec buildRaw
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
-buildRaw :: DeprecationMap -> Builder ()
-buildRaw depMap = do
+buildRaw :: Builder ()
+buildRaw = do
     buildRawImports
     addCoreProfiles
     addLatestProfileToRaw
     
     whenOption mkExtensionGroups addVendorModules
-    whenFlag RawCompatibility $ addCompatibilityModules depMap
+    whenFlag RawCompatibility $ addCompatibilityModules
 
 -----------------------------------------------------------------------------
 
