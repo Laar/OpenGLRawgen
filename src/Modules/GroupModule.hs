@@ -15,7 +15,6 @@
 -----------------------------------------------------------------------------
 
 module Modules.GroupModule (
-    addCoreProfiles,
     askExtensionVendors,
     addVendorModules,
     mkGroupModule,
@@ -38,43 +37,6 @@ import Modules.ModuleNames
 -- | Internal function which adds imports and exports for all the categories.
 mkGroupModule :: [Category] -> MBuilder ()
 mkGroupModule cats = forM_ cats $ askCategoryModule >=> tellReExportModule
-
------------------------------------------------------------------------------
-
--- | Add all the core profiles. See also 'addCoreProfile'.
-addCoreProfiles :: Builder ()
-addCoreProfiles = do
-    let addCat (Version ma mi DefaultProfile)
-            = Just $ do
-                addCoreProfile ma mi False
-                let makeCompatibilityModule = ma > 3 || (ma == 3 && mi /= 0)
-                when makeCompatibilityModule $ addCoreProfile ma mi True
-        addCat _
-            = Nothing
-    asksCategories (mapMaybe addCat) >>= sequence_
-
--- | Adds a coreprofile for a certain version. This is a module which
--- reexports all functions and enumeration values that are part of the
--- specification of OpenGL.
-addCoreProfile
-    :: Major        -- ^ Major version
-    -> Minor        -- ^ Minor version
-    -> Deprecated   -- ^ Compatibility Profile?
-    -> Builder ()
-addCoreProfile ma mi comp = do
-{-
-     let catFilter (Version ma' mi' comp') =
-            (ma' < ma || (ma' == ma && mi' <= mi)) -- version check
-            && (comp  || ma > 3 || (ma == 3 && mi == 0) || not comp') -- only import deprecated modules when needed
-         catFilter _                 = False
-     cats <- asksCategories (filter catFilter)
-     mn <- askProfileModule ma mi comp
-     addModule' mn  (CoreInterface ma mi comp) $ do
-        mkGroupModule cats
-        -- let the core modules also expose the types
-        askTypesModule >>= tellReExportModule
--}
-    return ()
 
 -----------------------------------------------------------------------------
 

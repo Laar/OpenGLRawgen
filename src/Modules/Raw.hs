@@ -45,7 +45,6 @@ makeRaw spec = snd <$> runBuilder spec buildRaw
 buildRaw :: Builder ()
 buildRaw = do
     buildRawImports
-    addCoreProfiles
     addLatestProfileToRaw
     
     whenOption mkExtensionGroups addVendorModules
