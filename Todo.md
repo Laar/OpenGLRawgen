@@ -1,5 +1,3 @@
-- Remove compatibility types
-- Handle profiles correctly
+- Fix the core profiles
 - Fix the ARB/Compatibility.hs file
-- Handle the difference between OpenGL en OpenGL ES
 - Handle 3DFX, the 3 is illegal as start of the module name.

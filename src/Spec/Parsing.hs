@@ -160,19 +160,12 @@ convertAliasType n = case n of
 -- TODO: filter OpenGL ES
 
 extensionLocs :: P.Extension -> LocationMap
-extensionLocs ext = case P.decomposeExtensionToken $ P.extensionName ext of
+extensionLocs ext = case P.extensionSupported ext of
     Nothing -> mempty
-    Just (vn, name) ->
-        F.foldMap addExtensionElem $ P.extensionRequires ext
-      where
-        cat = Extension vendor name DefaultProfile --TODO: just to get it working
-        addExtensionElem = F.foldMap addInterfaceElem . P.eeElements
-        addInterfaceElem ie = case P.ieElementType ie of
-            P.IEnum    eName -> addLocation cat (mkEnumName eName) mempty
-            P.ICommand cName -> addLocation cat (mkFuncName cName) mempty
-            _       -> mempty --TODO
-        vendor = case vn of
-            P.VendorName n -> Vendor n
+    Just s ->
+        if s `P.supports` P.GL
+         then snd $ featureVersion ext mempty
+         else mempty
 
 featureLocs :: S.Set P.Feature -> LocationMap
 featureLocs featureSet =
