@@ -71,8 +71,9 @@ options =
         (ReqArg (\f r -> return r{rgSpecFile = Just f}) "FILE") "The gl.spec file to use"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
+-- TODO: this is broken, should it be included see GL_PRIMARY_COLOR(_NV) in NV_path_rendering
     , Option ['s'] ["strip"]
-        (NoArg $ \r -> return r{rgStripName = True, rgEGrouping = False}) "Enables striping of the extension suffixes from names, implies -G"
+        (NoArg $ \r -> return r{rgStripName = True, rgEGrouping = False}) "Enables striping of the extension suffixes from names, implies -G" 
     , Option ['S'] ["no-strip"]
         (NoArg $ \r -> return r{rgStripName = False}) "Disables striping of the extension suffixes from names"
     , Option ['g'] ["groups"]
