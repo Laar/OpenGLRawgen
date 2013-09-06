@@ -225,7 +225,8 @@ instance ElementContainer P.ExtensionElement where
         Nothing -> True
         Just a  -> a == api
 
-featureVersion :: ApiPart p => p -> ProfileBuild -> (ProfileBuild, LocationMap)
+featureVersion :: (ApiPart p, Ord (ElemContainer p)) -- The ord is needed for travis' ghc
+    => p -> ProfileBuild -> (ProfileBuild, LocationMap)
 featureVersion feat profBuild =
     let (reqGeneric, reqProfile) = S.partition (isNothing . profileName)
             . S.filter (`isOfApi` P.GL)
