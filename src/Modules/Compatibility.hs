@@ -19,6 +19,7 @@ module Modules.Compatibility (
 -----------------------------------------------------------------------------
 
 import Control.Monad
+import Data.Monoid
 import qualified Data.Set as S
 
 import Language.Haskell.Exts.Syntax
@@ -27,7 +28,6 @@ import Language.OpenGLRaw.Base
 import Spec
 
 import Modules.Builder
-import Modules.GroupModule
 import Modules.ModuleNames
 
 -----------------------------------------------------------------------------
@@ -57,37 +57,36 @@ addOldCoreTypes = do
 
 addARBCompatibility :: Builder ()
 addARBCompatibility = do
-    return ()
-{-
-    let modFilter (Version _ _ True) = True
-        modFilter _                  = False
+    let modFilter1 cat = case cat of
+            (Version _ _ (ProfileName "compatibility")) -> True
+            _ -> False
+    cats <- asksCategories $ filter modFilter1
+    (enums, funcs) <- fmap mconcat $ forM cats $ \cat -> do
+        let coreCat = case cat of
+                (Version ma mi _) -> Version ma mi DefaultProfile
+                _                 -> error "addARBCompatibility: Impossible"
+        catEnums  <- asksLocationMap $ categoryValues cat
+        coreEnums <- asksLocationMap $ categoryValues coreCat
+        catFuncs  <- asksLocationMap $ categoryValues cat
+        coreFuncs <- asksLocationMap $ categoryValues coreCat
+        let enums' :: S.Set EnumName
+            enums' = catEnums `S.difference` coreEnums
+            funcs' :: S.Set FuncName
+            funcs' = catFuncs `S.difference` coreFuncs 
+        return (enums', funcs')
 
-        modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
+    let modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
         warning = DeprText "\"The ARB.Compatibility is combined with the profiles.\""
-
-        edeps = S.fromList $ getDeprecations (3,1) depMap :: S.Set EnumName
-        fdeps = S.fromList $ getDeprecations (3,1) depMap :: S.Set FuncName
-        pre31 (CompVersion 3  0 False) = True
-        pre31 (CompVersion ma _ False) = ma < 3
-        pre31 _                        = False
-        importLookup :: Category -> MBuilder ()
-        importLookup c = do
-            funcs <- lift . asksLocationMap $ categoryValues c
-            enums <- lift . asksLocationMap $ categoryValues c
-            cModName <- askCategoryModule c
-            let funcs' = fdeps `S.intersection` funcs
-                enums' = edeps `S.intersection` enums
-                mkReExport :: SpecValue s => ValueName s -> MBuilder ModulePart
-                mkReExport e = do
-                    n <- unwrapNameM e
-                    return . ReExport (n, cModName) $ toGLName e
-            mapM_ (mkReExport >=> tellPart) $ S.toList funcs'
-            mapM_ (mkReExport >=> tellPart) $ S.toList enums'
-            
-            return ()
-    pre31Cats <- asksCategories $ filter pre31
+        mkReExport sv = do
+            mloc <- getDefineLoc sv
+            case mloc of
+                Nothing  -> error $ "addARBCompatibility: Yet undefined enum" ++ show sv
+                Just cat -> do
+                    n <- unwrapNameM sv
+                    rmodName <- askCategoryModule cat
+                    return $ ReExport (n, rmodName) $ toGLName sv
     addModuleWithWarning modName Compatibility warning $ do
-        (lift . asksCategories $ filter modFilter) >>= mkGroupModule
-        mapM_ importLookup pre31Cats
--}
+        mapM_ (mkReExport >=> tellPart) $ S.toList enums
+        mapM_ (mkReExport >=> tellPart) $ S.toList funcs
+
 -----------------------------------------------------------------------------

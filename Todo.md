@@ -1,3 +1,2 @@
 - Fix the core profiles
-- Fix the ARB/Compatibility.hs file
 - Handle 3DFX, the 3 is illegal as start of the module name.
