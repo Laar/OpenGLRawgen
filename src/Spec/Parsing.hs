@@ -240,16 +240,13 @@ featureVersion feat profBuild =
             . flipFoldr (addGeneric False) remGeneric
             . flipFoldr (addGeneric True)  reqGeneric
             $ profBuild
-        -- | This function introduces the core profile for OpenGL 3.0, this is
-        -- needed as the compatibility profile is introduced at this version.
-        -- But the first require or remove for core is only at 3.2 thus to get
-        -- the core profile at version 3.0 it needs to be created explicitly.
+        -- | Sometimes a non default profile is added without any changes to
+        -- the core profile. Yet when there are profiles the core profile acts
+        -- as the default one. Thus it needs to be added when there are other
+        -- profiles and it has not yet been created.
         addCore pb@(gen, profs) = if M.null profs || M.member (P.ProfileName "core") profs
             then pb
             else (gen, M.insert (P.ProfileName "core") gen profs)
---        addCore pb@(gen, profs) = if P.featureNumber feat /= (3,0)
---            then pb
---            else (gen, M.insert (P.ProfileName "core") gen profs)
         locMap = defineLocations (version feat) profBuild'
     in (profBuild', locMap)
 
