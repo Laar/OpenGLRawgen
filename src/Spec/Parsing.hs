@@ -157,7 +157,6 @@ convertAliasType n = case n of
     "GLhandleARB"       -> TCon "GLhandle"
     "GLvdpauSurfaceNV"  -> TCon "GLvdpauSurface"
     _                   -> error $ "alias type " ++ n
--- TODO: filter OpenGL ES
 
 extensionLocs :: P.Extension -> LocationMap
 extensionLocs ext = case P.extensionSupported ext of
@@ -181,7 +180,7 @@ type Prof = P.ProfileName
 type ProfileBuild = (S.Set IE, M.Map Prof (S.Set IE))
 
 featureApi :: [P.Feature] -> LocationMap
-featureApi features@(f:_) | P.featureApi f == P.GL = -- TODO: the generator can only handle OpenGL
+featureApi features@(f:_) | P.featureApi f == P.GL =
     let features' = sortBy (compare `on` P.featureNumber) $ features
         (_, locs) = mapAccumL (flip featureVersion) mempty features'
     in mconcat locs
@@ -204,7 +203,7 @@ instance ApiPart P.Extension where
     requires = P.extensionRequires
     removes = P.extensionRemoves
     version e = case P.decomposeExtensionToken $ P.extensionName e of
-        Nothing -> error $ "Non decomposible extension token" ++ show (P.extensionName e) -- TODO : remove 
+        Nothing -> error $ "Non decomposible extension token" ++ show (P.extensionName e)
         Just (vn,name) ->
             Extension vend name
           where vend = case vn of P.VendorName n -> Vendor n
@@ -212,18 +211,27 @@ instance ApiPart P.Extension where
 class ElementContainer e where
     elements    :: e -> S.Set P.InterfaceElement
     profileName :: e -> Maybe P.ProfileName
+    -- Check if the element container supports the api, as some elements might
+    -- not be applicable for all api-s.
+    isOfApi     :: e -> P.ApiReference -> Bool
 instance ElementContainer P.FeatureElement where
     elements    = P.feElements
     profileName = P.feProfileName
+    isOfApi _ _ = True
 instance ElementContainer P.ExtensionElement where
     elements    = P.eeElements
     profileName = P.eeProfileName
+    isOfApi ee api = case P.eeApi ee of
+        Nothing -> True
+        Just a  -> a == api
 
 featureVersion :: ApiPart p => p -> ProfileBuild -> (ProfileBuild, LocationMap)
 featureVersion feat profBuild =
     let (reqGeneric, reqProfile) = S.partition (isNothing . profileName)
+            . S.filter (`isOfApi` P.GL)
             $ requires feat
         (remGeneric, remProfile) = S.partition (isNothing . profileName)
+            . S.filter (`isOfApi` P.GL)
             $ removes feat
         flipFoldr f = flip (F.foldr' f)
         profBuild'
