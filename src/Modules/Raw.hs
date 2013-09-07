@@ -26,7 +26,7 @@ import Data.List(minimumBy)
 
 import Main.Options
 import Spec
-import Text.OpenGL.Spec(Category(..))
+import Language.OpenGLRaw.Base
 
 import Modules.Builder
 import Modules.Compatibility
@@ -45,11 +45,10 @@ makeRaw spec = snd <$> runBuilder spec buildRaw
 buildRaw :: Builder ()
 buildRaw = do
     buildRawImports
-    addCoreProfiles
     addLatestProfileToRaw
     
     whenOption mkExtensionGroups addVendorModules
-    whenFlag RawCompatibility addCompatibilityModules
+    whenFlag RawCompatibility $ addCompatibilityModules
 
 -----------------------------------------------------------------------------
 
@@ -64,11 +63,11 @@ addLatestProfileToRaw :: Builder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
     Version ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
-    latestProf <- askProfileModule ma mi False
+    latestProf <- askProfileModule ma mi DefaultProfile
     bm <- askBaseModule
-    addModule' bm True $ tellReExportModule latestProf
+    addModule' bm TopLevelGroup $ tellReExportModule latestProf
     where
-        catRanking (Version ma mi False) = (-ma, -mi)
-        catRanking _                     = (1, 1)
+        catRanking (Version ma mi DefaultProfile) = (-ma, -mi)
+        catRanking _                              = (1, 1)
 
 -----------------------------------------------------------------------------

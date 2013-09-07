@@ -22,12 +22,13 @@ module Modules.Builder (
     MBuilder,
 
     -- * The generated module
-    External, RawModule(..),
+    ModuleType(..), RawModule(..),
 
     module Main.Monad,
     -- * Miscellaneous functions for the builders
     addCategoryModule,  addCategoryModule',
     addModule, addModule',
+    addModuleWithWarning,
     runBuilder,
 
     -- * ModuleBuilding related
@@ -58,8 +59,8 @@ import Control.Monad.Writer
 
 import Language.Haskell.Exts.Syntax
 
-import Text.OpenGL.Spec as S
 import Spec
+import Main.Options
 import Main.Monad
 
 import Modules.ModuleNames
@@ -100,8 +101,8 @@ lgbuilder = lift . gbuilder
 -----------------------------------------------------------------------------
 
 -- | Adds a new module
-newModule :: ModuleName -> External -> [ModulePart] -> Builder ()
-newModule m e parts = Builder . tell . pure $ RawModule m e parts
+newModule :: ModuleName -> ModuleType -> Maybe WarningText -> [ModulePart] -> Builder ()
+newModule m t wt parts = Builder . tell . pure $ RawModule m t wt parts
 
 -----------------------------------------------------------------------------
 
@@ -113,9 +114,9 @@ runMBuilder builder = runWriterT builder
 addCategoryModule :: Category -> (Category -> MBuilder a) -> Builder a
 addCategoryModule cat buildFunc = do
     modName <- askCategoryModule cat
-    isExternal <- isExposedCategory cat
+    moduType <- askCategoryModuleType cat
     (a,parts) <- runMBuilder (buildFunc cat)
-    newModule modName isExternal parts
+    newModule modName moduType Nothing parts
     return a
 
 -- | See `addCategoryModule`.
@@ -123,15 +124,24 @@ addCategoryModule' :: Category -> MBuilder a -> Builder a
 addCategoryModule' c = addCategoryModule c . const
 
 -- | Adds a module with a specific name.
-addModule :: ModuleName -> External -> (ModuleName -> MBuilder a) -> Builder a
-addModule modName isExternal buildFunc = do
+addModule :: ModuleName -> ModuleType -> (ModuleName -> MBuilder a) -> Builder a
+addModule modName modType buildFunc = do
     (a,parts) <- runMBuilder (buildFunc modName)
-    newModule modName isExternal parts
+    newModule modName modType Nothing parts
     return a
 
 -- | See `addModule`.
-addModule' :: ModuleName -> External -> MBuilder a -> Builder a
-addModule' modulName isExternal = addModule modulName isExternal . const
+addModule' :: ModuleName -> ModuleType -> MBuilder a -> Builder a
+addModule' modulName modulType = addModule modulName modulType . const
+
+addModuleWithWarning :: ModuleName -> ModuleType -> WarningText
+    -> MBuilder a -> Builder a
+addModuleWithWarning modName modType modWarning buildFunc = do
+    (a, parts) <- runMBuilder buildFunc
+    w <- asksOptions moduleWarnings
+    let warning = if w then Just modWarning else Nothing
+    newModule modName modType warning parts
+    return a
 
 -----------------------------------------------------------------------------
 

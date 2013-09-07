@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 -----------------------------------------------------------------------------
 --
 -- Module      :  Spec.Parsing
@@ -8,42 +9,32 @@
 -- Stability   :
 -- Portability :
 --
--- | The parser build over the the parsers in openGL-api , and a simple
--- parser to parse the reuse entries.
+-- | The conversion of the `P.Registry` from opengl-xmlspec to the used
+-- datatypes of OpenGLRawgen.
 --
 -----------------------------------------------------------------------------
 
 module Spec.Parsing (
     parseSpecs,
-    parseReuses,
 ) where
 
 -----------------------------------------------------------------------------
 
-
-import Control.Monad.State
-import Control.Monad.Writer
-
-import Data.List(stripPrefix)
+import qualified Data.Foldable as F
+import Data.Function
+import Data.List
 import qualified Data.Map as M
-import Data.Maybe(fromMaybe)
+import Data.Maybe(fromMaybe, isNothing)
+import Data.Monoid
+import qualified Data.Set as S
 
-import Language.Haskell.Exts.Syntax
-import Code.Generating.Utils
-
-import Control.Applicative
-
-import Text.Parsec.String(GenParser)
-import Text.Parsec hiding
-  (many, optional, (<|>), token)
-
-import Text.OpenGL.Api as A
-import Text.OpenGL.Spec as S hiding (Value)
-import qualified Text.OpenGL.Spec as S
+import qualified Text.OpenGL as P
 
 import Main.Options
 import Main.Monad
 import Spec.RawSpec
+
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
 
@@ -51,182 +42,308 @@ import Spec.RawSpec
 -- them.
 parseSpecs :: RawGenIO (LocationMap, ValueMap)
 parseSpecs = do
-    especf <- asksOptions enumextFile >>= liftIO . readFile
-    fspecf <- asksOptions glFile >>= liftIO . readFile
-    tymapf <- asksOptions tmFile >>= liftIO . readFile
-    espec <- liftEither $ parseEnumSpec <$> enumLines especf
-    tymap <- liftEither $ mkTypeMap <$> tmLines tymapf
-    fspec <- liftEither $ extractFunctions <$> funLines fspecf
-    return . mappend espec $ parseFSpec fspec tymap
+    specLocation <- asksOptions specFile
+    registry <- liftEither =<< (liftIO $ P.readRegistry specLocation True)
+    let lm = createLocMap registry
+        vm = createValMap registry
+    return (lm, vm)
 
 -----------------------------------------------------------------------------
+-- ValueMap generating
+-- 
+-- The creation of the valuemap is straight forward. Each defined enumeration
+-- constant and each command (function) is converted to an EnumValue or
+-- FuncValue for the ValueMap.
 
+-- | Create the total `ValueMap` from the registry
+createValMap :: P.Registry -> ValueMap
+createValMap reg =
+    F.foldMap enumsMap (P.regEnums reg)
+    `mappend`
+    F.foldMap commandsMap (P.regCommands reg)
+  where
+    commandsMap = F.foldMap funcVal . P.commands
 
--- | Parse the enumeration spec.
-parseEnumSpec :: [EnumLine] -> (LocationMap, ValueMap)
-parseEnumSpec eLines =
-    let specWriter = evalStateT (parseEnumLines eLines) $ error "No category"
-        (endoLMap, endoVMap) = execWriter specWriter
-    in (appEndo endoLMap mempty, appEndo endoVMap mempty)
+-- | The `ValueMap` for the enumeration constants.
+enumsMap :: P.Enums -> ValueMap
+enumsMap ens = F.foldMap mkEnum $ P.enums ens
+  where
+    ty = case P.enumsType ens of
+        Just "bitfield" -> BitfieldValue
+        _               -> EnumValue
+    mkEnum (Right _) = mempty
+    mkEnum (Left  e) = enumVal ty e
 
-type EP = StateT Category (Writer (Endo LocationMap, Endo ValueMap))
+-- | The `ValueMap` for a single enumeration constant. This needs the type of
+-- it, as it is stored per enum set.
+enumVal :: ValueType -> P.GLEnum -> ValueMap
+enumVal ty e
+    = addValue 
+        (mkEnumName $ P.enumName e) 
+        (Value (P.enumValue e) ty)
+        mempty
 
-tellLoc :: (LocationMap -> LocationMap) -> EP ()
-tellLoc f = tell (Endo f, mempty)
+-- | The `ValueMap` for a single command.
+funcVal :: P.Command -> ValueMap
+funcVal com 
+    = addValue 
+        (mkFuncName $ P.commandName com)
+        (RawFunc retType argTypes alias)
+        mempty
+  where
+    retType = convertType . P.returnType $ P.commandReturnType com
+    argTypes = map (convertType . P.paramType) $ P.commandParams com
+    alias = mkFuncName `fmap` P.commandAlias com
 
-tellVal :: (ValueMap -> ValueMap) -> EP ()
-tellVal f = tell (mempty, Endo f)
+mkEnumName :: P.EnumName -> EnumName
+mkEnumName = wrapName . tryStrip "GL_" . (\(P.EnumName n') -> n')
 
-parseEnumLines :: [EnumLine] -> EP ()
-parseEnumLines = mapM_ parseEnumLine
+mkFuncName :: P.CommandName -> FuncName
+mkFuncName = wrapName . tryStrip "gl" . (\(P.CommandName n) -> n)
 
-parseEnumLine :: EnumLine -> EP ()
-parseEnumLine (Start cat _) = put cat
-parseEnumLine (Profile Compatibility) = modify toDeprecatedCat
-parseEnumLine (Enum n v _)  = addEnumValue n v >> addEnumLocation n
-parseEnumLine (Use _ n)     = addEnumLocation n
-parseEnumLine _             = return ()
-
-addEnumLocation :: String -> EP ()
-addEnumLocation name = do
-    cat <- get
-    tellLoc $ addLocation cat (wrapName name :: EnumName)
-
-addEnumValue :: String -> S.Value -> EP ()
-addEnumValue name v = addValue' $ case v of
-    Hex  i _ _   -> Value i ty
-    Deci i       -> Value (fromIntegral i) ty
-    Identifier i ->
-        let i' = wrapName . fromMaybe i . stripPrefix "GL_" $ i
-        in ReUse i' ty
-    where
-        addValue' :: EnumValue -> EP ()
-        addValue' enumVal = tellVal $ addValue (wrapName name) enumVal
-        ty :: Type
-        ty = tyCon' $ if isBitfieldName name then "GLbitfield" else "GLenum"
-
------------------------------------------------------------------------------
-
--- | Parse (or process) the function as the are supplied by the openGL-api
--- package.
-parseFSpec :: [Function] -> TypeMap -> (LocationMap, ValueMap)
-parseFSpec funcs tm = foldr (add . convertFunc tm) mempty funcs
-    where
-        add (c, (fn, fv)) (lMap, vMap)
-            = (addLocation c fn lMap, addValue fn fv vMap)
-
-convertFunc :: TypeMap -> Function -> (Category, (FuncName, FuncValue))
-convertFunc tm rf = (cat, (wrapName name, RawFunc name ty alias))
-    where
-        name = funName rf
-        cat = case funProfile rf of
-            Nothing -> funCategory rf
-            Just Compatibility -> toDeprecatedCat $ funCategory rf
-        ty   = foldr (-->>)
-            (convertRetType $ funReturnType rf)
-            (map paramToType $ funParameters rf)
-        alias = funAlias rf
-        paramToType (Parameter _ t _ p) = lookupType t p tm
+tryStrip :: String -> String -> String
+tryStrip pre n = fromMaybe n $ pre `stripPrefix` n
 
 -----------------------------------------------------------------------------
+-- LocationMap generating
+--
+-- The conversion from the P.Registry format is not that straight forward.
+-- There are two points that make the conversion difficult
+-- 
+--  - The profiles, a feature or extension is described by a set of enums and
+--    functions, where some additions or removals depend on the profile. The
+--    tricky part comes from the posibility to remove functionality. If the
+--    processing is not done right the enum or function to remove might not
+--    yet be added. Thus the processing needs to first handle the profile
+--    independent parts and then the profile dependent parts.
+--  - The second difficulty stems from the incremental definition of the
+--    OpenGL versions especially in combination with the profiles. Version
+--    1.1 is defined as 1.0 with some additions (and later also removals).
+--    But again, the additions and removals could depend on the used profile.
 
--- | Parse the reuses from a string.
-parseReuses :: String -> Either ParseError [(Category, [Category])]
-parseReuses = parse (many pReuseLine <* eof) "reuse"
+createLocMap :: P.Registry -> LocationMap
+createLocMap reg =
+    F.foldMap extensionLocs (P.regExtensions reg)
+    `mappend`
+    versionLocs (P.regFeatures reg)
 
-type CP = GenParser Char ()
+extensionLocs :: P.Extension -> LocationMap
+extensionLocs ext = case P.extensionSupported ext of
+    Nothing -> mempty
+    Just s ->
+        if s `P.supports` P.GL
+         then snd $ apiPartLocMap ext mempty
+         else mempty
 
-blanks :: CP String
-blanks = many (oneOf " \t")
-eol :: CP ()
-eol = () <$ char '\n'
+-- | Creates the `LocationMap` for all OpenGL versions.
+versionLocs :: S.Set P.Feature -> LocationMap
+versionLocs featureSet =
+    let features
+            = partitionBy P.featureApi $ S.toList featureSet
+        partitionBy :: Ord a => (b -> a) -> [b] -> [[b]]
+        partitionBy f = groupBy ((==) `on` f) . sortBy (compare `on` f)
+        -- | Subprocessor for a specific `P.ApiReference` (e.g. OpenGL or
+        --  OpenGL ES).
+        versionApi :: [P.Feature] -> LocationMap
+        versionApi feats@(f:_) | P.featureApi f == P.GL =
+            let feats' = sortBy (compare `on` P.featureNumber) $ feats
+                (_, locs) = mapAccumL (flip apiPartLocMap) mempty feats'
+            in mconcat locs
+        versionApi _ = mempty
+    in F.foldMap versionApi features
 
-pReuseLine :: CP (Category, [Category])
-pReuseLine = (,) <$> (pCategory <* blanks)
-    <*> sepBy pCategory (char ',' *> blanks) <* eol
+-- Two short hands to keep the type signatures readable
+type IE = P.InterfaceElement
+type Prof = P.ProfileName
+-- And the building type,
+type ProfileBuild =
+    ( S.Set IE -- The Interface elements whitout a specific profile
+    , M.Map Prof (S.Set IE)) -- The Interface elements for a specific profile
+
+
+-- | Builds the `LocationMap` for an `ApiPart`. This supports both the one
+-- shot building of `P.Extension`s as the incremental building of 
+-- `P.Feature`s. For the latter the `ProfileBuild`s are used to keep track of
+-- the enums and functions that are defined so far.
+apiPartLocMap :: (ApiPart p, Ord (ElemContainer p)) -- The ord is needed for travis' ghc
+    => p -> ProfileBuild -> (ProfileBuild, LocationMap)
+apiPartLocMap feat profBuild =
+    let (reqGeneric, reqProfile) = S.partition (isNothing . profileName)
+            . S.filter (`isOfApi` P.GL)
+            $ requires feat
+        (remGeneric, remProfile) = S.partition (isNothing . profileName)
+            . S.filter (`isOfApi` P.GL)
+            $ removes feat
+        flipFoldr f = flip (F.foldr' f)
+        profBuild'
+            -- See the note on the difficulties of building the LocationMap.
+            = addCore
+            . flipFoldr (addProf False)    remProfile
+            . flipFoldr (addProf True)     reqProfile
+            . flipFoldr (addGeneric False) remGeneric
+            . flipFoldr (addGeneric True)  reqGeneric
+            $ profBuild
+        -- | Sometimes a non default profile is added without any changes to
+        -- the core profile. Yet when there are profiles the core profile acts
+        -- as the default one. Thus it needs to be added when there are other
+        -- profiles and it has not yet been created.
+        addCore pb@(gen, profs) = if M.null profs || M.member (P.ProfileName "core") profs
+            then pb
+            else (gen, M.insert (P.ProfileName "core") gen profs)
+        locMap = defineLocations (category feat) profBuild'
+    in (profBuild', locMap)
+
+-- Helper functions to update the `ProfileBuild`
+
+addGeneric :: ElementContainer c => Bool -> c -> ProfileBuild -> ProfileBuild
+addGeneric addRem element p = F.foldr' (updateNonProfile addRem) p
+                            $ elements element
+addProf :: ElementContainer c => Bool -> c -> ProfileBuild -> ProfileBuild
+addProf addRem element p = F.foldr' (updateProfile addRem prof) p
+                         $ elements element
+    where prof = fromMaybe (error "No profile") $ profileName element
+
+-- | Adds or removes an `IE` which has no profile. To keep all the profiles
+-- consistent it needs to update both the generic interface elements as the
+-- ones for each profile.
+updateNonProfile :: Bool -> IE -> ProfileBuild -> ProfileBuild
+updateNonProfile addRem ie (gen, profs) =
+    let update = (if addRem then S.insert else S.delete) ie
+    in (update gen, fmap update profs)
+
+updateProfile :: Bool -> Prof -> IE -> ProfileBuild -> ProfileBuild
+updateProfile addRem prof ie (gen, profs) =
+    let updateVal :: S.Set IE -> S.Set IE
+        updateVal = (if addRem then S.insert else S.delete) ie
+        update :: Maybe (S.Set IE) -> Maybe (S.Set IE)
+        update = Just . updateVal . fromMaybe gen
+    in (gen, M.alter update prof profs)
+
+-- | Make the `LocationMap` from the `ProfileBuild`.
+defineLocations :: (Profile -> Category) -> ProfileBuild -> LocationMap
+defineLocations f (gen, profs) =
+    if M.null profs
+     then mkLocMap (f DefaultProfile) gen
+     else F.fold $ M.mapWithKey (\p ies -> mkLocMap (mkCat p) ies) profs
+  where
+    mkCat :: Prof -> Category
+    mkCat (P.ProfileName pn) = f $ case pn of
+        "core"  -> DefaultProfile
+        _       -> ProfileName pn
+    mkLocMap :: Category -> S.Set IE -> LocationMap
+    mkLocMap c = F.foldMap (ieMap c . P.ieElementType)
+    ieMap :: Category -> P.ElementType -> LocationMap
+    ieMap c ie = case ie of
+        P.IEnum     eName -> addLocation c (mkEnumName eName) mempty
+        P.ICommand  cName -> addLocation c (mkFuncName cName) mempty
+        _                 -> mempty
+
+-- Helper classes to generalize P.Feature and P.Extension, as they are in
+-- essence a group of remove and require sets.
+
+class ElementContainer (ElemContainer p) => ApiPart p where
+    type ElemContainer p :: *
+    -- The required elements
+    requires :: p -> S.Set (ElemContainer p)
+    -- The removed elements
+    removes  :: p -> S.Set (ElemContainer p)
+    -- The category this `ApiPart` represents
+    category  :: p -> Profile -> Category
+instance ApiPart P.Feature where
+    type ElemContainer P.Feature = P.FeatureElement
+    requires = P.featureRequires
+    removes  = P.featureRemoves
+    category f = case P.featureNumber f of
+        (ma, mi) -> Version ma mi
+instance ApiPart P.Extension where
+    type ElemContainer P.Extension = P.ExtensionElement
+    requires = P.extensionRequires
+    removes = P.extensionRemoves
+    category e = case P.decomposeExtensionToken $ P.extensionName e of
+        Nothing -> error $ "Non decomposible extension token" ++ show (P.extensionName e)
+        Just (vn,name) ->
+            Extension vend name
+          where vend = case vn of P.VendorName n -> Vendor n
+
+class ElementContainer e where
+    -- | The set of `P.InterfaceElement`s that this container holds
+    elements    :: e -> S.Set P.InterfaceElement
+    -- | The `P.ProfileName` for which this `ElemContainer` is relevant.
+    profileName :: e -> Maybe P.ProfileName
+    -- Check if the element container supports the api, as some elements might
+    -- not be applicable for all api-s.
+    isOfApi     :: e -> P.ApiReference -> Bool
+instance ElementContainer P.FeatureElement where
+    elements    = P.feElements
+    profileName = P.feProfileName
+    isOfApi _ _ = True
+instance ElementContainer P.ExtensionElement where
+    elements    = P.eeElements
+    profileName = P.eeProfileName
+    isOfApi ee api = case P.eeApi ee of
+        Nothing -> True
+        Just a  -> a == api
 
 -----------------------------------------------------------------------------
+-- Type Conversion
 
-toDeprecatedCat :: Category -> Category
-toDeprecatedCat c = case c of
-    Version ma mi _ -> Version ma mi True
-    Extension e n _ -> Extension e n True
-    Name n          -> Name n
+convertType :: P.CType -> FType
+convertType ct = case ct of
+    P.Struct n      -> convertStruct n
+    P.CConst t      -> convertType t
+    P.Ptr    t      -> case convertType t of
+        UnitTCon    -> TPtr TVar
+        t'          -> TPtr t'
+    P.BaseType bt   -> convertBaseType bt
+    P.AliasType n   -> convertAliasType n
 
--- | Convert the 'ReturnType' supplied by openGL-api to a type useable for
--- Language.Haskell.Exts
-convertRetType :: ReturnType -> Type
-convertRetType rt = addIOType $ case rt of
-    Boolean      -> tyCon' "GLboolean"
-    BufferOffset -> tyCon' "GLsizeiptr"
-    ErrorCode    -> tyCon' "GLenum" -- TODO lookup
-    Float32      -> tyCon' "GLfloat"
-    FramebufferStatus -> tyCon' "GLenum" -- lookup
-    GLEnum       -> tyCon' "GLenum"
-    HandleARB    -> tyCon' "GLuint" -- lookup
-    Int32        -> tyCon' "GLint"
-    Path         -> tyCon' "GLuint" -- lookup, seems to be an object
-    S.List       -> tyCon' "GLuint" -- lookup
-    S.String     -> TyApp (tyCon' "Ptr") (tyCon' "GLchar")
-    Sync         -> tyCon' "GLsync"
-    UInt32       -> tyCon' "GLuint"
-    UInt64       -> tyCon' "GLuint64"
-    Void         -> unit_tycon
-    VoidPointer  -> TyApp (tyCon' "Ptr") (tyVar' "a") -- TODO improve the type variable
-    VdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
-
--- | Convert the type supplied by openGL-api to a type useable for
--- Language.Haskell.Exts
-lookupType :: String -> Passing -> TypeMap -> Type
-lookupType t _ _ | t == "cl_context" = tyCon' "CLcontext"
-                 | t == "cl_event"   = tyCon' "CLevent"
-lookupType t p tm = case M.lookup t tm of
-    Just (t', ptr) -> addPointer (p /= S.Value) . addPointer ptr $ convertType t'
-    Nothing -> error $ "lookupType: Type not found " ++ show t
-    where
-        addPointer :: Bool -> Type -> Type
-        addPointer addptr = if addptr then TyApp (tyCon' "Ptr") else id
-        convertType t' = case t' of
-            Star        -> TyApp (tyCon' "Ptr") (tyVar' "a")
-            GLbitfield  -> tyCon' "GLbitfield"
-            GLboolean   -> tyCon' "GLboolean"
-            GLbyte      -> tyCon' "GLbyte"
-            GLchar      -> tyCon' "GLchar"
-            GLcharARB   -> tyCon' "GLchar"
-            GLcharStarConst -> tyCon' "GLchar" -- LOOKUP if it needs a pointer
-            GLclampd    -> tyCon' "GLclampd"
-            GLclampf    -> tyCon' "GLclampf"
-            GLdouble    -> tyCon' "GLdouble"
-            GLenum      -> tyCon' "GLenum"
---            GLenumWithTrailingComma -- removed from the source
-            GLfloat     -> tyCon' "GLfloat"
-            UnderscoreGLfuncptr -> error "_GLfuncptr"
-            GLhalfNV    -> tyCon' "GLushort" -- lookup
-            GLhandleARB -> tyCon' "GLhandle"--tyCon' "GLuint" -- lookup
-            GLint       -> tyCon' "GLint"
-            GLint64     -> tyCon' "GLint64"
-            GLint64EXT  -> tyCon' "GLint64"
-            GLintptr    -> tyCon' "GLintptr"
-            GLintptrARB -> tyCon' "GLintptr"
-            GLshort     -> tyCon' "GLshort"
-            GLsizei     -> tyCon' "GLsizei"
-            GLsizeiptr  -> tyCon' "GLsizeiptr"
-            GLsizeiptrARB -> tyCon' "GLsizeiptr"
-            GLsync      -> tyCon' "GLsync"
-            GLubyte     -> tyCon' "GLubyte"
-            ConstGLubyte -> error "cubyte"
-            GLuint      -> tyCon' "GLuint"
-            GLuint64    -> tyCon' "GLuint64"
-            GLuint64EXT -> tyCon' "GLuint64"
-            GLUnurbs    -> error "Unurbs"
-            GLUquadric  -> error "Uquadric"
-            GLushort    -> tyCon' "GLushort"
-            GLUtesselator -> error  "tesselator"
-            GLvoid      -> tyVar' "a"
-            GLvoidStarConst -> TyApp (tyCon' "Ptr") (tyVar' "b") -- TODO lookup ??, only used in MultiModeDrawElementsIBM
-            GLvdpauSurfaceNV -> tyCon' "GLintptr" -- lookup
-            GLdebugproc    -> tyCon' "GLdebugproc"
-            GLdebugprocARB -> tyCon' "GLdebugprocARB" -- lookup
-            GLdebugprocAMD -> tyCon' "GLdebugprocAMD" -- lookup
+convertStruct :: String -> FType
+convertStruct n = case n of
+    "_cl_context"   -> TCon "CLcontext"
+    "_cl_event"     -> TCon "CLevent"
+    _               -> error $ "struct " ++ n
+convertBaseType :: P.BaseType -> FType
+convertBaseType bt = case bt of
+    P.Void  -> UnitTCon
+    _       -> error $ show bt
+convertAliasType :: String -> FType
+convertAliasType n = case n of
+    "GLboolean"         -> TCon "GLboolean"
+    "GLbyte"            -> TCon "GLbyte"
+    "GLubyte"           -> TCon "GLubyte"
+    "GLchar"            -> TCon "GLchar"
+    "GLcharARB"         -> TCon "GLchar"
+    "GLshort"           -> TCon "GLshort"
+    "GLushort"          -> TCon "GLushort"
+    "GLint"             -> TCon "GLint"
+    "GLuint"            -> TCon "GLuint"
+    "GLfixed"           -> TCon "GLfixed"
+    "GLint64"           -> TCon "GLint64"
+    "GLint64EXT"        -> TCon "GLint64"
+    "GLuint64"          -> TCon "GLuint64"
+    "GLuint64EXT"       -> TCon "GLuint64"
+    "GLsizei"           -> TCon "GLsizei"
+    "GLenum"            -> TCon "GLenum"
+    "GLintptr"          -> TCon "GLintptr"
+    "GLintptrARB"       -> TCon "GLintptr"
+    "GLsizeiptr"        -> TCon "GLsizeiptr"
+    "GLsizeiptrARB"     -> TCon "GLsizeiptr"
+    "GLbitfield"        -> TCon "GLbitfield"
+    "GLsync"            -> TCon "GLsync"
+    "GLhalf"            -> TCon "GLhalf"
+    "GLhalfNV"          -> TCon "GLhalf"
+    "GLfloat"           -> TCon "GLfloat"
+    "GLclampf"          -> TCon "GLclampf"
+    "GLclampx"          -> TCon "GLclampx"
+    "GLdouble"          -> TCon "GLdouble"
+    "GLclampd"          -> TCon "GLclampd"
+    "GLvoid"            -> UnitTCon
+    "GLDEBUGPROC"       -> TCon "GLdebugproc"
+    "GLDEBUGPROCAMD"    -> TCon "GLdebugproc"
+    "GLDEBUGPROCARB"    -> TCon "GLdebugproc"
+    "GLDEBUGPROCKHR"    -> TCon "GLdebugproc"
+    "GLhandleARB"       -> TCon "GLhandle"
+    "GLvdpauSurfaceNV"  -> TCon "GLvdpauSurface"
+    _                   -> error $ "alias type " ++ n
 
 -----------------------------------------------------------------------------

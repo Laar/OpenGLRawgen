@@ -1,5 +1,5 @@
 name: OpenGLRawgen
-version: 0.3.0
+version: 0.4.0
 cabal-version: >= 1.8
 build-type: Simple
 license: BSD3
@@ -32,6 +32,7 @@ executable OpenGLRawgen
     Modules.Raw
     Modules.Types
     Code.ModuleCode
+    Code.PostProcessing
   build-depends:
     CodeGenerating >=0.1.0 && <0.3.0,
     base >=4,
@@ -40,8 +41,8 @@ executable OpenGLRawgen
     filepath -any,
     haskell-src-exts -any,
     mtl -any,
-    opengl-api -any,
-    parsec -any
+    opengl-xmlspec -any,
+    parsec -any,
+    OpenGLRawgenBase,
+    OpenGLRawInterface
   ghc-options: -Wall -O2 -rtsopts
-  ghc-shared-options:
-  ghc-prof-options: -Wall -O2 -rtsopts -prof -auto-all -caf-all

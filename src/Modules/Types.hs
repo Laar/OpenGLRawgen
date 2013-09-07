@@ -13,57 +13,58 @@
 -----------------------------------------------------------------------------
 
 module Modules.Types (
-    RawModule(..), External,
+    RawModule(..), ModuleType(..),
+    isExternal,
     
     ModulePart(..), Imported, GLName,
+    ValueType(..), FType(..),
 ) where
 
 -----------------------------------------------------------------------------
 
 import Language.Haskell.Exts.Syntax
 
-import Text.OpenGL.Spec (Category)
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
-
--- | Type indicating if a module is exposed to the outside world or
--- purely for internal use
-type External = Bool
 
 -- | A generated module
 data RawModule
     = RawModule
     { rawModuleName     :: ModuleName
-    , externalRawModule :: External
+    , rawModuleType     :: ModuleType
+    , rawModuleWarning  :: Maybe WarningText
     , rawModuleParts    :: [ModulePart]
-    } deriving (Show)
+    } deriving ()
+
+isExternal :: RawModule -> Bool
+isExternal rm = case rawModuleType rm of
+    Internal -> False
+    _        -> True
 
 -----------------------------------------------------------------------------
 
 -- | The parts in a module for OpenGLRaw.
 data ModulePart
     -- | Define an enumeration value with a specific value
-    = DefineEnum        Name Type Integer
+    = DefineEnum        Name GLName ValueType Integer
     -- | Define an enumeration value as an alias for another value in the
     -- same module.
-    | ReDefineLEnum     Name Type Name
+    | ReDefineLEnum     Name GLName ValueType Name
     -- | Define an enumeration value as an alias for another value, imported
     -- from another module.
-    | ReDefineIEnum     Name Type Imported
+    | ReDefineIEnum     Name GLName ValueType Imported
     -- | Reexport something (enum or function)
-    | ReExport          Imported
+    | ReExport          Imported GLName
     -- | Define a function.
-    | DefineFunc        Name Type
+    | DefineFunc        Name FType [FType]
         GLName    -- | The original name
         Category  -- | The category this function was part of.
     -- | Reexport a module
     | ReExportModule    ModuleName
-    deriving (Show)
+    deriving ()
 
 -- | An imported name with specific module.
 type Imported = (Name, ModuleName)
--- | The original name of something from OpenGL (thus the name as used in the
--- specification).
-type GLName = String
 
 -----------------------------------------------------------------------------

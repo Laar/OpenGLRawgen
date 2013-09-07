@@ -31,13 +31,16 @@ import Code.Generating.Utils
 import Modules.Raw
 import Modules.Types
 import Code.ModuleCode
+import Code.PostProcessing
 
 import Main.Monad
 import Main.Options
 
 import Spec
-import Spec.Parsing(parseSpecs, parseReuses)
+import Spec.Parsing(parseSpecs)
 
+
+import Interface.Module
 -- needed for the version
 import Data.Version(showVersion)
 import Paths_OpenGLRawgen(version)
@@ -55,40 +58,11 @@ main = do
 rmain :: RawGenIO ()
 rmain = do
     (lMap, vMap) <- parseSpecs
-    lMap' <- processReuses lMap
     opts <- askOptions
-    let lMap'' = cleanupSpec opts lMap'
-    modules <- liftRawGen $ makeRaw (lMap'', vMap)
+    let lMap' = cleanupSpec opts lMap
+    modules <- liftRawGen $ makeRaw (lMap', vMap)
     outputModules modules
-    -- write out the modules
---    logMessage $ "Writing modules"
---    processModules' outputModule modules
---    logMessage $ "Writing module names"
-    -- and a list of exposed and internal modules.
---    liftIO (safeWriteFile (oDir </> "modulesE.txt") (unlines .
---        map (\n -> "      " ++ moduleNameToName n ++ ",") . fst $ listModules modules))
---    liftIO (safeWriteFile (oDir </> "modulesI.txt") (unlines .
---        map (\n -> "      " ++ moduleNameToName n ++ ",") . snd $ listModules modules))
-
--- | Parse and process the reuse files. It generates no warning if there is
--- no reuse file to parse
-processReuses :: LocationMap -> RawGenIO LocationMap
-processReuses lMap = do
-    o <- askOptions
-    let freuseP = freuseFile o
-        ereuseP = ereuseFile o
-    freuses <- getReuses freuseP
-    ereuses <- getReuses ereuseP
-    return $ addReuses freuses ereuses lMap
-    where
-        getReuses :: FilePath -> RawGenIO [(Category, [Category])]
-        getReuses fp = liftIO (doesFileExist fp) >>= \exists ->
-            if not exists
-             then return []
-             else liftIO (readFile fp) >>= \reuses ->
-                    liftEitherMsg 
-                        (\e -> "Parsing reuses failed with: " ++ show e)
-                        . parseReuses $ reuses
+    verifyInterface modules
 
 printVersion :: IO ()
 printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version
@@ -99,21 +73,24 @@ outputModules :: [RawModule] -> RawGenIO ()
 outputModules modules = do
     logMessage $ "Writing " ++ show (length modules) ++ " modules"
     F.forM_ modules $ outputModule
-    let (exts, ints) = partition externalRawModule modules
+    let (exts, ints) = partition isExternal modules
     oDir <- asksOptions outputDir
     logMessage "Writing modulelistings"
     writeModuleListing (oDir </> "modulesE.txt") exts
     writeModuleListing (oDir </> "modulesI.txt") ints
+    -- writing the interface listing
+    writePackageInterface modules
 
 outputModule :: RawModule -> RawGenIO ()
 outputModule rmodule = do
     let mname = rawModuleName rmodule
     modu <- toModule rmodule
     oDir <- asksOptions outputDir
-    let modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
+    modu' <- liftRawGen $ postProcessModule $ prettyPrint modu
+    let -- modu' = replaceCallConv "CALLCONV" $ prettyPrint modu
         path = oDir </> moduleNameToPath mname ++ ".hs"
---    logMessage $ "Writing: " ++ moduleNameToName mname
     liftIO $ safeWriteFile path modu'
+    writeModuleInterface rmodule
 
 writeModuleListing :: FilePath -> [RawModule] -> RawGenIO ()
 writeModuleListing fp mods = do

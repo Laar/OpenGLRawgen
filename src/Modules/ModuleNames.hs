@@ -30,7 +30,7 @@ module Modules.ModuleNames (
     askCategoryPImport,
 
     -- * Ask-ers for other (spec related) information
-    isExposedCategory,
+    askCategoryModuleType,
     askCorePath,
 
 ) where
@@ -44,7 +44,7 @@ import Data.List(partition)
 import Language.Haskell.Exts.Syntax
 import Code.Generating.Utils
 
-import Text.OpenGL.Spec as S
+import Language.OpenGLRaw.Base
 import Main.Monad
 
 -----------------------------------------------------------------------------
@@ -102,39 +102,39 @@ askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
 categoryModule :: RawGenMonad m => Category -> m ModuleName
-categoryModule (Version ma mi d) = return .
+categoryModule (Version ma mi prof) = return .
     ModuleName
-        $ corePath <.> "Internal"
-        <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
-categoryModule (Extension ex n d) = return .
+        $ corePath
+        <.> ("Core" ++ show ma ++ show mi ++ profileNameExtension prof)
+categoryModule (Extension ex n prof) = return .
     ModuleName
-        $ moduleBase <.> upperFirst (show ex) <.> correctName n
-        ++ (if d then "Compatibility" else "")
-categoryModule (S.Name n) = throwRawError
-    $ "categoryModule: Category with only a name "
-    ++ upperFirst (show n)
+        $ moduleBase <.> upperFirst (vendorName ex) <.> correctName n
+        ++ profileNameExtension prof
 
--- | query whether or not the module of a certain category is an exposed
--- module.
-isExposedCategory :: RawGenMonad m => Category -> m Bool
---isExposedCategory (Version _ _ _) = return False
-isExposedCategory _               = return True
+profileNameExtension :: Profile -> String
+profileNameExtension p = case p of
+    DefaultProfile -> []
+    ProfileName pn -> upperFirst pn
+
+-- | Query what the module type of a given module is.
+askCategoryModuleType :: RawGenMonad m => Category -> m ModuleType
+askCategoryModuleType (Version ma mi prof)
+    = return $ CoreInterface ma mi prof
+askCategoryModuleType (Extension e n prof)
+    = return $ ExtensionMod e n prof
 
 -- | Asks the 'ModuleName' of a specific core profile
 askProfileModule
     :: RawGenMonad m 
     => Int -- ^ Major version
     -> Int -- ^ Minor version
-    -> Bool -- ^ Compatibility module?
+    -> Profile -- ^ The profile
     -> m ModuleName
-askProfileModule ma mi comp = do
-    cp <- askCorePath
-    return . ModuleName $ cp ++ ".Core" ++ show ma ++ show mi
-                ++ (if comp then "Compatibility" else "")
+askProfileModule ma mi prof = askCategoryModule (Version ma mi prof)
 
 -- | Asks the 'ModuleName' of the grouping module for a certain vendor
-askVendorModule :: RawGenMonad m => Extension -> m ModuleName
-askVendorModule e = return . ModuleName $ moduleBase <.> show e
+askVendorModule :: RawGenMonad m => Vendor -> m ModuleName
+askVendorModule e = return . ModuleName $ moduleBase <.> vendorName e
 
 -----------------------------------------------------------------------------
 
