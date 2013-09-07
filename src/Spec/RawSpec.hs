@@ -21,8 +21,7 @@ module Spec.RawSpec (
     
     ValueType(..), FType(..),
 
-    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation
-        , depMapFromList),
+    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
     ValueName(),
 
     EnumValue(..), EnumName,
@@ -44,12 +43,6 @@ module Spec.RawSpec (
     -- * DefineMap
     DefineMap,
     emptyDefineMap,
-
-    -- * DeprecationMap
-    DeprecationMap,
-    emptyDeprecationMap,
-    GLVersion, DeprecationRange(..),
-    isInRange, getDeprecations,
 ) where
 
 -----------------------------------------------------------------------------
@@ -189,42 +182,6 @@ emptyDefineMap = DefMap M.empty M.empty
 
 -----------------------------------------------------------------------------
 
-type GLVersion = (Major, Minor)
-data DeprecationRange
-    = DeprRange
-    { deprecationStart :: GLVersion -- First version where it was deprecated
-    , deprecationEnd   :: GLVersion -- First version where it was reintroduced
-    } deriving (Eq, Show)
-
-isInRange :: GLVersion -> DeprecationRange -> Bool
-isInRange (ma, mi) (DeprRange (maS, miS) (maE,miE))
-    =  (ma == maS && mi >= miS)
-    || (ma == maE && mi <  miE)
-    || (ma >  maS && ma <  maE)
-
-type DepMap sv = [(ValueName sv, DeprecationRange)]
-
--- | Mapping of Values that are deprecated and reintroduced later.
-data DeprecationMap
-    = DeprMap
-    { enumDepMap :: DepMap EnumValue
-    , funcDepMap :: DepMap FuncValue
-    } deriving (Show)
-
-instance Monoid DeprecationMap where
-    mempty = DeprMap mempty mempty
-    DeprMap e1 f1 `mappend` DeprMap e2 f2 = DeprMap (e1 <> e2) (f1 <> f2)
-
-getDeprecations :: SpecValue sv 
-    => GLVersion -> DeprecationMap -> [ValueName sv]
-getDeprecations v
-    = map fst . filter (isInRange v . snd) . getDepMap 
-
-emptyDeprecationMap :: DeprecationMap
-emptyDeprecationMap = mempty
-
------------------------------------------------------------------------------
-
 -- | A class to generalize over the value types (EnumValue and FuncValue) in
 -- the Mappings to reduce boilerplate code
 class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
@@ -245,9 +202,6 @@ class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
     addDefLocation      :: ValueName sv -> Category
                                 -> DefineMap -> DefineMap
 
-    getDepMap       :: DeprecationMap -> DepMap sv
-    depMapFromList  :: [(ValueName sv, DeprecationRange)] -> DeprecationMap
-
 type EnumName = ValueName EnumValue
 
 instance SpecValue EnumValue where
@@ -265,8 +219,6 @@ instance SpecValue EnumValue where
     modifyLocMap f r   = r{enumLMap = f $ enumLMap r}
     getDefLocation    n d   = M.lookup n $ enumDMap d
     addDefLocation    n c d = d{enumDMap = M.insert n c $ enumDMap d}
-    getDepMap               = enumDepMap
-    depMapFromList    l     = emptyDeprecationMap{enumDepMap = l}
 
 type FuncName = ValueName FuncValue
 
@@ -285,8 +237,6 @@ instance SpecValue FuncValue where
     modifyLocMap f r   = r{funcLMap = f $ funcLMap r}
     getDefLocation    n d   = M.lookup n $ funcDMap d
     addDefLocation    n c d = d{funcDMap = M.insert n c $ funcDMap d}
-    getDepMap               = funcDepMap
-    depMapFromList    l     = emptyDeprecationMap{funcDepMap = l}
 
 -----------------------------------------------------------------------------
 
