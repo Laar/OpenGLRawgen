@@ -50,15 +50,13 @@ module Spec.RawSpec (
     emptyDeprecationMap,
     GLVersion, DeprecationRange(..),
     isInRange, getDeprecations,
-    -- * Exported for parsing
-    isBitfieldName,
 ) where
 
 -----------------------------------------------------------------------------
 
 import Control.Monad(msum)
 
-import Data.List(stripPrefix, isPrefixOf, isInfixOf, isSuffixOf)
+import Data.List(stripPrefix)
 import Data.Monoid
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -326,13 +324,5 @@ extensions =
     , "S3", "SGIS", "SGIX", "SGI", "SUNX", "SUN"
     , "WIN"
     ]
-
--- | Check wheter the name for an enum is a bitfield or an enum.
-isBitfieldName :: String -> Bool
-isBitfieldName name =
-    let name' = removeEnumExtension name
-    in     "_BIT" `isSuffixOf` name'
-        || (("_ALL_" `isInfixOf` name' || "ALL_" `isPrefixOf` name') 
-                && "_BITS" `isSuffixOf` name')
 
 -----------------------------------------------------------------------------
