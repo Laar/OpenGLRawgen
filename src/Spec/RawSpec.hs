@@ -17,7 +17,7 @@
 module Spec.RawSpec (
 
     -- * The `RawSpec` and associates
-    Category() , -- Convenience
+    Category(..) , -- Convenience
     
     ValueType(..), FType(..),
 

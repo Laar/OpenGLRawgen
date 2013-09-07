@@ -39,6 +39,10 @@ buildModule c = do
     funcs <- lift . asksLocationMap $ categoryValues c
     enums <- lift . asksLocationMap $ categoryValues c
 
+    case c of
+        Version _ _ _ -> askTypesModule >>= tellReExportModule
+        _             -> return ()
+
     mapM_  (addEnum c) $ S.toList enums
     mapM_ (addFunc c) $ S.toList funcs
     

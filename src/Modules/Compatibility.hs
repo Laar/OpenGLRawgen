@@ -88,5 +88,9 @@ addARBCompatibility = do
     addModuleWithWarning modName Compatibility warning $ do
         mapM_ (mkReExport >=> tellPart) $ S.toList enums
         mapM_ (mkReExport >=> tellPart) $ S.toList funcs
+        -- Somehow the forgot to mention that ARB_imaging is part of the
+        -- compatibility profile of OpenGL.
+        askCategoryModule (Extension (Vendor "ARB") "imaging" (ProfileName "compatibility"))
+            >>= tellReExportModule
 
 -----------------------------------------------------------------------------
