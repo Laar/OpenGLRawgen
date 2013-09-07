@@ -1,4 +1,0 @@
-VERSION_1_2 ARB_imaging
-VERSION_1_2_DEPRECATED ARB_imaging_DEPRECATED
-ARB_fragment_program ARB_vertex_program
-EXT_texture_compression_vtc EXT_texture_compression_s3tc

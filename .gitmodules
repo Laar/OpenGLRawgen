@@ -1,9 +1,9 @@
 [submodule "CodeGenerating"]
 	path = CodeGenerating
 	url = git://github.com/Laar/CodeGenerating.git
-[submodule "opengl-api"]
-	path = opengl-api
-	url = git://github.com/Laar/opengl-api.git
 [submodule "OpenGLRawgenBase"]
 	path = OpenGLRawgenBase
 	url = git://github.com/Laar/OpenGLRawgenBase.git
+[submodule "opengl-xmlspec"]
+	path = opengl-xmlspec
+	url = git://github.com/Laar/opengl-xmlspec.git

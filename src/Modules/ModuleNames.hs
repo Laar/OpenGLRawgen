@@ -102,42 +102,39 @@ askCorePath = return corePath
 
 -- (Temporary) category to modulename mapping
 categoryModule :: RawGenMonad m => Category -> m ModuleName
-categoryModule (Version ma mi d) = return .
+categoryModule (Version ma mi prof) = return .
     ModuleName
-        $ corePath <.> "Internal"
-        <.> ("Core" ++ show ma ++ show mi ++ if d then "Compatibility" else "")
-categoryModule (Extension ex n d) = return .
+        $ corePath
+        <.> ("Core" ++ show ma ++ show mi ++ profileNameExtension prof)
+categoryModule (Extension ex n prof) = return .
     ModuleName
-        $ moduleBase <.> upperFirst (show ex) <.> correctName n
-        ++ (if d then "Compatibility" else "")
-categoryModule (Name n) = throwRawError
-    $ "categoryModule: Category with only a name "
-    ++ upperFirst (show n)
+        $ moduleBase <.> upperFirst (vendorName ex) <.> correctName n
+        ++ profileNameExtension prof
+
+profileNameExtension :: Profile -> String
+profileNameExtension p = case p of
+    DefaultProfile -> []
+    ProfileName pn -> upperFirst pn
 
 -- | Query what the module type of a given module is.
 askCategoryModuleType :: RawGenMonad m => Category -> m ModuleType
-askCategoryModuleType (Version _ _ _)
-    = return Internal
-askCategoryModuleType (Extension e n d)
-    = return $ ExtensionMod e n d
-askCategoryModuleType (Name _)
-    = throwRawError "askCategoryModuleType: Name category encountered"
+askCategoryModuleType (Version ma mi prof)
+    = return $ CoreInterface ma mi prof
+askCategoryModuleType (Extension e n prof)
+    = return $ ExtensionMod e n prof
 
 -- | Asks the 'ModuleName' of a specific core profile
 askProfileModule
     :: RawGenMonad m 
     => Int -- ^ Major version
     -> Int -- ^ Minor version
-    -> Bool -- ^ Compatibility module?
+    -> Profile -- ^ The profile
     -> m ModuleName
-askProfileModule ma mi comp = do
-    cp <- askCorePath
-    return . ModuleName $ cp ++ ".Core" ++ show ma ++ show mi
-                ++ (if comp then "Compatibility" else "")
+askProfileModule ma mi prof = askCategoryModule (Version ma mi prof)
 
 -- | Asks the 'ModuleName' of the grouping module for a certain vendor
-askVendorModule :: RawGenMonad m => Extension -> m ModuleName
-askVendorModule e = return . ModuleName $ moduleBase <.> show e
+askVendorModule :: RawGenMonad m => Vendor -> m ModuleName
+askVendorModule e = return . ModuleName $ moduleBase <.> vendorName e
 
 -----------------------------------------------------------------------------
 

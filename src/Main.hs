@@ -21,7 +21,6 @@ module Main (
 import Control.Monad(when)
 import qualified Data.Foldable as F
 import Data.List(partition, sort)
-import Data.Monoid
 import System.Directory
 import System.Exit(exitSuccess)
 import System.FilePath((</>), dropFileName)
@@ -38,7 +37,7 @@ import Main.Monad
 import Main.Options
 
 import Spec
-import Spec.Parsing(parseSpecs, parseReuses, parseDeprecations)
+import Spec.Parsing(parseSpecs)
 
 
 import Interface.Module
@@ -59,53 +58,11 @@ main = do
 rmain :: RawGenIO ()
 rmain = do
     (lMap, vMap) <- parseSpecs
-    lMap' <- processReuses lMap
     opts <- askOptions
-    let lMap'' = cleanupSpec opts lMap'
-    depMap <- buildDeprecationMap
-    modules <- liftRawGen $ makeRaw (lMap'', vMap) depMap
+    let lMap' = cleanupSpec opts lMap
+    modules <- liftRawGen $ makeRaw (lMap', vMap)
     outputModules modules
     verifyInterface modules
-
--- | Parse and process the reuse files. It generates no warning if there is
--- no reuse file to parse
-processReuses :: LocationMap -> RawGenIO LocationMap
-processReuses lMap = do
-    o <- askOptions
-    let freuseP = freuseFile o
-        ereuseP = ereuseFile o
-    freuses <- getReuses freuseP
-    ereuses <- getReuses ereuseP
-    return $ addReuses freuses ereuses lMap
-    where
-        getReuses :: FilePath -> RawGenIO [(Category, [Category])]
-        getReuses fp = liftIO (doesFileExist fp) >>= \exists ->
-            if not exists
-             then return []
-             else liftIO (readFile fp) >>= \reuses ->
-                    liftEitherMsg 
-                        (\e -> "Parsing reuses failed with: " ++ show e)
-                        . parseReuses $ reuses
-
-buildDeprecationMap :: RawGenIO DeprecationMap
-buildDeprecationMap = do
-    enumDeprs <- readDeprecations enumDeprecationsFile
-    funcDeprs <- readDeprecations funcDeprecationsFile
-    return $
-        depMapFromList (enumDeprs :: [(EnumName, DeprecationRange)])
-        `mappend`
-        depMapFromList (funcDeprs :: [(FuncName, DeprecationRange)])
-    where
-        readDeprecations :: SpecValue sv => (RawGenOptions -> FilePath)
-                                -> RawGenIO [(ValueName sv, DeprecationRange)]
-        readDeprecations fileOption = do
-            fp <- asksOptions fileOption
-            exists  <- liftIO $ doesFileExist fp
-            if not exists
-             then return []
-             else liftIO (readFile fp) >>= \deprs ->
-                    liftEitherPrepend "Parsing deprecations failed with\n"
-                    . parseDeprecations $ deprs
 
 printVersion :: IO ()
 printVersion = putStrLn $ "OpenGLRawgen " ++ showVersion version

@@ -22,9 +22,7 @@ module Main.Options (
     hasFlag,
     dropExtension,
 
-    enumextFile, glFile, tmFile,
-    freuseFile, ereuseFile,
-    enumDeprecationsFile, funcDeprecationsFile,
+    specFile,
     stripNames, mkExtensionGroups,
     moduleHeader, moduleWarnings,
     outputDir, interfaceDir,
@@ -37,10 +35,10 @@ module Main.Options (
 import Data.Maybe
 import System.FilePath((</>))
 
-import Text.OpenGL.Spec(Extension)
-
 import System.Console.GetOpt
 import System.Environment(getArgs)
+
+import Language.OpenGLRaw.Base
 
 -----------------------------------------------------------------------------
 
@@ -66,27 +64,16 @@ options =
     , Option ['c'] ["old-comp"]
         (flag RawCompatibility)    "Create backward compatiblity modules"
     , Option [] ["no-vendor"]
-        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . read) "VENDOR")  "No modules for the specified vendor"
+        (ReqArg ((\v r -> return r{rgNoExtension = v : rgNoExtension r}) . Vendor) "VENDOR")  "No modules for the specified vendor"
     , Option [] ["no-vendorf"]
         (ReqArg extensionFile "FILE")   "No vendor modules from file"
-    , Option ['e'] ["enumext"]
-        (ReqArg (\f r -> return r{rgEnum = Just f}) "FILE") "The enumext.spec file to use"
-    , Option ['f'] ["gl"]
-        (ReqArg (\f r -> return r{rgGL = Just f}) "FILE") "The gl.spec file to use"
-    , Option ['t'] ["tm"]
-        (ReqArg (\f r -> return r{rgTM = Just f}) "FILE") "The gl.tm file to use"
-    , Option []    ["freuses"]
-        (ReqArg (\f r -> return r{rgFReuse = Just f}) "FILE") "The function reuse file"
-    , Option []    ["ereuses"]
-        (ReqArg (\f r -> return r{rgEReuse = Just f}) "FILE") "The enum reuse file"
-    , Option []    ["edeprs"]
-        (ReqArg (\f r -> return r{rgEDeprs = Just f}) "FILE") "The enum deprecation file"
-    , Option []    ["fdeprs"]
-        (ReqArg (\f r -> return r{rgFDeprs = Just f}) "FILE") "The function deprecation file"
+    , Option ['f'] ["spec"]
+        (ReqArg (\f r -> return r{rgSpecFile = Just f}) "FILE") "The gl.spec file to use"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
+-- TODO: this is broken, should it be included see GL_PRIMARY_COLOR(_NV) in NV_path_rendering
     , Option ['s'] ["strip"]
-        (NoArg $ \r -> return r{rgStripName = True, rgEGrouping = False}) "Enables striping of the extension suffixes from names, implies -G"
+        (NoArg $ \r -> return r{rgStripName = True, rgEGrouping = False}) "Enables striping of the extension suffixes from names, implies -G" 
     , Option ['S'] ["no-strip"]
         (NoArg $ \r -> return r{rgStripName = False}) "Disables striping of the extension suffixes from names"
     , Option ['g'] ["groups"]
@@ -108,7 +95,7 @@ options =
         flag :: RawGenFlag -> ArgDescr (RawGenOptions -> IO RawGenOptions)
         flag f = NoArg $ \rgo -> return rgo{rgFlags = f : rgFlags rgo }
         extensionFile f r = readFile f >>=
-            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map read . concatMap words . lines
+            (\es -> return $ r{rgNoExtension = es ++ rgNoExtension r}) . map Vendor . concatMap words . lines
 
 -- | Config flags used by the generator
 data RawGenFlag
@@ -128,14 +115,8 @@ mkOptions (opts, _) = foldl (>>=) (return defaultOptions) opts
 data RawGenOptions
     = RawGenOptions
     { rgFlags       :: [RawGenFlag]     -- ^ The given flags.
-    , rgNoExtension :: [Extension]      -- ^ The `Extension`s that should be dropped
-    , rgEnum        :: Maybe FilePath   -- ^ The location of the enumext.spec file.
-    , rgGL          :: Maybe FilePath   -- ^ The location of the gl.spec file.
-    , rgTM          :: Maybe FilePath   -- ^ The location of the gl.tm file.
-    , rgEReuse      :: Maybe FilePath   -- ^ The location of the enum reuse file.
-    , rgFReuse      :: Maybe FilePath   -- ^ The location of the function reuse file.
-    , rgEDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated enums.
-    , rgFDeprs      :: Maybe FilePath   -- ^ The location of the file with undeprecated functions.
+    , rgNoExtension :: [Vendor]         -- ^ The `CompExtension`s that should be dropped
+    , rgSpecFile    :: Maybe FilePath   -- ^ The location of the spec file.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
     , rgStripName   :: Bool             -- ^ Strip the names of extensions
     , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
@@ -149,13 +130,7 @@ defaultOptions
     = RawGenOptions
     { rgFlags       = []
     , rgNoExtension = []
-    , rgEnum        = Nothing
-    , rgGL          = Nothing
-    , rgTM          = Nothing
-    , rgEReuse      = Nothing
-    , rgFReuse      = Nothing
-    , rgEDeprs      = Nothing
-    , rgFDeprs      = Nothing
+    , rgSpecFile    = Nothing
     , rgFilesDir    = Nothing
     , rgStripName   = False
     , rgEGrouping   = True
@@ -170,21 +145,12 @@ defaultOptions
 hasFlag :: RawGenFlag -> RawGenOptions -> Bool
 hasFlag f o = f `elem` rgFlags o
 
--- | Check wheter an `Extension` should be removed
-dropExtension :: Extension -> RawGenOptions -> Bool
+-- | Check wheter extensions from a `Vendor` should be removed
+dropExtension :: Vendor -> RawGenOptions -> Bool
 dropExtension e o = e `elem` rgNoExtension o
 
-enumextFile, glFile, tmFile, freuseFile, ereuseFile,
-    enumDeprecationsFile, funcDeprecationsFile :: RawGenOptions -> FilePath
-enumextFile = getFile rgEnum "enumext.spec"
-glFile      = getFile rgGL   "gl.spec"
-tmFile      = getFile rgTM   "gl.tm"
-
-freuseFile = getFile rgFReuse "reusefuncs"
-ereuseFile = getFile rgEReuse "reuseenums"
-
-enumDeprecationsFile = getFile rgEDeprs "enumDeprecations"
-funcDeprecationsFile = getFile rgFDeprs "functionDeprecations"
+specFile :: RawGenOptions -> FilePath
+specFile = getFile rgSpecFile   "gl.xml"
 
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =

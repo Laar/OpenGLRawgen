@@ -37,19 +37,18 @@ import Modules.ModuleNames
 -----------------------------------------------------------------------------
 
 -- | Build the OpenGLRaw Package from the specification.
-makeRaw :: (LocationMap, ValueMap) -> DeprecationMap -> RawGen [RawModule]
-makeRaw spec depMap = snd <$> runBuilder spec (buildRaw depMap)
+makeRaw :: (LocationMap, ValueMap) -> RawGen [RawModule]
+makeRaw spec = snd <$> runBuilder spec buildRaw
 
 -- | The builder that really builds the Raw package by combining other
 -- builders.
-buildRaw :: DeprecationMap -> Builder ()
-buildRaw depMap = do
+buildRaw :: Builder ()
+buildRaw = do
     buildRawImports
-    addCoreProfiles
     addLatestProfileToRaw
     
     whenOption mkExtensionGroups addVendorModules
-    whenFlag RawCompatibility $ addCompatibilityModules depMap
+    whenFlag RawCompatibility $ addCompatibilityModules
 
 -----------------------------------------------------------------------------
 
@@ -64,11 +63,11 @@ addLatestProfileToRaw :: Builder ()
 addLatestProfileToRaw = do
     -- head is used as there ought to be at least a single CoreProfile available
     Version ma mi _ <- asksCategories $ minimumBy (compare `on` catRanking)
-    latestProf <- askProfileModule ma mi False
+    latestProf <- askProfileModule ma mi DefaultProfile
     bm <- askBaseModule
     addModule' bm TopLevelGroup $ tellReExportModule latestProf
     where
-        catRanking (Version ma mi False) = (-ma, -mi)
-        catRanking _                     = (1, 1)
+        catRanking (Version ma mi DefaultProfile) = (-ma, -mi)
+        catRanking _                              = (1, 1)
 
 -----------------------------------------------------------------------------
