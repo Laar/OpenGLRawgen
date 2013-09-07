@@ -55,12 +55,16 @@ addOldCoreTypes = do
     addModuleWithWarning modName
         Compatibility warning $ tellReExportModule typesModule
 
+-- | Creates the ARB.Compatibility module.
 addARBCompatibility :: Builder ()
 addARBCompatibility = do
     let modFilter1 cat = case cat of
             (Version _ _ (ProfileName "compatibility")) -> True
             _ -> False
     cats <- asksCategories $ filter modFilter1
+    -- The basis for the ARB.Compatibility module are those enums that are
+    -- part of a OpenGL version with compatibility profile but not in the
+    -- core profile of the same version.
     (enums, funcs) <- fmap mconcat $ forM cats $ \cat -> do
         let coreCat = case cat of
                 (Version ma mi _) -> Version ma mi DefaultProfile
@@ -80,6 +84,9 @@ addARBCompatibility = do
         mkReExport sv = do
             mloc <- getDefineLoc sv
             case mloc of
+                -- This module should be defined after the core modules have
+                -- been defined, and thus are all EnumNames/FuncNames already
+                -- defined.
                 Nothing  -> error $ "addARBCompatibility: Yet undefined enum" ++ show sv
                 Just cat -> do
                     n <- unwrapNameM sv
