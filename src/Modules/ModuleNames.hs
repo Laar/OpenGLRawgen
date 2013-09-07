@@ -118,8 +118,8 @@ profileNameExtension p = case p of
 
 -- | Query what the module type of a given module is.
 askCategoryModuleType :: RawGenMonad m => Category -> m ModuleType
-askCategoryModuleType (Version _ _ _)
-    = return Internal
+askCategoryModuleType (Version ma mi prof)
+    = return $ CoreInterface ma mi prof
 askCategoryModuleType (Extension e n prof)
     = return $ ExtensionMod e n prof
 
