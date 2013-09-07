@@ -28,8 +28,6 @@ import Spec
 import Modules.Builder
 import Modules.ModuleNames
 
-import Debug.Trace
-
 -----------------------------------------------------------------------------
 
 -- | Builds a single module by adding the nessacery FFI imports and
@@ -61,9 +59,7 @@ addEnum c n = do
         Nothing -> do
             mk <- enumLookup n
             case mk of
-                -- This should not happen, but with the spec it is
-                -- always the question.
-                Nothing -> trace (show n ++ " not found") $ return ()
+                Nothing -> throwRawError $ "addEnum: " ++ show n ++ " not found"
                 Just x -> do
                     addDefineLoc n c
                     case x of
