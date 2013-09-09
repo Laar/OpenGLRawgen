@@ -103,6 +103,8 @@ addARBCompatibility = do
 
 -----------------------------------------------------------------------------
 
+-- Manual fix of the DeprText printing bug in haskell-src-exts for versions 
+-- <1.14. This is needed as build it on travis results in a timeout.
 deprText :: String -> WarningText
 #if MIN_VERSION_haskell_src_exts(1,14,0)
 deprText = DeprText
