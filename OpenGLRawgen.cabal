@@ -39,7 +39,7 @@ executable OpenGLRawgen
     containers -any,
     directory -any,
     filepath -any,
-    haskell-src-exts -any,
+    haskell-src-exts >=1.14.0,
     mtl -any,
     opengl-xmlspec -any,
     parsec -any,
