@@ -39,7 +39,8 @@ executable OpenGLRawgen
     containers -any,
     directory -any,
     filepath -any,
-    haskell-src-exts >=1.14.0,
+-- The 1.14 version has a necessary fix but takes to long to build on travis
+    haskell-src-exts >=1.13.0, 
     mtl -any,
     opengl-xmlspec -any,
     parsec -any,

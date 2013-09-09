@@ -43,7 +43,7 @@ addCompatibilityModules = do
 addOldCoreProfile :: Int -> Int -> Builder ()
 addOldCoreProfile ma mi =
     let modName = ModuleName $ "Graphics.Rendering.OpenGL.Raw.Core" ++ show ma ++ show mi
-        warning = DeprText "The core modules are moved to Graphics.Rendering.OpenGL.Raw.Core.CoreXY"
+        warning = deprText "The core modules are moved to Graphics.Rendering.OpenGL.Raw.Core.CoreXY"
     in do cp <- askProfileModule ma mi DefaultProfile
           addModuleWithWarning modName 
                 Compatibility warning $ tellReExportModule cp
@@ -51,7 +51,7 @@ addOldCoreProfile ma mi =
 addOldCoreTypes :: Builder ()
 addOldCoreTypes = do
     let modName = ModuleName "Graphics.Rendering.OpenGL.Raw.Core31.Types"
-        warning = DeprText "The OpenGL types are moved to Graphics.Rendering.OpenGL.Raw.Types ."
+        warning = deprText "The OpenGL types are moved to Graphics.Rendering.OpenGL.Raw.Types ."
     typesModule <- askTypesModule
     addModuleWithWarning modName
         Compatibility warning $ tellReExportModule typesModule
@@ -81,7 +81,7 @@ addARBCompatibility = do
         return (enums', funcs')
 
     let modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
-        warning = DeprText "The ARB.Compatibility is combined with the profiles."
+        warning = deprText "The ARB.Compatibility is combined with the profiles."
         mkReExport sv = do
             mloc <- getDefineLoc sv
             case mloc of
@@ -101,4 +101,12 @@ addARBCompatibility = do
         askCategoryModule (Extension (Vendor "ARB") "imaging" (ProfileName "compatibility"))
             >>= tellReExportModule
 
+-----------------------------------------------------------------------------
+
+deprText :: String -> WarningText
+#if MIN_VERSION_haskell_src_exts(1,14,0)
+deprText = DeprText
+#else
+deprText t = DeprText $ "\"" ++ t ++ "\""
+#endif
 -----------------------------------------------------------------------------
