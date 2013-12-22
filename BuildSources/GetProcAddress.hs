@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, CPP #-}
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Graphics.Rendering.OpenGL.Raw.GetProcAddress
+-- Module      :  Graphics.Rendering.OpenGL.Raw.Internal.GetProcAddress
 -- Copyright   :  (c) Sven Panne 2009
 -- License     :  BSD-style (see the file LICENSE)
 --

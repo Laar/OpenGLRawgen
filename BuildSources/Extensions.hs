@@ -1,7 +1,7 @@
 -- #hide
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Graphics.Rendering.OpenGL.Raw.Extensions
+-- Module      :  Graphics.Rendering.OpenGL.Raw.Internal.Extensions
 -- Copyright   :  (c) Sven Panne 2009
 -- License     :  BSD-style (see the file LICENSE)
 --
