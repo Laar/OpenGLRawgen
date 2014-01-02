@@ -3,7 +3,7 @@
 -- #hide
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Graphics.Rendering.OpenGL.Raw.TypesInternal
+-- Module      :  Graphics.Rendering.OpenGL.Raw.Types
 -- Copyright   :  (c) Sven Panne 2009
 -- License     :  BSD-style (see the file LICENSE)
 --
