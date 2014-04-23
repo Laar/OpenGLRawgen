@@ -48,9 +48,12 @@ type GLuint64   = Word64
 type GLhandle = CUInt
 type GLsync   = Ptr ()
 type GLvdpauSurface = GLintptr
+-- | Fixed point type for OES_fixed_point extension.
+type GLfixed = CInt
 
 newtype CLevent = CLEvent (Ptr CLevent)
 newtype CLcontext = CLContext (Ptr CLcontext)
 -- both are actually function pointers
 type GLdebugproc =  FunPtr (GLenum -> GLenum -> GLuint -> GLenum -> GLsizei 
                                 -> Ptr GLchar -> Ptr () -> IO ())
+
