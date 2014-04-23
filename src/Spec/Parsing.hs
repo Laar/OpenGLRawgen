@@ -344,6 +344,10 @@ convertAliasType n = case n of
     "GLDEBUGPROCKHR"    -> TCon "GLdebugproc"
     "GLhandleARB"       -> TCon "GLhandle"
     "GLvdpauSurfaceNV"  -> TCon "GLvdpauSurface"
-    _                   -> error $ "alias type " ++ n
+    _                   -> error $ unlines
+        [ "Unknown alias type " ++ n
+        , "Currently the translation of alias types is hardcoded,"
+        , "please add the alias type to 'convertAliasType'"
+        ]
 
 -----------------------------------------------------------------------------
