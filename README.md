@@ -1,7 +1,7 @@
 # OpenGLRawgen
 
 OpenGLRawgen is a generator tool to make a Raw FFI import of OpenGL to
-haskell in style of OpenGLRaw.
+Haskell in style of OpenGLRaw.
 
 [![Build Status](https://travis-ci.org/Laar/OpenGLRawgen.png)](https://travis-ci.org/Laar/OpenGLRawgen)
 
@@ -9,40 +9,58 @@ haskell in style of OpenGLRaw.
 
 The current (01-2013) OpenGLRaw is quite outdated and not practical to
 keep up to date as everything needs to be done by hand. The goal of this
-project is to make a generator which can produce most the otherwise
-handwritten source of OpenGLRaw. Therefore it tries to keep the work
-needed to generate a new version to a minimum and keeping in mind the
-current conventions, while also trying to take advantage of the extra
-processing power available.
+project is to make a generator which can produce most of the otherwise
+handwritten source of OpenGLRaw. The generated sources should strike a
+balance between being similar to OpenGLRaw and being future proof.
 
 ## Output
-The generator has creates all sources in the
-`Graphics.Rendering.OpenGL.Raw` namespace. In which it will generate
-several sub namespace.
+The generator creates all sources in the
+`Graphics.Rendering.OpenGL.Raw` namespace, which is currently hard 
+coded. In will generate
 
-* `Core.Internal` is generated to house all the code to describe the
-  functions and enumerations which are part of a certain
-  specification of OpenGL. Parts are put into modules based on the
-  first version of the specification to which they were added.
-* Extension granter namespaces e.g. `ARB` and `NV`, for each extension
-  granting entity there will be a separate namespace which will
-  contain all there extensions.
+* The top level module `Raw.hs`, which will export the most recent
+  Core version of OpenGL.
+* The `Core` namespace for the definition of the OpenGL profiles. This
+  will in turn contain
+  * Modules `CoreXY` and `CoreXYCompatibility` which contain the 
+    functions and enumerations for OpenGL version X.Y, one for the
+    Core profile and one for the one with Compatibility profile. 
+    These modules are build by reexporting from the internal modules.
+  * Modules `Internal.CoreXY` and `Internal.CoreXYCompatibility`
+    for the definitions of enumerations and functions that are 
+    introduced in version XY of OpenGL. The Compatibility version 
+    contains the ones that were later deprecated.
+* Extension granter (e.g. `ARB` and `NV`) modules and namespaces, where
+  each extension gets its own module under the namespace of the maker.
+  For example the `ARB_sync` extension is created in the module
+  `ARB.Sync`. All the extensions of a single maker are grouped under a
+  module with the name of the vendor (e.g. `ARB.hs`). Though this latter
+  functionality can be disabled.
 
-Furthermore it will make several extra modules to group functions and
-enumerations. Most importantly there are modules to do the grouping for
-a specific version of the OpenGl specification, they can be found in the
-subnamespace `Core`.
+Furthermore if asked (`-c` flag) it can generate modules for backwards
+compatibility with the old OpenGLRaw. These are `Core31` and `Core32`
+and `Core31.Types`.
+
+Apart from the Haskell sources the generator also outputs several other 
+files.
+* For generating a cabal file it creates `modulesI.txt` and 
+  `modulesE.txt` which contain all the internal and exposed modules for
+  in the cabal file.
+* A set of interface files describing the mapping between OpenGL names
+  and the corresponding Haskell names, including the module from which 
+  they are exported.
 
 ### Building
 Several steps are needed to be preformed to generate a working cabal
 package out of the generated sources. These steps are detailed in
-`BuildSources.BUILDING.md`.
+`BuildSources.BUILDING.md`. All the steps are also combined, mostly for
+testing purposes, in the `testbuild.sh` script.
 
 ### Other sources
 Some building blocks of the OpenGLRaw package have been reused from the
 old package. These parts are those representing types and the several of
 the internals (e.g. the ones for retrieving proc-addresses). These are
-also found in `BuildSources`, with there License.
+also found in `BuildSources`, with their License.
 
 ## Changes from OpenGLRaw
 There are of course some changes from the OpenGLRaw. (The list is
@@ -57,16 +75,24 @@ every binding.
 ### Naming schemes
 The old naming scheme for functions and enumeration was not very clear
 on when the extension suffixes should be kept for a function and when
-not. It seemed to depend on whether or not the specification for the
-function is the same as the one without suffix.
-The generator on the other hand needs a clear naming scheme, though
-then there is the choice on what to do with the suffixes. Two simple
-naming schemes have been included in the generator. -s Gives a version
-where all extension suffixes have been removed, -S will result in
-keeping all suffixes. -S is default as it results in the least trouble.
-As a consequence of name clashes with the -s option, the grouping
-modules for extension granters (e.g. `ARB` and `NV`) have been
-disabled.
+not. It seemed to keep the suffix only when there is a version without
+suffix and the one without suffix is different in specification is
+different from the one with suffix.
+
+Implementing such a naming scheme in the generator would require quite
+a bit of extra information about the equality of functions. In the past
+the generator included two naming schemes, one where all suffixes are 
+kept while the other dropped all of them. After the introduction of the
+specification in xml format it became clear that the dropping version
+would generate many name clashes. Therefore it was disabled and later
+removed. The only naming scheme now available is to keep all extension
+names.
+
+An example such a name clash is `PRIMARY_COLOR` and `PRIMARY_COLOR_NV`
+in the `NV_path_rendering` extension, which would both be mapped to 
+`gl_PRIMARY_COLOR` while they have different numerical values.
+Furthermore there are also similar clashes that would prevent the
+generation of extension grouping modules. 
 
 ## Implementation
 The generator can roughly be split in several steps.
@@ -92,23 +118,15 @@ Apart from these steps there are several other modules,
 ### 1. Parsing
 The implementation is based around the .spec files from the OpenGL
 [registry][] which provide a source of all function and enumerations in
-use. The (slightly corrected) files are parsed by [noteeds spec parser][parser]
-. As some information is only available in the comments of the spec
-files two extra files are used to represent the reusing of functions and
-enumerations from other categories. All the parsing code can be found in
-`Spec.Parsing`.
-
+use. The files are parsed by a separately packaged [spec parser][parser]
+. 
 [registry]: http://www.opengl.org/registry/#specfiles
-[parser]: https://raw.github.com/noteed/opengl-api
+[parser]: https://github.com/Laar/opengl-xmlspec
 
 ### 2. Processing
-The further processing is relatively simple. Some information about
-reusing definitions from other categories is buried in comments. These
-reuses are specified by two files (`enumreuses` and `funcreuses`). As
-the amount of extensions is quite large there is the possibility to
-exclude them based on vendor. Therefore a file (`novendor`) is used to
-filter the categories.
-
+The further processing is relatively simple. As the amount of extensions
+is quite large there is the possibility to exclude them based on vendor.
+ Therefore a file (`novendor`) is used to filter the categories.
 
 ### 3. `RawModule` generating
 The translation from the specification to code is done via `RawModule`,
@@ -148,10 +166,10 @@ managed by using git submodules. The current submodules are
 
 * `CodeGenerating` to add some extra functions to `haskell-src-exts` for
   generating source code.
-* `opengl-api` the [parser][parser] from noteed, which needs to be
-  patched for the latest version of the spec files.
+* `opengl-xml` the [parser][parser] for the xml specification.
 * `OpenGLRawgenBase` basic types also used in the interface, which could
-  be used without the generator.
+  be used without the generator. This also includes the interface reader
+  and writer.
 
 To simplify the installation (for both
 users and travis CI) there is a dependecy installation script 
