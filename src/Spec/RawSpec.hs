@@ -209,10 +209,7 @@ instance SpecValue EnumValue where
         deriving (Eq, Ord, Show)
     wrapName = EN
     toGLName = GLName . unEN
-    unwrapName n o =
-        let name = unEN n
-            name' = if stripNames o then removeEnumExtension name else name
-        in Ident $ "gl_" ++ name'
+    unwrapName n _ = Ident $ "gl_" ++ unEN n 
     getValMap             = enumVMap
     modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
     getLocMap          = enumLMap
@@ -227,10 +224,7 @@ instance SpecValue FuncValue where
         deriving (Eq, Ord, Show)
     wrapName = FN
     toGLName = GLName . unFN
-    unwrapName n o =
-        let name = unFN n
-            name' = if stripNames o then removeFuncExtension name else name
-        in Ident $ "gl" ++ name'
+    unwrapName n _ = Ident $ "gl" ++ unFN n
     getValMap     = funcVMap
     modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
     getLocMap  = funcLMap

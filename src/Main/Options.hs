@@ -23,7 +23,7 @@ module Main.Options (
     dropExtension,
 
     specFile,
-    stripNames, mkExtensionGroups,
+    mkExtensionGroups,
     moduleHeader, moduleWarnings,
     outputDir, interfaceDir,
     -- * Retrieving the options
@@ -71,11 +71,6 @@ options =
         (ReqArg (\f r -> return r{rgSpecFile = Just f}) "FILE") "The gl.spec file to use"
     , Option ['d'] ["dir"]
         (ReqArg (\d r -> return r{rgFilesDir = Just d}) "DIR") "The directory to find the files"
--- TODO: this is broken, should it be included see GL_PRIMARY_COLOR(_NV) in NV_path_rendering
-    , Option ['s'] ["strip"]
-        (NoArg $ \r -> return r{rgStripName = True, rgEGrouping = False}) "Enables striping of the extension suffixes from names, implies -G" 
-    , Option ['S'] ["no-strip"]
-        (NoArg $ \r -> return r{rgStripName = False}) "Disables striping of the extension suffixes from names"
     , Option ['g'] ["groups"]
         (NoArg $ \r -> return r{rgEGrouping = True}) "Enables the generation of Extension group modules"
     , Option ['G'] ["no-groups"]
@@ -118,7 +113,6 @@ data RawGenOptions
     , rgNoExtension :: [Vendor]         -- ^ The `CompExtension`s that should be dropped
     , rgSpecFile    :: Maybe FilePath   -- ^ The location of the spec file.
     , rgFilesDir    :: Maybe FilePath   -- ^ The location to search for files
-    , rgStripName   :: Bool             -- ^ Strip the names of extensions
     , rgEGrouping   :: Bool             -- ^ Adds all the grouping modules for extensions
     , rgModHeader   :: Maybe String     -- ^ An optional header above the module
     , rgModWarns    :: Bool             -- ^ Warning and deprecation texts on modules
@@ -132,7 +126,6 @@ defaultOptions
     , rgNoExtension = []
     , rgSpecFile    = Nothing
     , rgFilesDir    = Nothing
-    , rgStripName   = False
     , rgEGrouping   = True
     , rgModHeader   = Nothing
     , rgModWarns    = True
@@ -155,9 +148,6 @@ specFile = getFile rgSpecFile   "gl.xml"
 getFile :: (RawGenOptions -> Maybe FilePath) -> FilePath -> RawGenOptions -> FilePath
 getFile directGet name rgo =
     fromMaybe (maybe id (</>) (rgFilesDir rgo) $ name) $ directGet rgo
-
-stripNames :: RawGenOptions -> Bool
-stripNames = rgStripName
 
 mkExtensionGroups :: RawGenOptions -> Bool
 mkExtensionGroups = rgEGrouping
