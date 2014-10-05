@@ -69,7 +69,7 @@ toExport mp = case mp of
     DefineFunc      n _ _ _ _ -> nameExport n
     ReExportModule  mn        -> EModuleContents mn
     where
-        nameExport = EVar . UnQual
+        nameExport = eVar
 
 toImport :: ModulePart -> Imports
 toImport mp = case mp of
@@ -111,7 +111,7 @@ toImportDecls = map (uncurry toImportDecl) . M.toList . importMap
     where
         toImportDecl :: ModuleName -> Import -> ImportDecl
         toImportDecl mn IAll         = importAll mn
-        toImportDecl mn (IThings is) = partialImport mn . map IVar $ S.toList is
+        toImportDecl mn (IThings is) = partialImport mn . map iVar $ S.toList is
 
 -- | Import a single item.
 singletonImport :: Imported -> Imports

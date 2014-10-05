@@ -34,7 +34,7 @@ executable OpenGLRawgen
     Code.ModuleCode
     Code.PostProcessing
   build-depends:
-    CodeGenerating >=0.1.0 && <0.3.0,
+    CodeGenerating >=0.1.0 && <0.4.0,
     base >=4,
     containers -any,
     directory -any,
