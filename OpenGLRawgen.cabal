@@ -42,7 +42,7 @@ executable OpenGLRawgen
 -- The 1.14 version has a necessary fix but takes to long to build on travis
     haskell-src-exts >=1.11.1, 
     mtl -any,
-    opengl-xmlspec -any,
+    opengl-xmlspec >= 0.2,
     parsec -any,
     OpenGLRawgenBase,
     OpenGLRawInterface

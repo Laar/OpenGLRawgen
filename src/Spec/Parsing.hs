@@ -296,6 +296,7 @@ convertType ct = case ct of
         t'          -> TPtr t'
     P.BaseType bt   -> convertBaseType bt
     P.AliasType n   -> convertAliasType n
+    P.ArrayOf t _   -> TPtr $ convertType t
 
 convertStruct :: String -> FType
 convertStruct n = case n of
