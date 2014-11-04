@@ -1,13 +1,18 @@
 language: haskell
-before_install:
+#before_install:
 #    - git submodule update --init --recursive
-    - sudo apt-get install libghc-cmdargs-dev
-    - sudo apt-get install libghc-src-exts-dev
-    - sudo apt-get install libghc-hxt-dev
+#    - sudo apt-get install libghc-cmdargs-dev
+#    - sudo apt-get install libghc-src-exts-dev
+#    - sudo apt-get install libghc-hxt-dev
 install: 
 #    - cabal install opengl-api/ CodeGenerating/ OpenGLRawgenBase/OpenGLRawgenBase/
 #    - cabal install --only-dependencies --enable-tests
-     - ./depsinstall.sh cabal
+    - ghc-pkg list
+    - sudo apt-get install libghc-cmdargs-dev
+    - sudo apt-get install libghc-src-exts-dev
+    - sudo apt-get install libghc-hxt-dev
+    - ghc-pkg list
+    - ./depsinstall.sh cabal
 script: 
     - cabal configure
     - cabal build
