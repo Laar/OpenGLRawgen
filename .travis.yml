@@ -39,13 +39,6 @@ before_install:
 
 
 install: 
-#    - cabal install opengl-api/ CodeGenerating/ OpenGLRawgenBase/OpenGLRawgenBase/
-#    - cabal install --only-dependencies --enable-tests
-#    - ghc-pkg list
-#    - sudo apt-get install libghc-cmdargs-dev
-#    - sudo apt-get install libghc-src-exts-dev
-#    - sudo apt-get install libghc-hxt-dev
-#    - ghc-pkg list
     - ./depsinstall.sh $CABAL
 script: 
     - $CABAL configure
