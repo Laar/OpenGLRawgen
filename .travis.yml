@@ -38,9 +38,9 @@ before_install:
     fi
 
 
-install: 
+install:
     - ./depsinstall.sh $CABAL
-script: 
+script:
     - $CABAL configure
     - $CABAL build
     - ./testrun.sh
