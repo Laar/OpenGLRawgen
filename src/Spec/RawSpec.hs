@@ -19,13 +19,12 @@ module Spec.RawSpec (
     -- * The `RawSpec` and associates
     Category(..) , -- Convenience
     
-    ValueType(..), FType(..),
+    Value(..),
+    VName(),
+    NameType(..),
 
-    SpecValue(wrapName, unwrapName, getDefLocation, addDefLocation),
-    ValueName(),
+    wrapName, unwrapName,
 
-    EnumValue(..), EnumName,
-    FuncValue(..), FuncName,
     
     GLName, toGLName,
     -- * ValueMap
@@ -37,12 +36,14 @@ module Spec.RawSpec (
     addLocation,
     categoryValues,
     deleteCategory,
-    swapEnumValue,
+    swapValue,
     allCategories,
 
     -- * DefineMap
     DefineMap,
     emptyDefineMap,
+    getDefLocation,
+    addDefLocation,
 ) where
 
 -----------------------------------------------------------------------------
@@ -57,50 +58,44 @@ import Data.Maybe
 
 import Language.OpenGLRaw.Base
 
-import Main.Options
+-----------------------------------------------------------------------------
+
+data Value
+    = EValue Integer  ValueType
+    | ReUse  VName
+    | RawFunc
+        FType
+        [FType]
+        (Maybe VName)
+    deriving (Eq, Ord, Show)
+
+data VName = VName NameType String
+    deriving (Eq, Ord, Show)
+
+data NameType
+    = EnumName
+    | FuncName
+    deriving (Eq, Ord, Show)
 
 -----------------------------------------------------------------------------
 
--- | The real values of an enum
-data EnumValue
-    -- | A localy defined enumvalue
-    = Value     Integer   ValueType
-    | ReUse     EnumName  ValueType
-    deriving (Eq, Ord, Show)
-
--- | The specification of how the function is defined
-data FuncValue
-    = RawFunc
-        FType   -- ^ Return type without IO
-        [FType] -- ^ Types of the arguments
-        (Maybe FuncName) -- ^ The possible alias.
-    deriving (Eq, Ord, Show)
-
------------------------------------------------------------------------------
-
-type ValMap sv = M.Map (ValueName sv) sv
-
--- | Mapping from `ValueName`s to `SpecValue`s for looking up their values.
-data ValueMap
-    = ValMap
-    { enumVMap :: ValMap EnumValue
-    , funcVMap :: ValMap FuncValue
-    }
+-- | The mapping from Name to details of the definition.
+newtype ValueMap = ValMap (M.Map VName Value)
 
 instance Monoid ValueMap where
-    mempty = ValMap M.empty M.empty
-    ValMap e1 f1 `mappend` ValMap e2 f2 = ValMap (e1 <> e2) (f1 <> f2)
+    mempty = ValMap mempty
+    ValMap v1 `mappend` ValMap v2 = ValMap $ v1 <> v2
 
 -- | Adds a value to the `ValueMap`.
-addValue :: SpecValue sv => ValueName sv -> sv -> ValueMap -> ValueMap
-addValue vn val = modifyValMap (M.insert vn val)
+addValue :: VName -> Value -> ValueMap -> ValueMap
+addValue vn v (ValMap vm) = ValMap $ M.insert vn v vm
+
 
 -- | Lookup the the `SpecValue` for a given `ValueName`
-lookupValue :: SpecValue sv => ValueName sv -> ValueMap -> Maybe sv
-lookupValue sv rs = M.lookup sv $ getValMap rs
+lookupValue :: VName -> ValueMap -> Maybe Value
+lookupValue vn (ValMap vm) = M.lookup vn vm
 
--- | Swaps an `EnumValue` if it's an ReUse directive with the reused
--- definition. Thus if it was originally
+-- | Swaps a `ReUse` with the reused definition. E.g. with the original
 -- @
 -- Enum1 = 5
 -- Enum2 = Enum1
@@ -110,127 +105,73 @@ lookupValue sv rs = M.lookup sv $ getValMap rs
 -- Enum1 = Enum2
 -- Enum2 = 5
 -- @
--- Useful for reordering dependencies.
-swapEnumValue :: EnumName -> ValueMap -> ValueMap
-swapEnumValue e1 rawSpec = case lookupValue e1 rawSpec of
-    Just (ReUse e2 ty) ->
-        let mv2@(Just v2) = lookupValue e2 rawSpec
-            rawSpec' = addValue e1 v2
-                     . addValue e2 (ReUse e1 ty)
-                     $ rawSpec
-        in maybe rawSpec (const rawSpec') mv2
-    _ -> rawSpec
+-- Useful for reordering dependencies to prevent circular ones.
+swapValue :: VName -> ValueMap -> ValueMap
+swapValue n1 spec = case lookupValue n1 spec of
+    Just (ReUse n2) -> case lookupValue n2 spec of
+        Nothing -> spec
+        -- Here we add v2, which could be either a definition or another
+        -- reuse indirection.
+        Just v2 -> addValue n1 v2 $ addValue n2 (ReUse n1) spec
+    _ -> spec
 
 -----------------------------------------------------------------------------
 
-type LocMap sv = M.Map Category (S.Set (ValueName sv))
-
--- | Mapping of `Category`s to the `ValueName`s it contains.
-data LocationMap
-    = LocMap
-    { enumLMap :: LocMap EnumValue
-    , funcLMap :: LocMap FuncValue
-    }
+-- | The mapping from `Category` to the values it contains.
+newtype LocationMap = LocMap (M.Map Category (S.Set VName))
 
 instance Monoid LocationMap where
-    mempty = LocMap M.empty M.empty
-    LocMap e1 f1 `mappend` LocMap e2 f2
-        = LocMap (M.unionWith S.union e1 e2) (M.unionWith S.union f1 f2)
+    mempty = LocMap mempty
+    LocMap l1 `mappend` LocMap l2
+        = LocMap $ M.unionWith S.union l1 l2
 
 -- | Listing of all `Category`s
 allCategories :: LocationMap -> [Category]
-allCategories rs = S.toList $ S.union ecats fcats
-    where
-        ecats = M.keysSet . enumLMap $ rs
-        fcats = M.keysSet . funcLMap $ rs
+allCategories (LocMap l) = S.toList $ M.keysSet l
 
 -- | Adds the location where a value is used.
-addLocation :: SpecValue sv
-    => Category -> ValueName sv -> LocationMap -> LocationMap
-addLocation cat vn
-    = modifyLocMap (M.insertWith S.union cat $ S.singleton vn)
+addLocation :: Category -> VName -> LocationMap -> LocationMap
+addLocation cat vn (LocMap l)
+    = LocMap $ M.insertWith S.union cat (S.singleton vn) l
 
 -- | Deletes a `Category` from the `LocationMap`.
 deleteCategory :: Category -> LocationMap -> LocationMap
-deleteCategory c
-	= modifyLocMap (M.delete c :: LocMap EnumValue -> LocMap EnumValue)
-	. modifyLocMap (M.delete c :: LocMap FuncValue -> LocMap FuncValue)
+deleteCategory c (LocMap l) = LocMap $ M.delete c l
 
 -- | Set of all value's in a `Category`
-categoryValues :: SpecValue sv
-    => Category -> LocationMap -> S.Set (ValueName sv)
-categoryValues c rs = fromMaybe S.empty . M.lookup c $ getLocMap rs
+categoryValues :: Category -> LocationMap -> S.Set VName
+categoryValues c (LocMap l) = fromMaybe S.empty$ M.lookup c l
 
 -----------------------------------------------------------------------------
 
-type DefMap sv = M.Map (ValueName sv) Category
-
--- | Definition map, which records where each value is used first.
-data DefineMap
-    = DefMap
-    { enumDMap :: DefMap EnumValue
-    , funcDMap :: DefMap FuncValue
-    }
-
+-- Mapping of a name to the Category in which it is first defined.
+newtype DefineMap
+    = DefMap (M.Map VName Category)
 instance Monoid DefineMap where
-    mempty = emptyDefineMap
-    DefMap e1 f1 `mappend` DefMap e2 f2 = DefMap (e1 <> e2) (f1 <> f2)
+    mempty = DefMap mempty
+    DefMap d1 `mappend` DefMap d2 = DefMap $ d1 <> d2
+
+getDefLocation :: VName -> DefineMap -> Maybe Category
+getDefLocation vn (DefMap d) = M.lookup vn d
+
+addDefLocation :: VName -> Category -> DefineMap -> DefineMap
+addDefLocation vn c (DefMap d) = DefMap $ M.insert vn c d
 
 emptyDefineMap :: DefineMap
-emptyDefineMap = DefMap M.empty M.empty
-
+emptyDefineMap = mempty
 
 -----------------------------------------------------------------------------
 
--- | A class to generalize over the value types (EnumValue and FuncValue) in
--- the Mappings to reduce boilerplate code
-class (Ord (ValueName sv), Show (ValueName sv)) => SpecValue sv where
-    data ValueName sv
-    wrapName    :: String -> ValueName sv
-    -- | Return the original OpenGLName (as in the specification).
-    toGLName    :: ValueName sv -> GLName
-    unwrapName  :: ValueName sv -> RawGenOptions -> Name
+wrapName :: NameType -> String -> VName
+wrapName = VName
 
-    getValMap         :: ValueMap -> ValMap sv
-    modifyValMap      :: (ValMap sv -> ValMap sv)
-                                -> ValueMap -> ValueMap
-    getLocMap      :: LocationMap -> LocMap sv
-    modifyLocMap   :: (LocMap sv -> LocMap sv)
-                                -> LocationMap -> LocationMap
+toGLName :: VName -> GLName
+toGLName (VName _ n) = GLName n
 
-    getDefLocation      :: ValueName sv -> DefineMap -> Maybe Category
-    addDefLocation      :: ValueName sv -> Category
-                                -> DefineMap -> DefineMap
-
-type EnumName = ValueName EnumValue
-
-instance SpecValue EnumValue where
-    newtype ValueName EnumValue = EN{ unEN :: String }
-        deriving (Eq, Ord, Show)
-    wrapName = EN
-    toGLName = GLName . unEN
-    unwrapName n _ = Ident $ "gl_" ++ unEN n 
-    getValMap             = enumVMap
-    modifyValMap    f r   = r{enumVMap = f $ enumVMap r}
-    getLocMap          = enumLMap
-    modifyLocMap f r   = r{enumLMap = f $ enumLMap r}
-    getDefLocation    n d   = M.lookup n $ enumDMap d
-    addDefLocation    n c d = d{enumDMap = M.insert n c $ enumDMap d}
-
-type FuncName = ValueName FuncValue
-
-instance SpecValue FuncValue where
-    newtype ValueName FuncValue = FN{ unFN :: String }
-        deriving (Eq, Ord, Show)
-    wrapName = FN
-    toGLName = GLName . unFN
-    unwrapName n _ = Ident $ "gl" ++ unFN n
-    getValMap     = funcVMap
-    modifyValMap    f r   = r{funcVMap = f $ funcVMap r}
-    getLocMap  = funcLMap
-    modifyLocMap f r   = r{funcLMap = f $ funcLMap r}
-    getDefLocation    n d   = M.lookup n $ funcDMap d
-    addDefLocation    n c d = d{funcDMap = M.insert n c $ funcDMap d}
+unwrapName :: VName -> Name
+unwrapName (VName nt n) = Ident $ case nt of
+    FuncName -> "gl" ++ n
+    EnumName -> "gl_"  ++ n
 
 -----------------------------------------------------------------------------
 

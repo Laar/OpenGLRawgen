@@ -32,7 +32,6 @@ module Modules.Builder (
     runBuilder,
 
     -- * ModuleBuilding related
-    unwrapNameM,
     tellPart,
     tellReExportModule,
     ModulePart(..),
@@ -43,7 +42,8 @@ module Modules.Builder (
     addDefineLoc,
     asksLocationMap,
     getsValueMap,modifyValueMap,
-    enumLookup,
+    valueLookup,
+    resolveValue,
 
     lift,
 ) where
@@ -145,9 +145,10 @@ addModuleWithWarning modName modType modWarning buildFunc = do
 
 -----------------------------------------------------------------------------
 
--- | Lifted version of `unwrapName` supplying the needed options.
-unwrapNameM :: (RawGenMonad m, SpecValue sv) => ValueName sv -> m Name
+{-
+unwrapNameM :: RawGenMonad m => ValueName sv -> m Name
 unwrapNameM = asksOptions . unwrapName
+-}
 
 -- | Adds a `ModulePart` to the module being build.
 tellPart :: ModulePart -> MBuilder ()
@@ -166,11 +167,11 @@ asksCategories f = asksLocationMap (f . allCategories)
 
 -- | Gets the category where a certain `ValueName` is defined, if it's not
 -- defined the result will be Nothing
-getDefineLoc :: SpecValue sv => ValueName sv -> MBuilder (Maybe Category)
+getDefineLoc :: VName -> MBuilder (Maybe Category)
 getDefineLoc vn = lgbuilder $ gets (getDefLocation vn . fst)
 
 -- | Adds the location of a value.
-addDefineLoc :: SpecValue sv => ValueName sv -> Category -> MBuilder ()
+addDefineLoc :: VName -> Category -> MBuilder ()
 addDefineLoc vn cat = lgbuilder $ modify (first $ addDefLocation vn cat)
 
 -- | Gets the `ValueMap`.
@@ -183,19 +184,30 @@ modifyValueMap f = lgbuilder $ modify (second f)
 asksLocationMap :: (LocationMap -> a) -> Builder a
 asksLocationMap = gbuilder . asks
 
--- | Looks up the the `EnumValue` associated with a given `EnumName`. It
--- ensures that in case of a `ReUse`, the reused value is defined.
-enumLookup :: EnumName -> MBuilder (Maybe EnumValue)
-enumLookup en = do
-    val <- getsValueMap $ lookupValue en
+-- | Lookup of a value, which in addition reorders the ReUses if its
+-- dependency is not yet defined.
+valueLookup :: VName -> MBuilder (Maybe Value)
+valueLookup name = do
+    val <- getsValueMap $ lookupValue name
     case val of
-        Just (ReUse en1 _) -> do
-            loc <- getDefineLoc en1
+        Just (ReUse rname) -> do
+            loc <- getDefineLoc rname
             case loc of
                 Just _ -> return val
-                Nothing -> do
-                    modifyValueMap $ swapEnumValue en
-                    enumLookup en
+                Nothing -> do -- Not defined, thus swapping
+                    modifyValueMap $ swapValue name
+                    -- Recursive lookup, this handles the case that the new
+                    -- definition is again a reuse directive.
+                    valueLookup name
         _ -> return val
+
+-- | Lookup for the original defining value. Which might be needed to get
+-- the type of a ReUse value.
+resolveValue :: VName -> MBuilder (Maybe Value)
+resolveValue name = do
+    val <- getsValueMap $ lookupValue name
+    case val of
+        Just (ReUse rname)  -> resolveValue rname
+        _                   -> return val
 
 -----------------------------------------------------------------------------

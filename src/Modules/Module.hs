@@ -34,61 +34,63 @@ import Modules.ModuleNames
 -- enumeration values for the category
 buildModule :: Category -> MBuilder ()
 buildModule c = do
-    funcs <- lift . asksLocationMap $ categoryValues c
-    enums <- lift . asksLocationMap $ categoryValues c
-
+  --  funcs <- lift . asksLocationMap $ categoryValues c
+  --  enums <- lift . asksLocationMap $ categoryValues c
+    values <- lift . asksLocationMap $ categoryValues c
     case c of
         Version _ _ _ -> askTypesModule >>= tellReExportModule
         _             -> return ()
-
-    mapM_  (addEnum c) $ S.toList enums
-    mapM_ (addFunc c) $ S.toList funcs
+    mapM_ (addDef c) $ S.toList values
+  --  mapM_  (addEnum c) $ S.toList enums
+  --  mapM_ (addFunc c) $ S.toList funcs
     
 -----------------------------------------------------------------------------
 
--- | Adds the enum value pair to the current module, the category is the
--- current category. Needed to determine if it can be redefined locally.
-addEnum :: Category -> EnumName -> MBuilder ()
-addEnum c n = do
-    let glname = toGLName n
-    name <- unwrapNameM n
+addDef :: Category -> VName -> MBuilder ()
+addDef c n = do
     loc <- getDefineLoc n
     case loc of
-        Just c' -> do c'Module <- askCategoryModule c'
-                      tellPart $ ReExport (name, c'Module) glname
+        -- It is already defined, so we can reexport it.
+        Just c' -> reexport c'
         Nothing -> do
-            mk <- enumLookup n
-            case mk of
-                Nothing -> throwRawError $ "addEnum: " ++ show n ++ " not found"
-                Just x -> do
-                    addDefineLoc n c
-                    case x of
-                        Value val ty -> tellPart $ DefineEnum name glname ty val
-                        ReUse reuseName ty -> do
-                            reuseName' <- unwrapNameM reuseName
-                            ic <- getDefineLoc reuseName
-                                >>= liftMaybe ("Couldn't find " ++ show reuseName)
-                            if ic == c
-                             then tellPart $ ReDefineLEnum name glname ty reuseName'
-                             else do
-                                icmod <- askCategoryModule ic
-                                tellPart $ ReDefineIEnum name glname ty (reuseName', icmod)
+            -- Lookup the value, this also ensures that we only get a ReUse
+            -- when it would point to an already defined value.
+            val <- valueLookup n
+            case val of
+                Nothing -> throwRawError $ "addDef: " ++ show n ++ " not found"
+                Just (EValue intval ty) ->
+                    tellDefinition $ DefineEnum name glname ty intval
+                Just (RawFunc ret args _) ->
+                    tellDefinition $ DefineFunc name ret args glname c
+                Just (ReUse rname) -> do
+                    -- If not defined it would have been swapped by the
+                    -- previous call to `valueLookup`.
+                    Just ic <- getDefineLoc rname
+                    let rname' = unwrapName rname
+                    -- Check if it is local, or that it needs to be imported.
+                    origin <- if ic == c
+                                then return Nothing
+                                else Just `fmap` askCategoryModule ic
+                    -- Lookup the definition to get the type of value (Enum or
+                    -- Func) and the corresponding value type.
+                    def     <- resolveValue rname
+                    case def of
+                        Nothing -> throwRawError $ "addDef: " ++ show n
+                                                    ++ "could not be resolved"
+                        Just (EValue _ ty) -> tellDefinition
+                            $ ReDefineEnum name glname ty (rname', origin)
+                        Just (RawFunc ret args _) -> tellDefinition
+                            $ ReDefineFunc name glname ret args (rname', origin)
+                        Just (ReUse _) -> error "addDef: impossible"
+  where
+    name   = unwrapName n
+    glname = toGLName n
+    tellDefinition def = do
+        addDefineLoc n c
+        tellPart def
+    reexport cat = do
+        modName <- askCategoryModule cat
+        tellPart $ ReExport (name, modName) glname
 
------------------------------------------------------------------------------
-
--- Adds the function to the module.
-addFunc :: Category -> FuncName -> MBuilder ()
-addFunc c n = do
-    let glname = toGLName n
-    Just (RawFunc rty atys _) <- getsValueMap $ lookupValue n
-    name <- unwrapNameM n
-    loc <- getDefineLoc n
-    case loc of
-        Nothing -> do
-            addDefineLoc n c
-            tellPart $ DefineFunc name rty atys glname c
-        Just c' -> do
-            c'Module <- askCategoryModule c'
-            tellPart $ ReExport (name, c'Module) glname
 
 -----------------------------------------------------------------------------

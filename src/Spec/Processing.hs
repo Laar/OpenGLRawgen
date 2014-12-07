@@ -43,23 +43,16 @@ addReuses
     -> LocationMap -> LocationMap
 addReuses reuseF reuseE spec = foldr ($) spec $ enumAdds ++ funcAdds
    where
-        enumAdds = map (uncurry
-            $ addReuse (undefined :: EnumValue)) reuseE
-        funcAdds = map (uncurry
-            $ addReuse (undefined :: FuncValue)) reuseF
+        enumAdds = map (uncurry addReuse) reuseE
+        funcAdds = map (uncurry addReuse) reuseF
 
 -- | Adds the Reuses for a specific `SpecValue` (only as a hint)
 -- to a Category from a list of Categorys
 addReuse
-    :: SpecValue sv
-    => sv -> Category -> [Category]
+    :: Category -> [Category]
     -> LocationMap -> LocationMap
-addReuse dummyValue cat addFrom rawSpec =
+addReuse cat addFrom rawSpec =
     let vals = mconcat (map (`categoryValues` rawSpec) addFrom)
-                    `asSetTypeOf` dummyValue
-        asSetTypeOf :: SpecValue sv
-            => S.Set (ValueName sv) -> sv -> S.Set (ValueName sv)
-        asSetTypeOf = const
     in S.foldr (addLocation cat) rawSpec vals
 -----------------------------------------------------------------------------
 

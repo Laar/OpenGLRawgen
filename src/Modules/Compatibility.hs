@@ -66,19 +66,13 @@ addARBCompatibility = do
     -- The basis for the ARB.Compatibility module are those enums that are
     -- part of a OpenGL version with compatibility profile but not in the
     -- core profile of the same version.
-    (enums, funcs) <- fmap mconcat $ forM cats $ \cat -> do
+    diffVals <- fmap mconcat $ forM cats $ \cat -> do
         let coreCat = case cat of
                 (Version ma mi _) -> Version ma mi DefaultProfile
                 _                 -> error "addARBCompatibility: Impossible"
-        catEnums  <- asksLocationMap $ categoryValues cat
-        coreEnums <- asksLocationMap $ categoryValues coreCat
-        catFuncs  <- asksLocationMap $ categoryValues cat
-        coreFuncs <- asksLocationMap $ categoryValues coreCat
-        let enums' :: S.Set EnumName
-            enums' = catEnums `S.difference` coreEnums
-            funcs' :: S.Set FuncName
-            funcs' = catFuncs `S.difference` coreFuncs 
-        return (enums', funcs')
+        catVals     <- asksLocationMap $ categoryValues cat
+        coreVals    <- asksLocationMap $ categoryValues coreCat
+        return $ catVals `S.difference` coreVals
 
     let modName = ModuleName "Graphics.Rendering.OpenGL.Raw.ARB.Compatibility"
         warning = deprText "The ARB.Compatibility is combined with the profiles."
@@ -90,12 +84,11 @@ addARBCompatibility = do
                 -- defined.
                 Nothing  -> error $ "addARBCompatibility: Yet undefined enum" ++ show sv
                 Just cat -> do
-                    n <- unwrapNameM sv
+                    let n = unwrapName sv
                     rmodName <- askCategoryModule cat
                     return $ ReExport (n, rmodName) $ toGLName sv
     addModuleWithWarning modName Compatibility warning $ do
-        mapM_ (mkReExport >=> tellPart) $ S.toList enums
-        mapM_ (mkReExport >=> tellPart) $ S.toList funcs
+        mapM_ (mkReExport >=> tellPart) $ S.toList diffVals
         -- Somehow the forgot to mention that ARB_imaging is part of the
         -- compatibility profile of OpenGL.
         askCategoryModule (Extension (Vendor "ARB") "imaging" (ProfileName "compatibility"))

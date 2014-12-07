@@ -46,11 +46,13 @@ toModule rmodule = do
     let parts = rawModuleParts rmodule
     fimports <- when' (any definesFunc parts) funcImports
     eimports <- when' (any definesEnum parts) enumImports
+    rimports <- when' (any redefines   parts) redefineImports
     let name = rawModuleName rmodule
         warning = rawModuleWarning rmodule
         exps    = map toExport parts
         imports = toImportDecls $ 
             foldMap toImport parts `mappend` fimports `mappend` eimports
+                                   `mappend` rimports
         prags =    if any definesFunc parts then funcPrags else []
                 ++ if any definesEnum parts then enumPrags else []
     decls <- concat <$> traverse toDecls parts
@@ -62,23 +64,23 @@ toModule rmodule = do
 
 toExport :: ModulePart -> ExportSpec
 toExport mp = case mp of
-    DefineEnum      n _ _ _   -> nameExport n
-    ReDefineLEnum   n _ _ _   -> nameExport n
-    ReDefineIEnum   n _ _ _   -> nameExport n
-    ReExport        (n,_) _   -> nameExport n
-    DefineFunc      n _ _ _ _ -> nameExport n
-    ReExportModule  mn        -> EModuleContents mn
+    DefineEnum     n _ _ _   -> nameExport n
+    ReDefineEnum   n _ _ _   -> nameExport n
+    ReDefineFunc   n _ _ _ _ -> nameExport n
+    ReExport       (n,_) _   -> nameExport n
+    DefineFunc     n _ _ _ _ -> nameExport n
+    ReExportModule mn        -> EModuleContents mn
     where
         nameExport = eVar
 
 toImport :: ModulePart -> Imports
 toImport mp = case mp of
-    DefineEnum{}          -> mempty
-    ReDefineLEnum{}       -> mempty
-    ReDefineIEnum _ _ _ i -> singletonImport i
-    ReExport      i _     -> singletonImport i
-    DefineFunc{}          -> mempty
-    ReExportModule mn     -> importMod mn
+    DefineEnum{}                -> mempty
+    ReDefineEnum _ _ _ (n, i)   -> maybe mempty (singletonImport . (,) n) i
+    ReDefineFunc _ _ _ _ (n, i) -> maybe mempty (singletonImport . (,) n) i
+    ReExport     i _            -> singletonImport i
+    DefineFunc{}                -> mempty
+    ReExportModule mn           -> importMod mn
 
 -----------------------------------------------------------------------------
 
@@ -147,8 +149,6 @@ funcPrags =
 
 definesEnum :: ModulePart -> Bool
 definesEnum DefineEnum{}    = True
-definesEnum ReDefineIEnum{} = True
-definesEnum ReDefineLEnum{} = True
 definesEnum _               = False
 
 -- | Extra imports needed when an enum is defined
@@ -159,25 +159,49 @@ enumImports = importMod <$> askTypesModule
 enumPrags :: [ModulePragma]
 enumPrags = []
 
+redefines :: ModulePart -> Bool
+redefines ReDefineEnum{} = True
+redefines ReDefineFunc{} = True
+redefines _              = False
+
+redefineImports :: RawGenMonad m => m Imports
+redefineImports = importMod <$> askTypesModule
+
 -----------------------------------------------------------------------------
 
 toDecls :: RawGenMonad m => ModulePart -> m [Decl]
-toDecls (DefineEnum    n _ t v)       = enumTemplate n t (Lit $ Int v)
-toDecls (ReDefineLEnum n _ t n')      = enumTemplate n t (var n')
-toDecls (ReDefineIEnum n _ t (n',_))  = enumTemplate n t (var n')
-toDecls (DefineFunc n rt ats gn c)    = funcTemplate n (fromFType rt ats) gn c
-toDecls _                             = pure []
+toDecls (DefineEnum   n _ t v)
+    = enumTemplate n t (Lit $ Int v)
+toDecls (ReDefineEnum n _ t (n', _))
+    = reuseTemplate n (fromEType t) (var n')
+toDecls (ReDefineFunc n _ rt ats (n',_))
+    = reuseTemplate n (fromFType rt ats) (var n')
+toDecls (DefineFunc   n rt ats gn c)
+    = funcTemplate n (fromFType rt ats) gn c
+toDecls _
+    = pure []
 
 -----------------------------------------------------------------------------
 
 enumTemplate :: RawGenMonad m => Name -> ValueType -> Exp -> m [Decl]
 enumTemplate name vType vExp =
-    pure [ oneTypeSig name vType'
+    pure [ oneTypeSig name $ fromEType vType
          , oneLiner name [] vExp]
-    where
-        vType' = case vType of
-            EnumValue       -> tyCon' "GLenum"
-            BitfieldValue   -> tyCon' "GLbitfield"
+
+fromEType :: ValueType -> Type
+fromEType vType = case vType of
+    EnumValue       -> tyCon' "GLenum"
+    BitfieldValue   -> tyCon' "GLbitfield"
+
+
+-----------------------------------------------------------------------------
+
+-- TODO: replace Exp?
+reuseTemplate :: RawGenMonad m => Name -> Type -> Exp -> m [Decl]
+reuseTemplate name ty rexp =
+    pure [ oneTypeSig name ty
+         , oneLiner name [] rexp
+         ]
 
 -----------------------------------------------------------------------------
 

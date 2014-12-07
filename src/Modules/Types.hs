@@ -50,11 +50,13 @@ data ModulePart
     = DefineEnum        Name GLName ValueType Integer
     -- | Define an enumeration value as an alias for another value in the
     -- same module.
-    | ReDefineLEnum     Name GLName ValueType Name
+--    | ReDefineLEnum     Name GLName ValueType Name
     -- | Define an enumeration value as an alias for another value, imported
     -- from another module.
-    | ReDefineIEnum     Name GLName ValueType Imported
+--    | ReDefineIEnum     Name GLName ValueType Imported
     -- | Reexport something (enum or function)
+    | ReDefineEnum     Name GLName ValueType     (Name, Maybe ModuleName)
+    | ReDefineFunc     Name GLName FType [FType] (Name, Maybe ModuleName)
     | ReExport          Imported GLName
     -- | Define a function.
     | DefineFunc        Name FType [FType]

@@ -80,7 +80,7 @@ enumVal :: ValueType -> P.GLEnum -> ValueMap
 enumVal ty e
     = addValue 
         (mkEnumName $ P.enumName e) 
-        (Value (P.enumValue e) ty)
+        (EValue (P.enumValue e) ty)
         mempty
 
 -- | The `ValueMap` for a single command.
@@ -95,11 +95,11 @@ funcVal com
     argTypes = map (convertType . P.paramType) $ P.commandParams com
     alias = mkFuncName `fmap` P.commandAlias com
 
-mkEnumName :: P.EnumName -> EnumName
-mkEnumName = wrapName . tryStrip "GL_" . (\(P.EnumName n') -> n')
+mkEnumName :: P.EnumName -> VName
+mkEnumName = wrapName EnumName . tryStrip "GL_" . (\(P.EnumName n') -> n')
 
-mkFuncName :: P.CommandName -> FuncName
-mkFuncName = wrapName . tryStrip "gl" . (\(P.CommandName n) -> n)
+mkFuncName :: P.CommandName -> VName
+mkFuncName = wrapName FuncName . tryStrip "gl" . (\(P.CommandName n) -> n)
 
 tryStrip :: String -> String -> String
 tryStrip pre n = fromMaybe n $ pre `stripPrefix` n
